@@ -1,0 +1,39 @@
+.btn-success { padding:6px 5px 6px 5px; }
+#reportDiv { background-color:#60226b; width:156px; border-right:2px solid #fff; 
+border-left:2px solid #fff; }
+#sideMenu { margin-left:9%; }
+input,textarea,select { border:1px solid #cfcfcf;}
+#pageContent { overflow-x:hidden;}
+#backBtn { font-size:11px; padding:2px 2px 2px 2px; }
+
+
+.box-3 {
+	position:relative;overflow:hidden;
+	width:400px;height:200px;border:1px dashed #0C0;text-align:center;margin:5px;float:left;
+}
+
+.ajax_loader {background: url("images/spinner_squares_circle.gif") no-repeat center center transparent;width:100%;height:100%;}
+.blue-loader .ajax_loader {background: url("images/ajax-loader_blue.gif") no-repeat center center transparent;}
+
+.borderless td, .borderless th {
+    border: none;
+}
+
+#map_wrapper {
+    height: 400px;
+}
+
+#map_canvas {
+    width: 90%;
+    height: 100%;
+}
+
+.labels {
+     color: white;
+     background-color: red;
+     font-family: "Lucida Grande", "Arial", sans-serif;
+     font-size: 10px;
+     text-align: center;
+     width: 10px;     
+     white-space: nowrap;
+   }

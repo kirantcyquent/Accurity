@@ -1,0 +1,56 @@
+<?php
+
+include_once('Database.php');
+include_once('Session.php');
+
+class User {
+
+	public $email;
+	public $password;
+
+	public function __construct(){
+
+	}
+
+	public function check_user(){
+		$db = new Database();
+		$session = new Session();
+
+		$this->email = mysql_real_escape_string($this->email, $db->getDBConnection());
+		$this->password = mysql_real_escape_string($this->password, $db->getDBConnection());
+		$result = $db->runQuery("SELECT * FROM userdetail WHERE username='{$this->email}' and password='{$this->password}'");
+		if($db->checkRows($result)>0){
+			$session->set_session('email',$this->email);			
+			$details = $db->fetchArray($result);
+			$session->set_session('user_type',$details['TypeOfUser']);
+			$randomsession = uniqid(ssn);
+			$session->set_session('sessionid',$randomsession);
+			$insertArray['SessionID'] = $randomsession;
+			$insertArray['UserID'] = $details['UserID'];
+			$rs = $db->saveRecords($insertArray, "session");
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+
+	public function get_user_type(){
+		$db = new Database();
+		$session = new Session();
+		$result = $db->runQuery("SELECT TypeOfUser FROM userdetail WHERE username='{$_SESSION['email']}'");
+		$row = $db->fetchArray($result);
+		return $row['TypeOfUser'];
+	}
+
+	public function saveAction($actionId, $action, $parameters){
+		$db = new Database();
+		$session = new Session();
+		$params['SessionID'] = $session->get_session('sessionid');
+		$params['ActionID'] = $actionId;
+		$params['Action'] = $action;
+		$params['Parameters'] = $parameters;
+		$db->saveRecords();
+	}
+}
+?>

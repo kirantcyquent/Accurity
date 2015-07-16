@@ -1,0 +1,26 @@
+<?php
+
+class Property{
+
+	public $sq_footage , $bedrooms, $bathrooms, $year_built, $lot_size, $stories, $sq_f, $radius, $age, $l_size;
+	public $story, $pool, $basement, $beds_from, $beds_to, $baths_from, $baths_to, $sale_range, $sale_type;
+
+
+	public function __construct(){
+		$this->sq_f = "+/- 20%";
+		$this->radius  = isset($_SESSION['refineSearch']['radius']) ? $_SESSION['refineSearch']['radius'] : "0.5 Mile";
+		$this->age  = isset($_SESSION['refineSearch']['age']) ? $_SESSION['refineSearch']['age'] : "+/- 5 years";
+		$this->l_size  = isset($_SESSION['refineSearch']['l_size']) ? $_SESSION['refineSearch']['l_size'] : "+/- 50%";
+		$this->story  = isset($_SESSION['refineSearch']['story']) ? $_SESSION['refineSearch']['story'] : "3";
+		$this->pool = isset($_SESSION['refineSearch']['pool']) ? $_SESSION['refineSearch']['pool'] : "No";
+		$this->basement = isset($_SESSION['refineSearch']['basement']) ? $_SESSION['refineSearch']['basement'] : "No";
+		$this->beds_from = isset($_SESSION['refineSearch']['beds_from']) ? $_SESSION['refineSearch']['beds_from'] : "2";
+		$this->beds_to = isset($_SESSION['refineSearch']['beds_to']) ? $_SESSION['refineSearch']['beds_to'] : "3";
+		$this->baths_from = isset($_SESSION['refineSearch']['baths_from']) ? $_SESSION['refineSearch']['baths_from'] :"2";
+		$this->baths_to = isset($_SESSION['refineSearch']['baths_to']) ? $_SESSION['refineSearch']['baths_to'] :"3";
+		$this->sale_range = isset($_SESSION['refineSearch']['sale_range']) ? $_SESSION['refineSearch']['sale_range'] :"0.3 Months";
+		$this->sale_type = isset($_SESSION['refineSearch']['sale_type']) ? $_SESSION['refineSearch']['sale_type'] :"Full Value";
+	}
+
+}
+?>

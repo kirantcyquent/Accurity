@@ -1,0 +1,655 @@
+<?php
+	session_start();
+	$sessiondata = $_SESSION['email'];
+
+	include('db/db.php');
+	$query = "select TypeOfUser from userdetail where UserName = '$sessiondata'";
+	$sql = mysql_query($query) or die(mysql_error());
+	$result = mysql_fetch_row($sql);	
+	$user = $result[0];
+
+
+	include('classes/User.php');
+	$us = new User();
+  	include_once('includes/process.php') ;
+  	
+	$maxRecords=5;
+
+	if($user==2  && isset($_REQUEST['searchAddress'])){
+
+			include_once('includes/process.php') ;
+			$Add = 	isset($_REQUEST['searchAddress']) ? $_REQUEST['searchAddress']: $_SESSION['results']['address'];
+			$Add = strip_tags($Add);
+			$Add = mysql_real_escape_string(@$Add);
+
+
+
+			if(isset($_REQUEST['searchAddress']))
+			{
+				unset($_SESSION['results']);
+				$aRet = ConvertAddress($Add);
+				$PropData = GetPropertyFromRealty($aRet['StreetAdd'],$aRet['City'],$aRet['State'],$aRet['Zip']);
+				
+				if(!isset($PropData['_STREETADDRESS'])){
+			?>
+			<script>
+				var currentPage="index";
+				$.ajax({
+						type: "GET",
+						data: "error=1",
+						url: "home.php?page="+currentPage+"&set_page=index",
+						success: function(data){	
+							$("#pageContent").html(data);
+							$('.nav-stacked li').removeClass('active')
+							$(".nav-stacked li:first").addClass("active");
+						}
+				});
+
+			</script>
+			<?php
+					exit;
+				}
+				$address= $Add;
+						
+		        $_SESSION['search']['searchAddress']=$address;
+				$PropData['TOTALBATHROOMCOUNT']=round($PropData['TOTALBATHROOMCOUNT']);
+				$Add =  $PropData['_STREETADDRESS'] .' '.$PropData['_CITY'].' '.$PropData['_STATE'].' '.$PropData['_POSTALCODE'];	
+				$street = $aRet['StreetAdd'];
+				$city = $PropData['_CITY'];
+				$state  = $PropData['_STATE'];
+				$zip =$PropData['_POSTALCODE'];
+
+				$sq_footage =  $PropData['GROSSLIVINGAREASQUAREFEETCOUNT'];
+				$bedrooms = $PropData['TOTALBEDROOMCOUNT'];
+				$bathrooms=$PropData['TOTALBATHROOMCOUNT'];
+				$year_built =$PropData['PROPERTYSTRUCTUREBUILTYEAR'];
+				$lot_size =  $PropData['LOTSIZESQUAREFEETCOUNT_EXT'];
+				$stories = $PropData['STORIESCOUNT'];
+				
+				$sq_f  =  "+/- 20%";
+				$radius  =  "0.5 Mile";
+				$age  =  "5";
+				$l_size  ="+/- 50%";
+				$story  = "3";
+				$pool =  "No";
+				$basement =  "No";
+				$beds_from = "2";
+				$beds_to =  "3";
+				$baths_from = "2";
+				$baths_to = "3";
+				$sale_range = "0.3 Months";
+				$sale_type = "Full Value";
+
+				$searchId = $us->saveSearch($Add, 0, $_SESSION);
+
+				$_SESSION['search']['address'] = $Add;
+				$_SESSION['search']['bedrooms'] = $bedrooms;
+				$_SESSION['search']['bathrooms'] = $bathrooms;
+				$_SESSION['search']['square_footage'] = $square_footage;
+				$_SESSION['search']['stories'] = $stories;												
+				$_SESSION['search']['lot_size'] = $lot_size;	
+				$_SESSION['search']['year_built'] = $year_built;	
+				$_SESSION['search']['pool'] = $pool;									
+				$_SESSION['search']['basement'] = $basement;													
+
+				$date = date('Y-m-d');
+				
+			
+				//echo "($street,$city,$state,$zip,'',$date";
+			//	$xml_result = generate_xml($street,$city,$state,$zip,'',$date);
+				$street = preg_replace("@\s+@","+",$street);
+				$arr  = array ('street'=>$street,'city'=>$city, 'state'=>$state, 'zip'=>$zip,'beds'=>$bedrooms, 'baths'=>$bathrooms,'square_footage'=>$square_footage,'lot_size'=>$lot_size, 'sale_date'=> '','amount_min'=>'','amount_max'=>'', 'built_year'=>$year_built);
+				$xml_result = get_xml_data($arr);
+				$results = array();
+
+				/*criteria- 1   ******** sqft->10+- age 5+-  saledate<180 prox0.5mile lot size 50+-   ***********/
+				$C1Rangesqrft = MinMax(10,$sq_footage);
+				$C1RangeAge = MinMaxAge(5, $year_built);
+				$C1Rangelot = MinMax(50,$lot_size);
+				$C1Proximity = "0.5";
+
+				/*criteria- 2   ******** sqft->10+- age 5+-  saledate<180 prox0.5mile lot size 50+-   ***********/
+				$C2Rangesqrft = MinMax(15,$sq_footage);
+				$C2RangeAge = MinMaxAge(10,$year_built);
+				$C2Rangelot = MinMax(50,$lot_size);
+				$C2Proximity = "1";
+
+				/*criteria- 3   ******** sqft->10+- age 5+-  saledate<180 prox0.5mile lot size 50+-   ***********/
+				$C3Rangesqrft = MinMax(20,$sq_footage);
+				$C3RangeAge = MinMaxAge(50,$year_built);
+				$C3Rangelot = MinMax(50,$lot_size);
+				$C3Proximity = "2.5";
+
+
+				$aSearchProp = array();
+				$c1=array(); 
+				$c2=array(); 
+				$c3=array();
+
+
+				foreach($xml_result as $rows)
+				{
+					//print_r($rows);
+					//$rows['lot_size'] = $rows['lot_size'] * 43560;
+					$listdate = $rows['dateSold'];
+					$listdate = preg_replace("@T.*?$@","",$listdate);
+					list($m,$d,$y) = preg_split("@-@",$listdate);
+					
+					
+					$ydate = strtotime("$y-$m-$d");
+
+					$cn1 = time() - (180*24*60*60);
+					$cn2 = time() - (365*24*60*60);
+
+					$adr = preg_replace("@\s+@","+",$Add);
+					$coords = getLatitudeLongitude($adr);
+
+/*
+					if(($rows['sq_size'] > $C1Rangesqrft['Min'] && $rows['sq_size'] < $C1Rangesqrft['Max'] ) && ($rows['lot_size]'] > $C1Rangelot['Min'] && $rows['lot_size]'] < $C1Rangelot['Max']) && ($rows['year_built'] > $C1RangeAge['Min'] && $rows['year_built'] < $C1RangeAge['Max']) && ($ydate> $cn1) && $rows['distance']<$C1Proximity)
+					{
+						$c1[] = array('address'=>$rows['address'], 'distance'=>$rows['distance'],'bedsBaths'=>$rows['beds'] ,'sq_size'=>$rows['sq_size'],'year_built'=>$rows['year_built'],'lot_size'=>$rows['lot_size'],'stories'=>$rows['stories'],'dateSold'=>$rows['dateSold'], 'amount'=>$rows['amount'], 'latitude'=>$coords['latitude'], 'longitude'=>$coords['longitude']);
+					}
+					else 
+					if(($rows['sq_size'] > $C2Rangesqrft['Min'] && $rows['sq_size'] < $C2Rangesqrft['Max'] ) && ($rows['lot_size'] > $C2Rangelot['Min'] && $rows['lot_size'] < $C2Rangelot['Max']) && ($rows['year_built'] > $C2RangeAge['Min'] && $rows['year_built'] < $C2RangeAge['Max']) && ($ydate> $cn2) && $rows['distance']<$C2Proximity)
+					{
+						$c2[] = array('address'=>$rows['address'], 'distance'=>$rows['distance'],'bedsBaths'=>$rows['beds'] ,'sq_size'=>$rows['sq_size'],'year_built'=>$rows['year_built'],'lot_size'=>$rows['lot_size'],'stories'=>$rows['stories'],'dateSold'=>$rows['dateSold'], 'amount'=>$rows['amount'], 'latitude'=>$coords['latitude'], 'longitude'=>$coords['longitude']);
+					}else */
+
+
+					if(($rows['sq_size'] > $C3Rangesqrft['Min'] && $rows['sq_size'] < $C3Rangesqrft['Max'] ) && ($rows['lot_size'] > $C3Rangelot['Min'] && $rows['lot_size'] < $C3Rangelot['Max']) && ($rows['year_built'] > $C3RangeAge['Min'] && $rows['year_built'] < $C3RangeAge['Max']) && $rows['distance']<$C3Proximity)
+					{
+						$c3[] = array('address'=>$rows['address'], 'distance'=>$rows['distance'],'bedsBaths'=>$rows['beds'] ,'sq_size'=>$rows['sq_size'],'year_built'=>$rows['year_built'],'lot_size'=>$rows['lot_size'],'stories'=>$rows['stories'],'dateSold'=>$rows['dateSold'], 'amount'=>$rows['amount'], 'latitude'=>$coords['latitude'], 'longitude'=>$coords['longitude']);
+					}
+					
+				}
+				
+				
+				$aSearchProp = array_merge($c1, $c2);
+				$aSearchProp =array_merge($aSearchProp, $c3);
+
+				
+
+
+				if(count($aSearchProp)<=0){
+					
+						?>
+						<script>
+							var currentPage="refineSearch";
+							$.ajax({
+									type: "GET",
+									data: "referror=1",
+									url: "home.php?page="+currentPage+"&set_page=index",
+									success: function(data){	
+										$("#pageContent").html(data);
+										$('.nav-stacked li').removeClass('active')
+										$(".nav-stacked li:nth-child(2)").addClass("active");
+									}
+							});
+						</script>
+						<?php
+						exit;
+				}
+
+				$us->updateSearch($address, 0, $_SESSION, $_SESSION['searchId']);
+				
+					
+	
+			}
+	}
+
+	else if(isset($_POST['sq_f']) || ($user == 2 && isset($_POST['searchdata'])) )
+	{
+		
+		$sq_f = $_POST['sq_f'];
+		$radius = $_POST['radius']; 
+		$age = $_POST['age'];
+		$l_size = $_POST['l_size'];
+		$story = $_POST['story'];
+		$pool = $_POST['pool'];
+		$basement = $_POST['basement']; 
+		$beds_from = $_POST['beds_from']; 
+		$beds_to = $_POST['beds_to'];
+		$baths_from = $_POST['baths_from']; 
+		$baths_to = $_POST['baths_to']; 
+		$sale_range = $_POST['sale_range'];  
+		$sale_type = $_POST['sale_type']; 
+		$square_footage = $_POST['square_footage'];
+		$bedrooms = $_POST['bedrooms']; 
+		$bathrooms = $_POST['bathrooms']; 
+		$stories = $_POST['stories']; 
+		$lot_size = $_POST['lot_size'];
+		$year_built = $_POST['year_built'];
+		
+		$address= $_POST['address'];
+		$street = $_POST['street'];
+		$city = $_POST['city'];
+		$state  = $_POST['state'];
+		$zip =$_POST['zip'];
+
+		$date = date('Y-m-d');
+		
+		
+		//echo "($street,$city,$state,$zip,'',$date";
+		$xml_result = generate_xml($street,$city,$state,$zip,'',$date);
+		$results = array();
+		
+		/*criteria- 1   ******** sqft->10+- age 5+-  saledate<180 prox0.5mile lot size 50+-   ***********/
+		$C1Rangesqrft = MinMax(10,$square_footage);
+		$C1RangeAge = MinMaxAge(5, 2015 - $age);
+		$C1Rangelot = MinMax(50,$lot_size);
+		$C1Proximity = "0.5";
+
+		/*criteria- 2   ******** sqft->10+- age 5+-  saledate<180 prox0.5mile lot size 50+-   ***********/
+
+		$C2Rangesqrft = MinMax(15,$square_footage);
+		$C2RangeAge = MinMaxAge(10, 2015 - $age);
+		$C2Rangelot = MinMax(50,$lot_size);
+		$C2Proximity = "1";
+
+		/*criteria- 3   ******** sqft->10+- age 5+-  saledate<180 prox0.5mile lot size 50+-   ***********/
+		$C3Rangesqrft = MinMax(20,$square_footage);
+		$C3RangeAge = MinMax(50, 2015 - $age);
+		$C3Rangelot = MinMax(50,$lot_size);
+		$C3Proximity = "2.5";
+
+		$aSearchProp = array();
+		$c1=array(); 
+		$c2=array(); 
+		$c3=array();
+
+		foreach($xml_result as $rows)
+		{
+			$rows['LOTSIZEACRES'] = $rows['LOTSIZEACRES'] * 43560;
+			$listdate = $rows['LISTDATE'];
+			list($m,$d,$y) = preg_split("@\/@",$listdate);
+			$ydate = strtotime("$y-$m-$d");
+			$cn1 = time() - (180*24*60*60);
+			$cn2 = time() - (365*24*60*60);
+
+			if(($rows['SQ_FT'] > $C1Rangesqrft['Min'] && $rows['SQ_FT'] < $C1Rangesqrft['Max'] ) && ($rows['LOTSIZEACRES'] > $C1Rangelot['Min'] && $rows['LOTSIZEACRES'] < $C1Rangelot['Max']) && ($rows['YEARBUILT'] > $C1RangeAge['Min'] && $rows['YEARBUILT'] < $C1RangeAge['Max']) && ($ydate> $cn1) && $rows['DIST']<$C1Proximity)
+			{
+				$c1[] = array('address'=>$rows['ADDRESS'], 'distance'=>$rows['DIST'],'bedsBaths'=>$rows['BEDS'].' Bd /'.$rows['BATHS'].' Ba','sq_size'=>$rows['SQ_FT'],'year_built'=>$rows['YEARBUILT'],'lot_size'=>$rows['LOTSIZEACRES'],'stories'=>$rows['STRUCTURESTORIES'],'dateSold'=>$rows['LISTDATE'], 'amount'=>$rows['LISTPRICE'], 'latitude'=>$rows['LAT'], 'longitude'=>$rows['LON']);
+			}
+			else 
+			if(($rows['SQ_FT'] > $C2Rangesqrft['Min'] && $rows['SQ_FT'] < $C2Rangesqrft['Max'] ) && ($rows['LOTSIZEACRES'] > $C2Rangelot['Min'] && $rows['LOTSIZEACRES'] < $C2Rangelot['Max']) && ($rows['YEARBUILT'] > $C2RangeAge['Min'] && $rows['YEARBUILT'] < $C2RangeAge['Max']) && ($ydate> $cn2) && $rows['DIST']<$C2Proximity)
+			{
+				$c2[] = array('address'=>$rows['ADDRESS'], 'distance'=>$rows['DIST'],'bedsBaths'=>$rows['BEDS'].' Bd /'.$rows['BATHS'].' Ba','sq_size'=>$rows['SQ_FT'],'year_built'=>$rows['YEARBUILT'],'lot_size'=>$rows['LOTSIZEACRES'],'stories'=>$rows['STRUCTURESTORIES'],'dateSold'=>$rows['LISTDATE'], 'amount'=>$rows['LISTPRICE'],'latitude'=>$rows['LAT'], 'longitude'=>$rows['LON']);
+			}else 
+			if(($rows['SQ_FT'] > $C3Rangesqrft['Min'] && $rows['SQ_FT'] < $C3Rangesqrft['Max'] ) && ($rows['LOTSIZEACRES'] > $C3Rangelot['Min'] && $rows['LOTSIZEACRES'] < $C3Rangelot['Max']) && ($rows['YEARBUILT'] > $C3RangeAge['Min'] && $rows['YEARBUILT'] < $C3RangeAge['Max']) && ($ydate> $cn2) && $rows['DIST']<$C3Proximity)
+			{
+				$c3[] = array('address'=>$rows['ADDRESS'], 'distance'=>$rows['DIST'],'bedsBaths'=>$rows['BEDS'].' Bd /'.$rows['BATHS'].' Ba','sq_size'=>$rows['SQ_FT'],'year_built'=>$rows['YEARBUILT'],'lot_size'=>$rows['LOTSIZEACRES'],'stories'=>$rows['STRUCTURESTORIES'],'dateSold'=>$rows['LISTDATE'], 'amount'=>$rows['LISTPRICE'],'latitude'=>$rows['LAT'], 'longitude'=>$rows['LON']);
+			}
+			
+		}
+		
+		$aSearchProp = array_merge($c1, $c2);
+		$aSearchProp =array_merge($aSearchProp, $c3);
+
+		if(count($aSearchProp)<=0){
+			
+				?>
+				<script>
+		var currentPage="refineSearch";
+		$.ajax({
+				type: "GET",
+				data: "referror=1",
+				url: "home.php?page="+currentPage+"&set_page=index",
+				success: function(data){	
+					$("#pageContent").html(data);
+					$('.nav-stacked li').removeClass('active')
+					$(".nav-stacked li:nth-child(2)").addClass("active");
+				}
+		});
+
+	</script>
+				<?php
+				exit;
+		}
+
+		$us->updateSearch($address, 0, $_SESSION, $_SESSION['searchId']);
+
+		$street = preg_replace("@\s+@","+",$street);
+		$arr  = array ('street'=>$street,'city'=>$city, 'state'=>$state, 'zip'=>$zip,'beds'=>$bedrooms, 'baths'=>$bathrooms,'square_footage'=>$square_footage,'lot_size'=>$lot_size, 'sale_date'=> '','amount_min'=>'','amount_max'=>'', 'built_year'=>$year_built);
+		$res = get_xml_data($arr);		
+	}
+	else if(isset($_SESSION['results']['matchResult'])){	
+		$result=unserialize(urldecode($_SESSION['results']['matchResult']));
+		
+		$aSearchProp = $result;
+		
+		if($user==2){
+		$address = $_SESSION['search']['address'];
+		$bedrooms  = $_SESSION['search']['bedrooms'];
+		$bathrooms= $_SESSION['search']['bathrooms'];
+		$square_footage= $_SESSION['search']['square_footage'];
+		$stories= $_SESSION['search']['stories'];
+		$year_built= $_SESSION['search']['year_built'];
+		}else{
+		$address = $_SESSION['refineSearch']['address'];
+		$bedrooms  = $_SESSION['refineSearch']['bedrooms'];
+		$bathrooms= $_SESSION['refineSearch']['bathrooms'];
+		$square_footage= $_SESSION['refineSearch']['square_footage'];
+		$stories= $_SESSION['refineSearch']['stories'];
+		$year_built= $_SESSION['refineSearch']['year_built'];
+		}
+	}else{
+		
+		
+?>
+	<script>
+	
+		var currentPage="index";
+			$.ajax({
+				type: "GET",
+				url: "home.php?page="+currentPage+"&set_page=index",
+				success: function(data){	
+				$("#pageContent").html(data);
+				$('.nav-stacked li').removeClass('active')
+				$(".nav-stacked li:first").addClass("active");
+				}
+				});
+
+	</script>
+<?php
+		exit;
+	}
+
+	$b = $a = $aSearchProp;
+	function cmp($a, $b) {
+		if($a['distance'] == $b['distance']) {
+			return 0;
+		}
+		return ($a['distance'] < $b['distance']) ? -1 : 1;
+	}
+
+	uasort($a, 'cmp');
+	$aSearchProp = $a;
+	
+?>
+<?php
+		$adr = preg_replace("@\s+@","+",$address);
+		$main = getLatitudeLongitude($adr);
+		$markers = array();
+		$markers[] = array('id'=>'C','address'=>$address, 'latitude'=>$main['latitude'], 'longitude'=>$main['longitude']);
+?>
+		<div class="row">
+		<div class="col-sm-4" style="padding:30px 0px 0px 30px;">
+		<span style="font-size:12px; font-weight:bold; color:#6a6a6a;"><?php  echo $address; ?>  </span>
+		
+		<span style="font-size:12px; color:#6a6a6a;"><br/>
+		<?php echo $bedrooms; ?>bd | <?php echo $bathrooms; ?>Ba | <?php echo $square_footage; ?> Sq Ft<br/>
+		<?php echo $stories; ?> Stories | Lot Size <?php echo $lot_size; ?><br/>
+		<?php echo "Pool ".$pool; ?> |  <?php echo "Basement ".$basement; ?><br/>
+		Built <?php echo $year_built; ?>
+		</span>
+		</div>
+		<div class="col-sm-3">	
+		</div>
+		</div>
+		<div style="border-top:1px solid #e2e2e2; margin:0px 80px 0px 15px;"></div>
+		<div class="row">
+		<div class="col-sm-12" style="padding:20px 80px 0px 30px;">
+		<form id="resultForm" action="" method="post">
+		<table class="table table-striped">
+    <thead>
+      <tr>
+		<th></th>
+        <th>Address</th>
+        <th>Distance</th>
+        <th>Beds/Baths</th>
+		<th>Size</th>
+        <th>Built</th>
+        <th>Lot</th>
+		<th>Stories</th>
+        <th>Date Sold</th>
+        <th>Amount</th>
+        <?php if($user==1){ ?>
+		<th>DS</th>
+		<th>AM</th>
+		<th>Utilized</th>
+		<?php } ?>
+      </tr>
+    </thead>
+    <tbody>
+	<?php
+		$i=1;
+		$seq=1;
+		$aMatchData = array();
+		foreach($aSearchProp as $row){
+			if($i%2==0){
+				echo '<tr>';
+			}else{
+				echo '<tr style="background:#f6f6f6;">';
+			}
+
+			if($i>$maxRecords){
+				break;
+			}
+			$i++;
+			
+			
+			if(!isset($row['ay'] ))
+			{
+				//echo "<pre>"; print_r($res);
+				foreach($res as $rs){
+					if($row['address']==$rs['address']){
+						
+						if($row['dateSold']==$rs['dateSold']){
+							$dy = "Y";
+						}else{ 
+							$dy = "N/a";
+						}
+
+						if($row['amount']==$rs['amount']){
+							$ay = "Y";
+						}
+						else{
+							$ay = "N/a";
+						}
+						break;
+					}else{
+
+						$ay="N/a";
+						$dy="N/a";
+					}
+				}
+				$row['ay'] = $ay;
+				$row['dy'] = $dy;
+			}
+		
+			$aMatchData[$seq] = $row;
+			echo '<td>'.$seq.'</td>';
+			echo '<td>'.$row['address'].'</td>';
+			echo '<td>'.$row['distance'].' Miles</td>';
+			echo '<td>'.$row['bedsBaths'].'</td>';
+			echo '<td>'.$row['sq_size'].' sqft</td>';
+			echo '<td>'.$row['year_built'].'</td>';
+			echo '<td>'.$row['lot_size'].'</td>';
+			echo '<td>'.$row['stories'].'</td>';
+			echo '<td>'.$row['dateSold'].'</td>';
+			echo '<td>$'.$row['amount'].'</td>';
+			   if($user==1){ 
+			echo '<td>'.$row['dy'].'</td>';
+			echo '<td>'.$row['ay'].'</td>';
+			echo '<td>
+			<select name="utilizes['.$seq.']" onchange="return checkReason(this.value, '.$seq.');">
+				<option value="Yes">Yes</option>
+				<option value="No">No</option>
+			</select>
+			</td>';
+		}
+			echo '</tr>';
+			echo '<tr id="sequence_'.$seq.'"></tr>';
+			$markers[]=array('id'=>$seq, 'address'=>$row['address'], 'latitude'=>$row['latitude'], 'longitude'=>$row['longitude']);
+			$seq++;
+		}
+		//echo "<pre>"; print_r($aMatchData);
+		$strMatchData = urlencode(serialize($aMatchData));
+
+ $map = file_get_contents("https://maps.googleapis.com/maps/api/staticmap?center=415+31ST+AVE+N+NASHVILLE+TN+37215&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:S%7C36.1544,-86.8215");
+$fp = fopen('map.jpg','w');
+fclose($fp);
+	?>    
+	<input type="hidden" name="matchResult" id="matchResult" value="<?php echo $strMatchData; ?>" />
+
+    </tbody>
+  </table>
+  <div style="padding:10px 0px 5px 0px; float:right;">
+			<button type="button" class="btn btn-success"  style="padding:2px 5px 0px 5px;" id="continueBtn">Continue Analysis>></button>
+	</form>
+		</div>
+		</div>
+		</div>
+<?php
+        $locstring='';    
+        $c=1;
+        foreach($markers as $m){
+        	if($c==1){ $color="red";}
+        	else if($c%2==0){ $color ="green";}else{$color="blue";}
+	        $c++;
+			if($m['id']=="C"){
+				$color = 'purple';
+			}else{
+				$color = $m['id'];
+			}
+	        $locstring=$locstring.'&markers=color:'.$color.'%7Clabel:'.$m['id'].'%7C'.$m['latitude'].','.$m['longitude'];
+        }
+        $url="http://maps.googleapis.com/maps/api/staticmap?zoom=15&size=800x400&maptype=ROADMAP&".urlencode("center")."=".$locstring."&sensor=false";
+		$_SESSION['results']['map'] = $url;
+		$_SESSION['map']=$url;
+?>
+
+
+		<div id="map_wrapper">
+			  <div id="map_canvas" class="mapping"></div>
+		</div>
+
+
+	
+		<div class="row">
+		<div class="col-sm-12" style="padding:20px 0px 30px 15px;">
+		
+		<div style="padding:10px 80px 5px 0px; float:right;">
+		<button type="button" class="btn btn-success" style="padding:2px 5px 0px 5px;">Continue Analysis>></button>
+		</div>
+		</div>
+		</div>
+		
+		
+		 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+			<script type="text/javascript">
+
+			function checkReason(util, id){
+					if(util=="No"){
+						var data = '<td colspan="15"><select class="reasonRisk" name="reasonRisk_'+id+'"><option value="1">Poor Condition of Subject/Good Condition of Comp</option><option value="2">None</option></select> &nbsp; &nbsp; <select class="noteRisk" name="noteRisk_'+id+'"><option value="1">I didn\'t use this property because</option><option value="2">None</option></select></td>';
+						document.getElementById('sequence_'+id+'').innerHTML = data;
+					}else{
+						document.getElementById('sequence_'+id+'').innerHTML = '';
+					}
+			}
+
+			jQuery(function($) {
+				// Asynchronously Load the map API 
+				var script = document.createElement('script');
+				script.src = "http://maps.googleapis.com/maps/api/js?sensor=false&callback=initialize";
+				document.body.appendChild(script);
+			});
+
+			function initialize() {
+				var map;
+				var bounds = new google.maps.LatLngBounds();
+				var mapOptions = {
+					zoom: 6,
+					center: new google.maps.LatLng(<?php echo $main['latitude']; ?>, <?php echo $main['longitude']; ?>),
+					mapTypeId: 'roadmap'
+				};
+								
+				// Display a map on the page
+				map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+				map.setTilt(45);
+					
+				// Multiple Markers
+				var markers = [
+					<?php
+						$count = count($markers);
+						foreach($markers as $m){
+							$count--;
+							if($count==0){
+								echo "['".$m['address']."',".$m['latitude'].",".$m['longitude']."]";
+							}else{
+							echo "['".$m['address']."',".$m['latitude'].",".$m['longitude']."],";
+							}
+						}
+					?>
+			
+				];
+									
+				// Info Window Content
+				/*var infoWindowContent = [
+					['<div class="info_content">' +
+					'<h3>London Eye</h3>' +
+					'<p>The London Eye is a giant Ferris wheel situated on the banks of the River Thames. The entire structure is 135 metres (443 ft) tall and the wheel has a diameter of 120 metres (394 ft).</p>' +        '</div>'],
+					['<div class="info_content">' +
+					'<h3>Palace of Westminster</h3>' +
+					'<p>The Palace of Westminster is the meeting place of the House of Commons and the House of Lords, the two houses of the Parliament of the United Kingdom. Commonly known as the Houses of Parliament after its tenants.</p>' +
+					'</div>']
+				];*/
+					
+				// Display multiple markers on a map
+				//var infoWindow = new google.maps.InfoWindow(), marker, i;
+				// Loop through our array of markers & place each one on the map  
+				for( i = 0; i < markers.length; i++ ) {
+					var position = new google.maps.LatLng(markers[i][1], markers[i][2]);
+					bounds.extend(position);
+					marker = new google.maps.Marker({
+						position: position,
+						map: map,
+ 						title: markers[i][0],
+					});
+					
+					// Allow each marker to have an info window    
+					/*google.maps.event.addListener(marker, 'click', (function(marker, i) {
+						return function() {
+							infoWindow.setContent(infoWindowContent[i][0]);
+							infoWindow.open(map, marker);
+						}
+					})(marker, i));
+					*/
+					// Automatically center the map fitting all markers on the screen
+					map.fitBounds(bounds);
+				}
+
+				// Override our map zoom level once our fitBounds function runs (Make sure it only runs once)
+				var boundsListener = google.maps.event.addListener((map), 'bounds_changed', function(event) {
+					//this.setZoom(60);
+					google.maps.event.removeListener(boundsListener);
+				});
+				
+			}
+			 
+
+			$('#continueBtn').click(function() { 
+				
+				var currentPage="results";
+				var matchResult = $("#matchResult").val();
+				var dataString = 'matchResult='+matchResult;
+
+				$.ajax({
+				type: "POST",
+				data: $('#resultForm').serialize()+dataString,
+				url: "home.php?page=report&set_page=results",
+				success: function(data){	
+				$("#pageContent").html(data);
+				<?php if($user==2){  ?>
+					$('.nav-stacked li').removeClass('active')
+					$(".nav-stacked li:nth-child(3)").addClass("active");
+					<?php } else{ ?>
+					$('.nav-stacked li').removeClass('active')
+					$(".nav-stacked li:nth-child(4)").addClass("active");
+					<?php } ?>
+				}
+				});
+			});	
+	
+
+		</script>
