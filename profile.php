@@ -1,13 +1,23 @@
-<?php session_start();
-if (!(isset($_SESSION['email']) && $_SESSION['email'] == true)) {
-    header ("location: login.php");
-} else {
+<?php
+	session_start();
+	$user_type=$_SESSION['user_type'];
+	if(!isset($_SESSION['email']) || !isset($_SESSION['sessionid'])){
+		header('Location: login.php');
+	}	
+    else {
 	include('db/db.php'); 
 	$user_type=$_SESSION['user_type'];
-	?>
-	
-<?php include('includes/header.php'); ?>
+	$x="profile";
+?>
+<?php  include('includes/header.php'); ?>	
 <?php  include('includes/topBar.php'); ?>
+	<div class="row" id="sideMenuDiv">
+		<?php  include('includes/profile-sideMenu.php'); ?>	
+		<div class="col-sm-10" id="pageContent">
+
+			<div style="padding:20px;">
+
+
 <?php 
 //SELECT Answer FROM securityquestion WHERE userID = (SELECT UserID FROM userdetail where UserName = '$emailid')
 	$query = "SELECT Question,Answer FROM securityquestion WHERE userID = (SELECT UserID FROM userdetail where UserName = '$sessiondata')";
@@ -24,11 +34,7 @@ if (!(isset($_SESSION['email']) && $_SESSION['email'] == true)) {
 	$sql4 = mysql_query($query4);
 	$result4 = mysql_fetch_array($sql4);
 ?>
-<div class="row" style="width:80%;margin:0 auto;">
-<div class="col-lg-2 col-md-2">
-<?php  include('includes/profile-sideMenu.php'); ?>
-</div>
-<div class="col-lg-10 col-md-10" style="margin-top:33px;">
+
 <?php $errormsg = $_GET['error_message']; ?>
 <?php $successmsg = $_GET['success_meassage']; ?>
  <?php if($errormsg){ ?>
@@ -41,6 +47,8 @@ if (!(isset($_SESSION['email']) && $_SESSION['email'] == true)) {
 		  <strong>Success!</strong> <?php echo $successmsg; ?>
 		</div>   
 	   <?php } else{} ?>
+
+	   <h3>Profile Information </h3>
 <div class="table-responsive">
   <table class="table table-bordered">
     <thead>
@@ -77,8 +85,11 @@ if (!(isset($_SESSION['email']) && $_SESSION['email'] == true)) {
       </tbody>
   </table>
 </div>
-<a style="margin-bottom:20px;" href="edit-profile.php" class="btn btn-default">Edit Profile</a>
+<a style="margin-bottom:20px;" href="edit-profile.php" class="btn btn-success">Edit Profile</a>
+
 </div>
+</div>	
+	</div>
 </div>
-<?php include('includes/footer.php'); ?>
+<?php  include('includes/footer.php'); ?>
 <?php } ?>

@@ -3,15 +3,19 @@
 	if (!(isset($_SESSION['email']) && $_SESSION['email'] == true)) {
     header ("location: login.php");
 } else {
+  $x="profile";
+  $user_type=$_SESSION['user_type'];
 	?>
 	
-<?php include('includes/header.php'); ?>
-<style>
-input[type="text"]{
-	width:100% !important;
-}
-</style>
+
+
+<?php  include('includes/header.php'); ?> 
 <?php  include('includes/topBar.php'); ?>
+  <div class="row" id="sideMenuDiv">
+    <?php  include('includes/profile-sideMenu.php');?> 
+    <div class="col-sm-10" id="pageContent">
+      <div style="padding:20px; padding-left:0;">
+
 <?php 
 //SELECT Answer FROM securityquestion WHERE userID = (SELECT UserID FROM userdetail where UserName = '$emailid')
 	$query = "SELECT QuestionID,Question,Answer FROM securityquestion WHERE userID = (SELECT UserID FROM userdetail where UserName = '$sessiondata')";
@@ -28,18 +32,14 @@ input[type="text"]{
 	$sql4 = mysql_query($query4);
 	$result4 = mysql_fetch_array($sql4);
 ?>
-<div class="row" style="width:80%;margin:0 auto;">
-<div class="col-md-2">
-<?php  include('includes/sideMenu.php'); ?>
-</div>
-<div class="col-md-10" style="margin-top:33px;">
-<form method="post" action="edit-profile-details.php">
+
+<form method="post" action="edit-profile-details.php" autocomplete="off">>
 <div class="table-responsive">
   <table class="table table-bordered">
     <thead>
         <tr>
-          <th>Info</th>
-          <th>Details</th>
+          <th><h4>Info</h4></th>
+          <th><h4>Details</h4></th>
         </tr>
       </thead>
 	  <tbody>
@@ -68,14 +68,13 @@ input[type="text"]{
           <td><input type="text" class="form-control input-sm" placeholder="Answer3.." required name="answer3" value="<?php echo $result3[2]; ?>" /></td>
         </tr>
 		<tr>
-          <th scope="row"><a style="" href="profile.php" class="btn btn-default">cancel</a></th>
-          <td><input type="submit" name="update" class="btn btn-default" value="Update" /></td>
+          <th scope="row"><a style="" href="profile.php" class="btn btn-danger">Cancel</a></th>
+          <td><input type="submit" name="update" class="btn btn-success" value="Update" /></td>
         </tr>
       </tbody>
   </table>
 </div>
 </form>
 </div>
-</div>
-<?php include('includes/footer.php'); ?>
+</div></div</div><?php include('includes/footer.php'); ?>
 <?php } ?>

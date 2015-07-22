@@ -1,9 +1,16 @@
 <?php
 	session_start();
 	$user_type=$_SESSION['user_type'];
-	if(!isset($_SESSION['email']) || !isset($_SESSION['sessionid']) || $user_type==3){
+	if(!isset($_SESSION['email']) || !isset($_SESSION['sessionid'])){
 		header('Location: login.php');
 	}	
+	if($user_type==3){
+		header('Location: users.php');
+	}
+
+	if($user_type==0){
+		header('Location: institutes.php');
+	}
 ?>
 <?php  include('includes/header.php'); ?>	
 <?php  include('includes/topBar.php'); ?>

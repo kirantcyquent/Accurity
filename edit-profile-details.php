@@ -33,8 +33,8 @@ if(isset($_POST['update'])){
 	}else{
 		mysql_query("INSERT INTO userdetail (Name,Address) VALUES ('$name','$address')");
 	}
-	header("Location: profile.php?success_meassage='profile update successfully'");
+	header("Location: profile.php?success_meassage=profile update successfully");
 	}else{
-	header("Location: edit_profile.php?error_message='Something went wrong. Please retry'");	
+	header("Location: edit_profile.php?error_message=Something went wrong. Please retry");	
 	}
 ?>

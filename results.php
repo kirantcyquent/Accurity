@@ -50,7 +50,7 @@
 					exit;
 				}
 				$address= $Add;
-						
+				
 		        $_SESSION['search']['searchAddress']=$address;
 				$PropData['TOTALBATHROOMCOUNT']=round($PropData['TOTALBATHROOMCOUNT']);
 				$Add =  $PropData['_STREETADDRESS'] .' '.$PropData['_CITY'].' '.$PropData['_STATE'].' '.$PropData['_POSTALCODE'];	
@@ -100,6 +100,8 @@
 				$street = preg_replace("@\s+@","+",$street);
 				$arr  = array ('street'=>$street,'city'=>$city, 'state'=>$state, 'zip'=>$zip,'beds'=>$bedrooms, 'baths'=>$bathrooms,'square_footage'=>$square_footage,'lot_size'=>$lot_size, 'sale_date'=> '','amount_min'=>'','amount_max'=>'', 'built_year'=>$year_built);
 				$xml_result = get_xml_data($arr);
+
+
 				$results = array();
 
 				/*criteria- 1   ******** sqft->10+- age 5+-  saledate<180 prox0.5mile lot size 50+-   ***********/
@@ -158,12 +160,12 @@
 
 					if(($rows['sq_size'] > $C3Rangesqrft['Min'] && $rows['sq_size'] < $C3Rangesqrft['Max'] ) && ($rows['lot_size'] > $C3Rangelot['Min'] && $rows['lot_size'] < $C3Rangelot['Max']) && ($rows['year_built'] > $C3RangeAge['Min'] && $rows['year_built'] < $C3RangeAge['Max']) && $rows['distance']<$C3Proximity)
 					{
-						$c3[] = array('address'=>$rows['address'], 'distance'=>$rows['distance'],'bedsBaths'=>$rows['beds'] ,'sq_size'=>$rows['sq_size'],'year_built'=>$rows['year_built'],'lot_size'=>$rows['lot_size'],'stories'=>$rows['stories'],'dateSold'=>$rows['dateSold'], 'amount'=>$rows['amount'], 'latitude'=>$coords['latitude'], 'longitude'=>$coords['longitude']);
+						$c3[] = array('address'=>$rows['address'], 'distance'=>$rows['distance'],'bedsBaths'=>$rows['beds'] ,'sq_size'=>$rows['sq_size'],'year_built'=>$rows['year_built'],'lot_size'=>$rows['lot_size'],'stories'=>$rows['stories'],'dateSold'=>$rows['dateSold'], 'amount'=>$rows['amount'], 'latitude'=>$rows['latitude'], 'longitude'=>$rows['longitude'],'pool'=>$rows['pool'], 'basement'=>$rows['basement']);
 					}
 					
 				}
 				
-				
+			
 				$aSearchProp = array_merge($c1, $c2);
 				$aSearchProp =array_merge($aSearchProp, $c3);
 
@@ -248,7 +250,7 @@
 
 		/*criteria- 3   ******** sqft->10+- age 5+-  saledate<180 prox0.5mile lot size 50+-   ***********/
 		$C3Rangesqrft = MinMax(20,$square_footage);
-		$C3RangeAge = MinMax(50, 2015 - $age);
+		$C3RangeAge = MinMaxAge(50, 2015 - $age);
 		$C3Rangelot = MinMax(50,$lot_size);
 		$C3Proximity = "2.5";
 
@@ -266,18 +268,19 @@
 			$cn1 = time() - (180*24*60*60);
 			$cn2 = time() - (365*24*60*60);
 
+			if($rows['POOL']==""){ $rows['POOL']="No";}
 			if(($rows['SQ_FT'] > $C1Rangesqrft['Min'] && $rows['SQ_FT'] < $C1Rangesqrft['Max'] ) && ($rows['LOTSIZEACRES'] > $C1Rangelot['Min'] && $rows['LOTSIZEACRES'] < $C1Rangelot['Max']) && ($rows['YEARBUILT'] > $C1RangeAge['Min'] && $rows['YEARBUILT'] < $C1RangeAge['Max']) && ($ydate> $cn1) && $rows['DIST']<$C1Proximity)
 			{
-				$c1[] = array('address'=>$rows['ADDRESS'], 'distance'=>$rows['DIST'],'bedsBaths'=>$rows['BEDS'].' Bd /'.$rows['BATHS'].' Ba','sq_size'=>$rows['SQ_FT'],'year_built'=>$rows['YEARBUILT'],'lot_size'=>$rows['LOTSIZEACRES'],'stories'=>$rows['STRUCTURESTORIES'],'dateSold'=>$rows['LISTDATE'], 'amount'=>$rows['LISTPRICE'], 'latitude'=>$rows['LAT'], 'longitude'=>$rows['LON']);
+				$c1[] = array('address'=>$rows['ADDRESS'], 'distance'=>$rows['DIST'],'bedsBaths'=>$rows['BEDS'].' Bd /'.$rows['BATHS'].' Ba','sq_size'=>$rows['SQ_FT'],'year_built'=>$rows['YEARBUILT'],'lot_size'=>$rows['LOTSIZEACRES'],'stories'=>$rows['STRUCTURESTORIES'],'dateSold'=>$rows['LISTDATE'], 'amount'=>$rows['LISTPRICE'], 'latitude'=>$rows['LAT'], 'longitude'=>$rows['LON'],'pool'=>$rows['POOL'], 'basement'=>"No");
 			}
 			else 
 			if(($rows['SQ_FT'] > $C2Rangesqrft['Min'] && $rows['SQ_FT'] < $C2Rangesqrft['Max'] ) && ($rows['LOTSIZEACRES'] > $C2Rangelot['Min'] && $rows['LOTSIZEACRES'] < $C2Rangelot['Max']) && ($rows['YEARBUILT'] > $C2RangeAge['Min'] && $rows['YEARBUILT'] < $C2RangeAge['Max']) && ($ydate> $cn2) && $rows['DIST']<$C2Proximity)
 			{
-				$c2[] = array('address'=>$rows['ADDRESS'], 'distance'=>$rows['DIST'],'bedsBaths'=>$rows['BEDS'].' Bd /'.$rows['BATHS'].' Ba','sq_size'=>$rows['SQ_FT'],'year_built'=>$rows['YEARBUILT'],'lot_size'=>$rows['LOTSIZEACRES'],'stories'=>$rows['STRUCTURESTORIES'],'dateSold'=>$rows['LISTDATE'], 'amount'=>$rows['LISTPRICE'],'latitude'=>$rows['LAT'], 'longitude'=>$rows['LON']);
+				$c2[] = array('address'=>$rows['ADDRESS'], 'distance'=>$rows['DIST'],'bedsBaths'=>$rows['BEDS'].' Bd /'.$rows['BATHS'].' Ba','sq_size'=>$rows['SQ_FT'],'year_built'=>$rows['YEARBUILT'],'lot_size'=>$rows['LOTSIZEACRES'],'stories'=>$rows['STRUCTURESTORIES'],'dateSold'=>$rows['LISTDATE'], 'amount'=>$rows['LISTPRICE'],'latitude'=>$rows['LAT'], 'longitude'=>$rows['LON'],'pool'=>$rows['POOL'], 'basement'=>"No");
 			}else 
 			if(($rows['SQ_FT'] > $C3Rangesqrft['Min'] && $rows['SQ_FT'] < $C3Rangesqrft['Max'] ) && ($rows['LOTSIZEACRES'] > $C3Rangelot['Min'] && $rows['LOTSIZEACRES'] < $C3Rangelot['Max']) && ($rows['YEARBUILT'] > $C3RangeAge['Min'] && $rows['YEARBUILT'] < $C3RangeAge['Max']) && ($ydate> $cn2) && $rows['DIST']<$C3Proximity)
 			{
-				$c3[] = array('address'=>$rows['ADDRESS'], 'distance'=>$rows['DIST'],'bedsBaths'=>$rows['BEDS'].' Bd /'.$rows['BATHS'].' Ba','sq_size'=>$rows['SQ_FT'],'year_built'=>$rows['YEARBUILT'],'lot_size'=>$rows['LOTSIZEACRES'],'stories'=>$rows['STRUCTURESTORIES'],'dateSold'=>$rows['LISTDATE'], 'amount'=>$rows['LISTPRICE'],'latitude'=>$rows['LAT'], 'longitude'=>$rows['LON']);
+				$c3[] = array('address'=>$rows['ADDRESS'], 'distance'=>$rows['DIST'],'bedsBaths'=>$rows['BEDS'].' Bd /'.$rows['BATHS'].' Ba','sq_size'=>$rows['SQ_FT'],'year_built'=>$rows['YEARBUILT'],'lot_size'=>$rows['LOTSIZEACRES'],'stories'=>$rows['STRUCTURESTORIES'],'dateSold'=>$rows['LISTDATE'], 'amount'=>$rows['LISTPRICE'],'latitude'=>$rows['LAT'], 'longitude'=>$rows['LON'], 'pool'=>$rows['POOL'], 'basement'=>"No");
 			}
 			
 		}
@@ -415,6 +418,7 @@
 		$i=1;
 		$seq=1;
 		$aMatchData = array();
+		
 		foreach($aSearchProp as $row){
 			if($i%2==0){
 				echo '<tr>';
@@ -427,8 +431,12 @@
 			}
 			$i++;
 			
+			$latitude = $row['latitude'];
+			$longitude = $row['longitude'];
 			
-			if(!isset($row['ay'] ))
+			$markers[]=array('id'=>$seq, 'address'=>$row['address'], 'latitude'=>$latitude, 'longitude'=>$longitude);
+			
+			if(!isset($row['ay']))
 			{
 				//echo "<pre>"; print_r($res);
 				foreach($res as $rs){
@@ -456,39 +464,36 @@
 				$row['ay'] = $ay;
 				$row['dy'] = $dy;
 			}
-		
-			$aMatchData[$seq] = $row;
+
+			if($row['dy']==""){$row['dy']="N/a";}
+			if($row['ay']==""){$row['ay']="N/a";}
 			echo '<td>'.$seq.'</td>';
 			echo '<td>'.$row['address'].'</td>';
-			echo '<td>'.$row['distance'].' Miles</td>';
+			echo '<td>'.$row['distance'].'miles</td>';
 			echo '<td>'.$row['bedsBaths'].'</td>';
-			echo '<td>'.$row['sq_size'].' sqft</td>';
+			echo '<td>'.$row['sq_size'].'</td>';
 			echo '<td>'.$row['year_built'].'</td>';
 			echo '<td>'.$row['lot_size'].'</td>';
 			echo '<td>'.$row['stories'].'</td>';
 			echo '<td>'.$row['dateSold'].'</td>';
 			echo '<td>$'.$row['amount'].'</td>';
-			   if($user==1){ 
-			echo '<td>'.$row['dy'].'</td>';
-			echo '<td>'.$row['ay'].'</td>';
-			echo '<td>
-			<select name="utilizes['.$seq.']" onchange="return checkReason(this.value, '.$seq.');">
-				<option value="Yes">Yes</option>
-				<option value="No">No</option>
-			</select>
-			</td>';
-		}
+			if($user==1){ 
+				echo '<td>'.$row['dy'].'</td>';
+				echo '<td>'.$row['ay'].'</td>';
+				echo '<td>
+				<select name="utilizes['.$seq.']" onchange="return checkReason(this.value, '.$seq.');">
+					<option value="Yes">Yes</option>
+					<option value="No">No</option>
+				</select>
+				</td>';
+			}
 			echo '</tr>';
 			echo '<tr id="sequence_'.$seq.'"></tr>';
-			$markers[]=array('id'=>$seq, 'address'=>$row['address'], 'latitude'=>$row['latitude'], 'longitude'=>$row['longitude']);
+			$aMatchData[$seq] = $row;			
 			$seq++;
 		}
-		//echo "<pre>"; print_r($aMatchData);
 		$strMatchData = urlencode(serialize($aMatchData));
-
- $map = file_get_contents("https://maps.googleapis.com/maps/api/staticmap?center=415+31ST+AVE+N+NASHVILLE+TN+37215&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:S%7C36.1544,-86.8215");
-$fp = fopen('map.jpg','w');
-fclose($fp);
+		$_SESSION['results']['matchResult']=$strMatchData;
 	?>    
 	<input type="hidden" name="matchResult" id="matchResult" value="<?php echo $strMatchData; ?>" />
 

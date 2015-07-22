@@ -5,7 +5,7 @@
 	}
 	include('classes/User.php');
 	$user_type=$_SESSION['user_type'];
-	$x = "adduser";
+	$x = "addins";
 ?>
 
 <style>
@@ -23,12 +23,12 @@
 <?php  include('includes/header.php'); ?>	
 <?php  include('includes/topBar.php'); ?>
 	<div class="row" id="sideMenuDiv">
-		<?php  include('includes/lendingMenu.php'); ?>	
+		<?php  include('includes/adminMenu.php'); ?>	
 		<div class="col-sm-10">
 			<br><br>
 			<div id="wrapper">
 			<h4>Add New User</h4>
-			<form action="addusers.php" method="post" onsubmit="return validateForm();">
+			<form action="addinstitute.php" method="post" onsubmit="return validateForm();">
 			<div class="row">
 			<div class="col-sm-12" >
 			<div style="margin-left:3%;">
@@ -50,17 +50,10 @@
 
 <div class="form-group">
 		<label for="exampleInputEmail1">Address</label>
-		<textarea class="form-control" id="" name="address" required></textarea>
+		<input type="text" class="form-control" id="" name="address" placeholder="Address" required>
 	</div>  
   
-	<div class="form-group">
-		<label for="exampleInputEmail1">Type of User</label>
-		<select class="form-control" name="type_user">
-			<option value="1">Appraiser</option>
-			<option value="2">Loan Officer</option>
-		</select>
-	</div>  
-	
+		
 	<div class="form-group">
 		<label for="exampleInputEmail1">Status</label>
 		<select class="form-control" name="status">

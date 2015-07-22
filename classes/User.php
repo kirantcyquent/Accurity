@@ -124,7 +124,9 @@ class User {
 	
 	public function getUserList(){
 		$db  = new Database();
-		$query = "select * from userdetail ORDER BY UserID";
+		$session = new Session();
+		$id = $session->get_session('userid');
+		$query = "select * from userdetail where lendingId='$id' ORDER BY UserID DESC";
 		$result = $db->runQuery($query);
 		$users = array();
 		while($row = mysql_fetch_array($result)){
@@ -132,10 +134,43 @@ class User {
 		}
 		return $users;
 	}
-	
+
+	public function getAppraiserList($id){
+		$db  = new Database();
+		$query = "select * from userdetail where TypeOfUser=1 and lendingId='$id' ORDER BY UserID";
+		$result = $db->runQuery($query);
+		$users = array();
+		while($row = mysql_fetch_array($result)){
+			$users[] = $row;
+		}
+		return $users;
+	}
+
+	public function getOfficerList($id){
+		$db  = new Database();
+		$query = "select * from userdetail where TypeOfUser=2 and lendingId='$id' ORDER BY UserID";
+		$result = $db->runQuery($query);
+		$users = array();
+		while($row = mysql_fetch_array($result)){
+			$users[] = $row;
+		}
+		return $users;
+	}
+
+	public function getLendingList(){
+		$db  = new Database();
+		$query = "select * from userdetail WHERE TypeOfUser=3 ORDER BY UserID";
+		$result = $db->runQuery($query);
+		$users = array();
+		while($row = mysql_fetch_array($result)){
+			$users[] = $row;
+		}
+		return $users;
+	}
+
 	public function getNbCompletedSearches($userid){
 		$db  = new Database();
-			$isDone = 1;
+		$isDone = 1;
 		$query = "SELECT count(s.SearchID) FROM savesearch s, sessionsavelink l WHERE s.SearchID=l.SearchID and s.UserID='$userid' and s.IsDone='$isDone' ORDER BY s.date DESC";
 		$result = $db->runQuery($query);
 		$row = mysql_fetch_row($result);
@@ -163,6 +198,60 @@ class User {
 		return $rows;
 	}
 
+	public function check_password($pass){
+		$db = new Database();
+		$session = new Session();
+		$id = $session->get_session('userid');
 
+		$query = "SELECT * FROM userdetail WHERE UserID='$id' and Password='$pass'";
+		$result = $db->runQuery($query);
+		$check = mysql_num_rows($result);
+		if($check>0){
+			return 1;
+		}else{
+			return 0;
+		}
+	}
+
+
+	public function change_password($pass){
+		print $pass;exit;
+		$db = new Database();
+		$session = new Session();
+		$id = $session->get_session('userid');
+
+		$query = "UPDATE userdetail SET Password='$pass' WHERE UserID='$id'";
+		$result = $db->runQuery($query);
+		if($result){
+			return 1;
+		}else{
+			return 0;
+		}
+	}
+
+
+	public function lendingAppraisers($lendingid){
+		$db = new Database();
+		$query = "SELECT count(UserID) FROM userdetail WHERE TypeOfUser=1 and lendingId='$lendingid'";			
+		$row = $db->runQuery($query);
+		$row = mysql_fetch_row($row);
+		return $row[0];
+	}
+
+	public function lendingOfficers($lendingid){
+		$db = new Database();
+		$query = "SELECT count(UserID) FROM userdetail WHERE TypeOfUser=2 and lendingId='$lendingid'";			
+		$row = $db->runQuery($query);
+		$row = mysql_fetch_row($row);
+		return $row[0];
+	}
+
+	public function lendingSearches($userid, $isDone){
+		$db  = new Database();
+		$query = "SELECT count(s.SearchID) FROM savesearch s, sessionsavelink l, userdetail u WHERE s.SearchID=l.SearchID and s.UserID=u.UserID and u.lendingId='$userid' and s.IsDone='$isDone'  ORDER BY s.date DESC";
+		$result = $db->runQuery($query);
+		$row = mysql_fetch_row($result);
+		return $row[0];
+	}
 }
 ?>

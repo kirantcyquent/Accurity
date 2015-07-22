@@ -6,16 +6,15 @@ if (!(isset($_SESSION['email']) && $_SESSION['email'] == true)) {
 	include('db/db.php'); 
 		include('classes/User.php');
 	$us = new User();
+	$x="incomplete";
+	$user_type=$_SESSION['user_type'];
 ?>
-	
-<?php include('includes/header.php'); ?>
+<?php  include('includes/header.php'); ?>	
 <?php  include('includes/topBar.php'); ?>
+	<div class="row" id="sideMenuDiv">
+		<?php  include('includes/profile-sideMenu.php'); ?>	
+		<div class="col-sm-10" id="pageContent">
 
-<div class="row" style="width:80%;margin:0 auto;">
-<div class="col-lg-2 col-md-2">
-<?php  include('includes/profile-sideMenu.php'); ?>
-</div>
-<div class="col-lg-10 col-md-10" style="margin-top:33px;">
 	<h4>Incomplete Searches</h4>
 <table class="table table-bordered">
 <thead>
@@ -34,12 +33,14 @@ if (!(isset($_SESSION['email']) && $_SESSION['email'] == true)) {
 			$date = strtotime($row['date']);
 			$date = date('d-m-Y H:i:s',$date);
 		}
+		$row["Name"] = preg_replace("@\_@", " ", $row['Name']);
 		echo '<tr><td>'.$count.'</td><td>'.$row['Name'].'</td><td>'.$date.'</td><td><a href="resume-search.php?id='.$row['SearchID'].'">Resume Search</a></td></tr>';
 		$count++;
 	}
 ?>
 </tbody>
 </table>
+</div>
 </div>
 </div>
 <?php include('includes/footer.php'); ?>

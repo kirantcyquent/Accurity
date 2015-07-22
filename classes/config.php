@@ -1,13 +1,13 @@
 <?php
 
-define('DB_USER', 'preetisa_admin');
-define('DB_PASS', 'T&NZR[,b%a_A');
+define('DB_USER', 'root');
+define('DB_PASS', 'secret');
 
 $dbhost = 'localhost';
-$dbname = 'preetisa_sample';
+$dbname = 'loan';
 
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'preetisa_sample');
+define('DB_NAME', 'loan');
 define('DB_URI', "mysql:host=$dbhost;dbname=$dbname");
 
 ?>
