@@ -8,11 +8,13 @@
 	$result = mysql_fetch_row($sql);	
 	$user = $result[0];
 
-
+	
 	include('classes/User.php');
 	$us = new User();
   	include_once('includes/process.php') ;
   	
+	$prepared_by = $us->getUserDetails();    
+
 	$maxRecords=5;
 
 	if($user==2  && isset($_REQUEST['searchAddress'])){
@@ -375,24 +377,76 @@
 		$markers = array();
 		$markers[] = array('id'=>'C','address'=>$address, 'latitude'=>$main['latitude'], 'longitude'=>$main['longitude']);
 ?>
-		<div class="row">
-		<div class="col-sm-4" style="padding:30px 0px 0px 30px;">
-		<span style="font-size:12px; font-weight:bold; color:#6a6a6a;"><?php  echo $address; ?>  </span>
-		
-		<span style="font-size:12px; color:#6a6a6a;"><br/>
-		<?php echo $bedrooms; ?>bd | <?php echo $bathrooms; ?>Ba | <?php echo $square_footage; ?> Sq Ft<br/>
+
+		<div class="row" id="repAddress">
+
+		<div class="col-sm-7"  style="padding:20px 0px 20px 20px;">
+		<span style="font-size:12px; font-weight:bold; color:#6a6a6a;" class="headAddress"><?php echo $address; ?></span>
+		<span style="font-size:12px; color:#6a6a6a;" class="headAdd"><br/>
+		<?php echo $bedrooms; ?> Bd | <?php echo $bathrooms; ?> Ba | <?php echo $square_footage;?> Sq Ft<br/>
 		<?php echo $stories; ?> Stories | Lot Size <?php echo $lot_size; ?><br/>
 		<?php echo "Pool ".$pool; ?> |  <?php echo "Basement ".$basement; ?><br/>
-		Built <?php echo $year_built; ?>
+		Built <?php echo $year_built;?>
 		</span>
 		</div>
-		<div class="col-sm-3">	
+
+		<div id="repBy" class="col-sm-5" style="padding:20px 0px 20px 20px;">
+		<span style="font-size:12px; font-weight:bold; color:#6a6a6a;" class="headAddress">Report Prepared By</span>
+		<span style="font-size:12px; color:#6a6a6a;"><br/>
+		<?php echo $prepared_by['Name']; ?><br/>
+		<?php echo $prepared_by['Address']; ?><br/>
+		<a href=""><?php echo $prepared_by['UserName']; ?></a>		
+		</span>
 		</div>
 		</div>
-		<div style="border-top:1px solid #e2e2e2; margin:0px 80px 0px 15px;"></div>
+
+		
 		<div class="row">
-		<div class="col-sm-12" style="padding:20px 80px 0px 30px;">
+		<div class="col-sm-12">
+		<table id="graph" style="width:60%;">
+		<tr>
+		
+		<td style="width:25px;">&nbsp;</td><td>&nbsp;&nbsp;</td>
+		<td style="width:25px; height:5px;background-color:#A689B6;">&nbsp;</td><td>&nbsp;Subject Property	 &nbsp;</td>
+		<td style="width:25px; height:5px;background-color:#99BEFD;">&nbsp;</td><td>&nbsp;Potential Comparable Sales Used &nbsp;</td>
+		<td style="width:25px; height:5px;background-color:#F5635B;">&nbsp;</td><td>&nbsp;Potential Comparable Sales Not Used &nbsp;</td>
+		</tr></table>
+		<br/>
+		</div>
+		</div>
+
+		<div class="row">
+		<div class="col-sm-12" >
+		<table><tr><td style="width:70%;">
+		<div>
+		<div id="map_wrapper">
+		<div id="map_canvas" class="mapping"></div>
+		</div>	
+		</div>
+		
+		</td>
+
+		<td style="width:40%;" valign="top">
+		<h3>Final Search Parameters</h3>
+		<table>
+		<tr><td> Square Footage</td><td> +/- 10%</td></tr>
+		<tr><td>Radius</td><td> &lt; 1 Mile </td></tr>
+		<tr><td>Age</td><td>+/- 5 Years</td></tr>
+		<tr><td>Lot Size</td><td>+/- 100%</td></tr>
+		<tr><td>Stories</td><td>2</td></tr>
+		<tr><td> Date of Sale</td><td>  &lt; 1 Year </td></tr>
+		</table>
+		</td></tr></table>
+		</div></div>
+		<div id="break"><br/><br/></div>
+
+		
+		
+		<div class="row">
+		<div class="col-sm-11" style="padding:20px 0px 20px 20px;">
 		<form id="resultForm" action="" method="post">
+		<h3>Potential Comparable Sales</h3>
+		<br>
 		<table class="table table-striped">
     <thead>
       <tr>
@@ -480,15 +534,60 @@
 			if($user==1){ 
 				echo '<td>'.$row['dy'].'</td>';
 				echo '<td>'.$row['ay'].'</td>';
-				echo '<td>
-				<select name="utilizes['.$seq.']" onchange="return checkReason(this.value, '.$seq.');">
-					<option value="Yes">Yes</option>
-					<option value="No">No</option>
-				</select>
-				</td>';
+
+				if(isset($_SESSION['results']['utilizes'][$seq])){
+					$util=$_SESSION['results']['utilizes'][$seq];
+					?>
+					<td>
+					<select name="utilizes[<?php echo $seq;?>]" onchange="return checkReason(this.value, <?php echo $seq;?>);">
+						<option value="Yes" <?php if($util=="Yes"){ echo " selected"; }?>>Yes</option>
+						<option value="No" <?php if($util=="No"){ echo " selected"; }?>>No</option>
+					</select>
+					</td>
+					<?php
+				}else{
+					echo '<td>
+					<select name="utilizes['.$seq.']" onchange="return checkReason(this.value, '.$seq.');">
+						<option value="Yes">Yes</option>
+						<option value="No">No</option>
+					</select>
+					</td>';
+				}
 			}
 			echo '</tr>';
-			echo '<tr id="sequence_'.$seq.'"></tr>';
+			echo '<tr id="sequence_'.$seq.'">';
+			if($util=="No"){
+				echo '<td colspan="15">
+				<select class="reasonRisk" name="reasonRisk_'.$seq.'">';
+
+				if($_SESSION['results']['reasonRisk_'.$seq]==1){
+					echo '<option value="1" selected>Poor Condition of Subject/Good Condition of Comp</option>';
+				}else{
+					echo '<option value="1" >Poor Condition of Subject/Good Condition of Comp</option>';
+				}
+				
+				if($_SESSION['results']['reasonRisk_'.$seq]==2){
+					echo '<option value="2" selected>None</option></select> &nbsp; &nbsp; ';
+				}else{
+					echo '<option value="2">None</option></select> &nbsp; &nbsp;';
+				}
+				
+				echo '<select class="noteRisk" name="noteRisk_'.$seq.'">';
+
+				if($_SESSION['results']['noteRisk_'.$seq]==1){
+					echo '<option value="1" selected>I didnt use this property because</option>';
+				}else{
+					echo '<option value="1">I didnt use this property because</option>';
+				}
+				
+				if($_SESSION['results']['noteRisk_'.$seq]==2){
+					echo '<option value="2" selected>None</option></select></td>';
+				}else{
+					echo '<option value="2">None</option></select></td>';
+				}
+			
+			}
+			echo '</tr>';
 			$aMatchData[$seq] = $row;			
 			$seq++;
 		}
@@ -499,12 +598,97 @@
 
     </tbody>
   </table>
-  <div style="padding:10px 0px 5px 0px; float:right;">
-			<button type="button" class="btn btn-success"  style="padding:2px 5px 0px 5px;" id="continueBtn">Continue Analysis>></button>
-	</form>
+  		<?php
+        $locstring='';    
+        $c=1;
+        foreach($markers as $m){
+        	if($c==1){ $color="red";}
+        	else if($c%2==0){ $color ="green";}else{$color="blue";}
+	        $c++;
+			if($m['id']=="C"){
+				$color = 'purple';
+			}else{
+				$color = $m['id'];
+			}
+	        $locstring=$locstring.'&markers=color:'.$color.'%7Clabel:'.$m['id'].'%7C'.$m['latitude'].','.$m['longitude'];
+        }
+        $url="http://maps.googleapis.com/maps/api/staticmap?zoom=15&size=800x400&maptype=ROADMAP&".urlencode("center")."=".$locstring."&sensor=false";
+		$_SESSION['results']['map'] = $url;
+		$_SESSION['map']=$url;
+?>
+
+	<div class="row">
+		<div class="col-sm-12" style="padding:20px 0px 20px 20px;">
+		<h5 style="color:black;font-weight:bold;">I used the following parameters for my comparable selection in the appraisal report:</h5>
+		<table style="width:100%;" id="paramTable">
+			<tr>
+				<td style="width:20%; height:25px;">Square Footage </td>
+				<td style="width:50%;height:25px;"><select name="compSq" class="input-medium"><option value="+/-10%"> +/-10%</option></td>
+			</tr>
+
+			<tr>
+				<td style="width:20%;height:25px;">Radius </td>
+				<td style="width:50%;height:25px;"><select name="compRadius" class="input-medium"><option value="< Mile">< 1 Mile</option></td>
+			</tr>
+
+			<tr>
+				<td style="width:20%;height:25px;">Age </td>
+				<td style="width:50%;height:25px;"><select name="compAge" class="input-medium"><option value="+/- 5 Years"> +/- 5 Years</option></td>
+			</tr>
+
+			<tr>
+				<td style="width:20%;height:25px;">Lot Size </td>
+				<td style="width:50%;height:25px;"><select name="compLot" class="input-medium"><option value="+/- 100%"> +/- 100%</option></td>
+			</tr>
+
+			<tr>
+				<td style="width:20%;height:25px;">Stories</td>
+				<td style="width:50%;height:25px;"><select class="input-medium" name="compStories"><option value="2"> 2</option></td>
+			</tr>
+
+			<tr>
+				<td style="width:20%;height:25px;">Date of Sale</td>
+				<td style="width:50%;height:25px;"><select name="compSale" class="input-medium"><option value="<1 Year"> < 1 Year</option></td>
+			</tr>			
+		</table>	
 		</div>
+	</div>
+
+
+	<div class="row">
+		<div class="col-sm-10" style="padding:20px 0px 20px 20px;">
+		<h5 style="color:black;font-weight:bold;">Please list any other sales that should be addressed that weren't used in appraisal:</h5>
+		
+		<div class="row" style="padding:20px 0px 20px 20px;">
+			<div class="col-sm-6">
+			<p style="font-weight:bold;color:black;">Address:</p>
+				<table class="table table-striped">
+					<tr><td>1. <input type="text" class="form-control" style="width:80%;" name="paramAdd[]" value="<?php echo $_SESSION['results']['paramAdd'][0];?>" /></td></tr>
+					<tr><td>2. <input type="text" class="form-control" style="width:80%;" name="paramAdd[]" value="<?php echo $_SESSION['results']['paramAdd'][1];?>"/></td></tr>
+					<tr><td>3. <input type="text" class="form-control" style="width:80%;" name="paramAdd[]" value="<?php echo $_SESSION['results']['paramAdd'][2];?>" /></td></tr>
+				</table>
+			</div>
+		
+			<div class="col-sm-6">
+			<p style="font-weight:bold;color:black;">Comments:</p>
+			<table class="table table-striped">
+					<tr><td>&nbsp;<input type="text" class="form-control pcom" style="width:80%;" name="paramComments[]" value="<?php echo $_SESSION['results']['paramComments'][0];?>"/></td></tr>
+					<tr><td>&nbsp;<input type="text" class="form-control pcom" name="paramComments[]" style="width:80%;" value="<?php echo $_SESSION['results']['paramComments'][1];?>"/></td></tr>
+					<tr><td>&nbsp;<input type="text" class="form-control pcom" name="paramComments[]" style="width:80%;" value="<?php echo $_SESSION['results']['paramComments'][2];?>"/></td></tr>
+				</table>
+			</div>
 		</div>
+
 		</div>
+	</div>
+
+<div class="row">
+<div class="col-sm-10" style="padding:20px 0px 30px 15px;">
+  <div style="float:right">
+	<button type="button" class="btn btn-success" style="padding:8px 8px 8px 8px;" id="continueBtn">&nbsp; Next &nbsp; </button>
+  </div>
+</div>
+</div>
 <?php
         $locstring='';    
         $c=1;
@@ -525,17 +709,13 @@
 ?>
 
 
-		<div id="map_wrapper">
-			  <div id="map_canvas" class="mapping"></div>
-		</div>
-
-
+		
 	
 		<div class="row">
 		<div class="col-sm-12" style="padding:20px 0px 30px 15px;">
 		
 		<div style="padding:10px 80px 5px 0px; float:right;">
-		<button type="button" class="btn btn-success" style="padding:2px 5px 0px 5px;">Continue Analysis>></button>
+		<!--<button type="button" class="btn btn-success" style="padding:2px 5px 0px 5px;">Continue Analysis>></button>-->
 		</div>
 		</div>
 		</div>
@@ -546,7 +726,7 @@
 
 			function checkReason(util, id){
 					if(util=="No"){
-						var data = '<td colspan="15"><select class="reasonRisk" name="reasonRisk_'+id+'"><option value="1">Poor Condition of Subject/Good Condition of Comp</option><option value="2">None</option></select> &nbsp; &nbsp; <select class="noteRisk" name="noteRisk_'+id+'"><option value="1">I didn\'t use this property because</option><option value="2">None</option></select></td>';
+						var data = '<td colspan="15"><select class="reasonRisk form-control" name="reasonRisk_'+id+'"><option value="1">Poor Condition of Subject/Good Condition of Comp</option><option value="2">None</option></select> &nbsp; &nbsp; <select class="noteRisk form-control" name="noteRisk_'+id+'"><option value="1">I didn\'t use this property because</option><option value="2">None</option></select></td>';
 						document.getElementById('sequence_'+id+'').innerHTML = data;
 					}else{
 						document.getElementById('sequence_'+id+'').innerHTML = '';
@@ -637,8 +817,9 @@
 				
 				var currentPage="results";
 				var matchResult = $("#matchResult").val();
-				var dataString = 'matchResult='+matchResult;
 
+				var dataString = '&matchResult='+matchResult;
+				
 				$.ajax({
 				type: "POST",
 				data: $('#resultForm').serialize()+dataString,

@@ -8,10 +8,17 @@
 	$result = mysql_fetch_row($sql);
 	$user = $result[0];
 
-	
 	include('classes/User.php');
 	$us = new User();
 	$prepared_by = $us->getUserDetails();        
+		
+
+	
+	$paramAdd = serialize($_REQUEST['paramAdd']);
+	$paramCom = serialize($_REQUEST['paramComments']);
+	$paramCom = preg_replace("@matchResult.*?\}\}@","",$paramCom);
+
+	$us->storeAddress($_SESSION['searchId'], $paramAdd, $paramCom);
 
     if($user==2){
 	$address = 	isset($_SESSION['search']['address']) ? $_SESSION['search']['address']: "3101 West End Ave, Nashvelle TN 37203" ;
@@ -110,7 +117,7 @@ if(isset($_SESSION['results']['matchResult'])){
 <?php
 exit;
 }
-			
+
 
 $_SESSION['sessionId'] = session_id();
 
@@ -121,7 +128,7 @@ $_SESSION['sessionId'] = session_id();
 		<div id="aclogo"></div>
 		<div class="row" id="repAddress">
 
-		<div class="col-sm-7"  style="padding:20px 0px 20px 30px;">
+		<div class="col-sm-7"  style="padding:20px 0px 20px 20px;">
 		<span style="font-size:12px; font-weight:bold; color:#6a6a6a;" class="headAddress"><?php echo $address; ?></span>
 		<span style="font-size:12px; color:#6a6a6a;" class="headAdd"><br/>
 		<?php echo $bedrooms; ?> Bd | <?php echo $bathrooms; ?> Ba | <?php echo $square_footage;?> Sq Ft<br/>
@@ -152,10 +159,12 @@ $_SESSION['sessionId'] = session_id();
 		<br><br>
 
 		<div class="row">
-		<div class="col-sm-7">
-		<table id="graph">
+		<div class="col-sm-12">
+		<table id="graph" style="width:60%;">
 		<tr>
-		<td style="width:25px; height:5px;background-color:#A689B6;">&nbsp;</td><td>&nbsp;Subject Property&nbsp;</td>
+		
+		<td style="width:25px;">&nbsp;</td><td>&nbsp;&nbsp;</td>
+		<td style="width:25px; height:5px;background-color:#A689B6;">&nbsp;</td><td>&nbsp;Subject Property	 &nbsp;</td>
 		<td style="width:25px; height:5px;background-color:#99BEFD;">&nbsp;</td><td>&nbsp;Potential Comparable Sales Used &nbsp;</td>
 		<td style="width:25px; height:5px;background-color:#F5635B;">&nbsp;</td><td>&nbsp;Potential Comparable Sales Not Used &nbsp;</td>
 		</tr></table>
@@ -193,13 +202,13 @@ $_SESSION['sessionId'] = session_id();
 	if(count($comps)>0){
 		?>
 		<div class="row">
-		<div class="col-sm-12" style="padding:20px 0px 0px 30px;">
+		<div class="col-sm-12" style="padding:20px 0px 0px 20px;">
 		<span style="font-size:16px; font-weight:bold; color:#6a6a6a;">Potential Comparable Sales Used</span>
 		</div>
 		</div>
 		
 		<div class="row">
-		<div class="col-sm-12" style="padding:20px 80px 0px 30px;">
+		<div class="col-sm-12" style="padding:20px 80px 0px 20px;">
 		<table class="table table-striped" id="comps">
    <thead>
    	 <?php
@@ -293,12 +302,12 @@ $_SESSION['sessionId'] = session_id();
 	if(count($not_comps)>0){
 		?>
 		<div class="row">
-		<div class="col-sm-12" style="padding:30px 0px 0px 30px;">
+		<div class="col-sm-12" style="padding:30px 0px 0px 20px;">
 		<span style="font-size:16px; font-weight:bold; color:#6a6a6a;">Potential Comparable Sales Not Used</span>
 		</div>
 		</div>
 		<div class="row">
-		<div class="col-sm-12" style="padding:20px 80px 0px 30px;">
+		<div class="col-sm-12" style="padding:20px 80px 0px 20px;">
 		<table class="table table-striped" id="ucomps">
     <thead>
         <tr rowspan="2">
@@ -353,7 +362,7 @@ $_SESSION['sessionId'] = session_id();
 		<td></td>
       </tr>
 	   <tr style="background:<?php  echo $color;?>">
-	  <td colspan="15"><?php echo $detail['reason'];?>  &nbsp; Notes: <?php echo $detail['note'];?></td>
+	  <td colspan="15"><span style="color:red;"><?php echo $detail['reason'];?></span>  &nbsp; <span style="color:red;">Notes: <?php echo $detail['note'];?></span></td>
 	  </tr>
 	  <?php
 		}
@@ -367,6 +376,46 @@ $_SESSION['sessionId'] = session_id();
 		</div>		
 		</div>
 		<?php } ?>
+
+		<div class="row">
+		<div class="col-sm-10" style="padding:20px 0px 20px 20px;">
+		<h5 style="color:black;font-weight:bold;">I used the following parameters for my comparable selection in the appraisal report:
+		<br>
+<?php echo $_SESSION['results']['compSq'];?> square footage , date of sale <?php echo $_SESSION['results']['compSale'];?>, <?php echo $_SESSION['results']['compRadius'];?>. 
+Please list any other sales that should be addressed that weren't used in appraisal:
+</h5>
+<div class="row" style="padding:20px 0px 20px 20px;">
+			<div class="col-sm-6">
+			<?php
+			if(count($_SESSION['results']['paramAdd'])>0){
+			?>
+			<p style="font-weight:bold;color:black;">Address:</p>
+				<table class="table table-striped">
+					<?php 	$count=1; foreach($_SESSION['results']['paramAdd'] as $res): ?>
+					<tr><td><?php echo $count; $count++;?>. <?php echo $res;?></td></tr>
+					<?php endforeach; ?>
+				</table>				
+				<?php } ?>
+			</div>
+		
+			<div class="col-sm-6">
+			<?php
+			if(count($_SESSION['results']['paramComments'])>0){
+			?>
+			<p style="font-weight:bold;color:black;">Comments:</p>
+			<table class="table table-striped">
+					<?php 	$count=1; foreach($_SESSION['results']['paramComments'] as $res): ?>
+					<tr><td><?php echo $count; $count++;?>. <?php echo $res;?></td></tr>
+					<?php endforeach; ?>
+				</table>
+				<?php } ?>
+				
+			</div>
+		</div>
+
+		
+		
+
 		<div id="repbtn" class="row" style="padding:0px 0px 30px 30px;" >
 		<div class="col-sm-6">
 		<!--<button type="button" class="btn btn-success" style="margin-bottom:3px;">Go Back</button>
