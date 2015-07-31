@@ -163,7 +163,7 @@
 		<form action="" method="post" id="measure_form">
 		<ul class="textDiv">
 		<li><b>Adjustments</b></li>
-		<li><input type="text"  name="square_footage" class="small" onkeypress="return isNumber(event)"  value="<?php echo $sq_footage; ?>" id="adjustments" pattern="^[0-9\.]+$" required>
+		<li><input type="text"  name="square_footage" class="small" onkeypress="return isNumber(event)"  value="<?php echo $sq_footage; ?>" id="adjustments" pattern="^[0-9\.]+$" maxlength="8" required>
 				<span id="sq_error" style="font-weight:bold; color:red;"></span>
 		</li>
 		<input type="hidden" name="bedrooms" value="<?php echo $bedrooms; ?>"/>
@@ -259,6 +259,11 @@
 					return false;
 				}else{
 					document.getElementById('sq_error').innerHTML = '';
+				}
+				if(isNaN(square_footage)){ 
+					document.getElementById('sq_error').innerHTML = 'please enter square footage';
+					$("#adjustments").val("");
+					return false;
 				}
 				var box3 = new ajaxLoader('#box3', {classOveride: 'blue-loader', bgColor: '#000'});
 				var sq_f = $("#sq_f").val();

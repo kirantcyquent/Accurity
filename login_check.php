@@ -8,8 +8,8 @@ if(isset($_POST['email']) && isset($_POST['password']))
 	$user = new User();
 	$session = new Session();
 
-	$user->email = $_POST['email'];
-	$user->password = $_POST['password'];
+	$user->email = strip_tags($_POST['email']);
+	$user->password = strip_tags($_POST['password']);
 
 
 	if($user->check_user()){		
@@ -25,7 +25,7 @@ if(isset($_POST['email']) && isset($_POST['password']))
 	header ("Location: index.php");	
 		exit;
 	}else{
-		header ("Location: login.php?error_message='login failed.Please Retry");			
+		header ("Location: login.php?error_message=login failed.Please Retry");			
 		exit;
 	}
 

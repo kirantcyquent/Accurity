@@ -33,7 +33,7 @@
 	$result4 = mysql_fetch_array($sql4);
 ?>
 
-<form method="post" action="edit-profile-details.php" autocomplete="off">>
+<form method="post" action="edit-profile-details.php" autocomplete="off">
 <div class="table-responsive">
   <table class="table table-bordered">
     <thead>

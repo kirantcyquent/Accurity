@@ -2,13 +2,13 @@
 session_start();
 	include('db/db.php');
 if(isset($_POST['update'])){
-	$name = $_POST['name'];
-	$question1 = $_POST['question1'];
-	$question2 = $_POST['question2'];
-	$question3 = $_POST['question3'];
-	$answer1 = $_POST['answer1'];
-	$answer2 = $_POST['answer2'];
-	$answer3 = $_POST['answer3'];
+	$name = strip_tags($_POST['name']);
+	$question1 = strip_tags($_POST['question1']);
+	$question2 = strip_tags($_POST['question2']);
+	$question3 = strip_tags($_POST['question3']);
+	$answer1 = strip_tags($_POST['answer1']);
+	$answer2 = strip_tags($_POST['answer2']);
+	$answer3 = strip_tags($_POST['answer3']);
 	$userid = $_POST['userid'];
 	$address = $_POST['address'];
 	$questionid1 = $_POST['questionid1'];

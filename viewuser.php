@@ -33,7 +33,13 @@
 	}
 </script>
 	<div class="row" id="sideMenuDiv">
-		<?php  include('includes/lendingMenu.php'); ?>	
+		<?php  
+if($usertype==0){
+include('includes/adminMenu.php');
+}else{
+		include('includes/lendingMenu.php');
+
+		} ?>	
 		<div class="col-sm-8" id="pageContent">
 			<br/><br/>
 			<?php

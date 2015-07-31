@@ -26,9 +26,37 @@ body{
 	box-shadow:0 0 2px #ccc;
 }
 </style>
+<script>
+	function validateMe(){
+		var err=0;
+
+		var mail = $('#email').val();
+		var pass = $('#pass').val();
+		
+		if(mail==""){
+			err=1;
+			$('#merr').html("<font color='red'>Enter email id</font>");
+		}else{
+			$('#merr').html("");
+		}
+
+		if(pass==""){
+			err=1;
+			$('#perr').html("<font color='red'>Enter password</font>");
+		}else{
+			$('#perr').html("");
+		}
+
+		if(err==1){
+			return false;
+		}
+		return true;
+	}
+</script>
 <body>
 <div class="container">
 
+	<div style="margin-left:35%;"><img src="css/images/main-logo.jpg"/></div>
   <div id="login-form">
 
     <h3>Login</h3>
@@ -52,18 +80,18 @@ body{
 		</div>
 		<?php }else{} ?>
 		
-      <form action="login_check.php" method="post">
+      <form action="login_check.php" method="post" onsubmit="return validateMe();">
 		
-        <input type="email" required value="Email" name="email" onBlur="if(this.value=='')this.value='Email'" onFocus="if(this.value=='Email')this.value='' "> <!-- JS because of IE support; better: placeholder="Email" -->
-
-        <input type="password" required value="Password" name="password" onBlur="if(this.value=='')this.value='Password'" onFocus="if(this.value=='Password')this.value='' "> <!-- JS because of IE support; better: placeholder="Password" -->
-
+        <input type="email" required  name="email" id="email" placeholder="Email" autofocus> <!-- JS because of IE support; better: placeholder="Email" -->
+        <br><span id="merr"></span>
+        <input type="password" required  id="pass" name="password"  placeholder="Password"> <!-- JS because of IE support; better: placeholder="Password" -->
+        <br><span id="perr"></span>
         <input type="submit" name="signin" value="Login">
 
         <footer class="clearfix">
 
           <p><span class="info">?</span> <a href="#" data-modal-id="popup1">Forgot Password</a></p>
- 
+ 		  
 
         </footer>
 

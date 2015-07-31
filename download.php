@@ -301,6 +301,10 @@ td{ font-size:12px; height:30px;}
 	
 		$odd=1;
 		foreach($not_comps as $key=>$detail){
+			if($download['results']['utilizes'][$key]=="No"){
+				$detail['reason'] = $download['results']['reasonRisk_'.$key.'']; 
+				$detail['note'] = $download['results']['noteRisk_'.$key.''];
+			}
 			if($detail['reason']==1){ $detail['reason'] = "Poor Condition of Subject/Good Condition of Comp"; } else{ $detail['reason']="None"; }
 			if($detail['note']==1){ $detail['note'] = "I didn't use this property because"; } else{ $detail['note']="None"; }
 	if($odd%2==0){ $color= "#ffffff;";}else{ $color= "#f6f6f6;";}

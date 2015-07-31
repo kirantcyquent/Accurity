@@ -253,5 +253,22 @@ class User {
 		$row = mysql_fetch_row($result);
 		return $row[0];
 	}
+
+	public function storeAddress($searchId, $paramAdd, $paramCom){		
+		$db = new Database();
+		$query = "select * from searchAddresses where searchId='$searchId'";		
+		$result = mysql_query($query)or die(mysql_error());
+		$row = mysql_num_rows($result);
+		
+
+		if($row>0){
+			$rw = mysql_fetch_array(mysql_query($query));
+			$id = $rw['id'];
+			$query ="update searchAddresses set paramAddress='$paramAdd', paramComments='$paramCom' where id='$id'";
+			$result = $db->runQuery($query);
+		}else{
+			$db->runQuery("insert into searchAddresses (searchId, paramAddress, paramComments) values ('$searchId','$paramAdd','$paramCom')");
+		}		
+	}
 }
 ?>
