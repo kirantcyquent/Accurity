@@ -198,12 +198,12 @@
 		if($resp === false)
 		{
 			$str =  'Curl error: ' . curl_error($ch);
-			$fp = fopen("\tmp\accurity.log","a+");
+			$fp = fopen("/tmp/accurity.log","a+");
 			fwrite($fp,$str);
 			fclose($fp);
 		}
 		
-		$fp = fopen("\tmp\accurity.log","a+");
+		$fp = fopen("/tmp/accurity.log","a+");
 		fwrite($fp,$resp);
 		fclose($fp);
 		curl_close($curl);
