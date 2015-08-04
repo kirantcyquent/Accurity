@@ -194,8 +194,20 @@
 		CURLOPT_POSTFIELDS => "login=bjones1&password=relar88&address=$address&city=$city&state=$state&zipCode=$zip&landUse=$landUse&date=$date",
 		));
 		$resp = curl_exec($curl);
+		
+		if($resp === false)
+		{
+			$str =  'Curl error: ' . curl_error($ch);
+			$fp = fopen("\tmp\accurity.log","a+");
+			fwrite($fp,$str);
+			fclose($fp);
+		}
+		
+		$fp = fopen("\tmp\accurity.log","a+");
+		fwrite($fp,$resp);
+		fclose($fp);
 		curl_close($curl);
-
+		
 		$p = xml_parser_create();
 		xml_parse_into_struct($p, $resp, $vals, $index);
 		xml_parser_free($p);
