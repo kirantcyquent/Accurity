@@ -25,7 +25,10 @@ if(isset($_POST['email']) && isset($_POST['password']))
 	header ("Location: index.php");	
 		exit;
 	}else{
-		header ("Location: login.php?error_message=login failed.Please Retry");			
+		$_SESSION['login-error'] = '<div class="error message">
+ <h3>Please login with valid credentials.</h3>
+</div>';
+		header ("Location: login.php");			
 		exit;
 	}
 

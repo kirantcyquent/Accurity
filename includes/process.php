@@ -165,6 +165,16 @@
 		return $ret;
 	}
 
+	function MinMaxAgePer($percent, $val)
+	{
+
+		$ageyear = date('Y')-$val;
+		$minmax = ceil(($ageyear*$percent)/100);
+		$ret['Max'] = $val+$minmax;
+		$ret['Min'] = $val-$minmax;
+		return $ret;
+	}
+
 
 	function getLatitudeLongitude($ad){
 	
@@ -194,20 +204,8 @@
 		CURLOPT_POSTFIELDS => "login=bjones1&password=relar88&address=$address&city=$city&state=$state&zipCode=$zip&landUse=$landUse&date=$date",
 		));
 		$resp = curl_exec($curl);
-		
-		if($resp === false)
-		{
-			$str =  'Curl error: ' . curl_error($ch);
-			$fp = fopen("/tmp/accurity.log","a+");
-			fwrite($fp,$str);
-			fclose($fp);
-		}
-		
-		$fp = fopen("/tmp/accurity.log","a+");
-		fwrite($fp,$resp);
-		fclose($fp);
 		curl_close($curl);
-		
+
 		$p = xml_parser_create();
 		xml_parse_into_struct($p, $resp, $vals, $index);
 		xml_parser_free($p);
@@ -218,6 +216,7 @@
 			if($aval['tag'] == 'PROP' && $aval['type'] == 'open')
 				$aProp[] = $aval['attributes'];
 		}
+
 		return $aProp;
 	}
 

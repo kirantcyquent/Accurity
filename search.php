@@ -1,23 +1,24 @@
 <?php  session_start();?>
+<!-- Search Page-->
 <div id="search_form">
-	<span style="color:#6c6c6c; font-size:20px;">Begin your search here</span>
-		<form role="form">
-			<div class="form-group" style="padding:5px 0px 0px 0px;">
-				<input type="text" class="form-control" id="searchAddress" name="searchAddress" value="<?php if($_SESSION['search']['searchAddress']!='') { echo $_SESSION['search']['searchAddress']; }
-		else {  } ?>" placeholder="Search Address or Assessor Parcel " autofocus required/>	
-		
-				<button type="button" value="search" class="btn btn-success" id="searchBtn" name="searchdata" style="margin-bottom:3px;">Search</button>
-				<br/><span >(* provide address in STREET CITY STATE ZIP format)</span>
-			</div>
+	<span class="heading-text">Begin your search here</span>
+	<form role="form">
+		<div class="form-group" style="padding:5px 0px 0px 0px;">
+			<input type="text" style="width:50%; height:30px;" id="searchAddress" name="searchAddress" value="<?php if($_SESSION['search']['searchAddress']!='') { echo $_SESSION['search']['searchAddress']; }
+		else {  } ?>" placeholder=" Search Address or Assessor Parcel " autofocus required/>	
+											
+			<button type="button" value="search" class="btn btn-success" id="searchBtn" name="searchdata" style="margin-bottom:3px;">Search</button>
+			<br/><span >(* provide address in STREET CITY STATE ZIP format)</span>
+		</div>
 
-			<div id="error" class="form-group" style="padding:5px 0px 0px 0px;">
+		<div id="error" class="form-group" style="padding:5px 0px 0px 0px;">
 			<?php  if(isset($_REQUEST['error']) && $_REQUEST['error']==1){ 
 				echo "<br/><strong><span style='color:red;'>No corresponding property found.</span></strong>";
 			}?>
-			</div>	
-		</form>		
+		</div>	
+	</form>		
 </div>
-
+<!-- Search Page Ends -->
 <script type="text/javascript">
 
 		$(document).ready(function(){
@@ -35,6 +36,7 @@
 
 		$('#searchBtn').click(function() { 
 			var sdata = $('#searchAddress').val();
+			
 			if(sdata=="" || sdata.length<=2){
 				return false;
 			}
@@ -43,6 +45,7 @@
 			if(sdata==""){
 				return false;
 			}
+			
 			if(userrole == 2){
 				var currentPage="results";
 			}else{

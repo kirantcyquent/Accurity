@@ -1,6 +1,5 @@
 <?php
 	session_start();
-
 	include('classes/User.php');
 	$us = new User();
 	if(isset($_REQUEST['searchAddress'])){
@@ -112,60 +111,70 @@
 			exit;
 	}
 	?>
-
-
-
-
+		<!-- RefineSearch -->
+		<div class="clearfix"></div>
 		<div class="row">
-		<div class="col-sm-6 textDiv">
-		<span style="font-size:16px; font-weight:bold; color:#6a6a6a;"><?php echo $Add;
-		?></span>
+		<div class="col-sm-12">
+			<?php 
+			if(isset($_REQUEST['referror'])){ 
+				echo '<div class="alert alert-danger fade in">Please adjust the square footage to the possible nearest value.</div>'; 
+				unset($_REQUEST['referror']); 
+			}
+			?>
 		</div>
+		</div>
+		
+		<div class="pull-left"><h4><?php echo $Add;?></h4></div>
+		<div class="pull-right"><!--<a href="javascript: return false;" class="button back black"><span></span>Back</a>--></div>
 
-		<div class="col-sm-6 textDiv">
-		<button type="button" id="backBtn" class="btn btn-success">&lArr;Back</button>
-		</div>
-		</div>
-
+		<div class="clearfix"></div>
 		<div class="row">
-		<div class="col-sm-6 textDiv">
-			<?php if(isset($_REQUEST['referror'])){ echo "please adjust the square footage to the possible nearest value."; unset($_REQUEST['referror']); }?>
-		</div>
-		</div>
+			<table class="table table-borderless" id="refineTable">
+				<thead>
+					<th>Attribute</th>
+					<th>Public Record Results</th>
+					<th>Adjustments</th>
+				</thead>
+				<tbody>
+					<tr>
+						<td>Measured Square Footage *</td>
+						<td><span id="sfcount">
+						<?php echo $sq_footage; ?>
+						</span></td>
+						<td class="style-4"> <input type="text"  name="square_footage" onkeypress="return isNumber(event)"  value="<?php echo $sq_footage; ?>" id="adjustments" pattern="^[0-9\.]+$" maxlength="8" required>
+				<span id="sq_error" style="font-weight:bold; color:red;"></td>
+					</tr>
+					<tr>
+						<td>Bedrooms</td>
+						<td><?php echo $bedrooms; ?></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>Bathrooms</td>
+						<td><?php echo $bathrooms; ?></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>Year Built</td>
+						<td><?php echo $year_built; ?></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>Lot Size</td>
+						<td><?php echo $lot_size; ?></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>Stories</td>
+						<td><?php echo $stories; ?></td>
+						<td></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>	
+		<!-- RefineSearch -->
 
-		<div class="row">
-		<div class="col-sm-3">
-		<ul class="textDiv">
-		<li><b>Attribute</b></li>
-		<li>Measured Square Footage <span style="color:red; font-weight:bold;">*</span></li>
-		<li>Bedrooms</li>
-		<li>Bathrooms</li>
-		<li>Year Built</li>
-		<li>Lot Size</li>
-		<li>Stories</li>
-		</ul>
-		</div>
-		<div class="col-sm-3">
-		<ul class="textDiv">
-		<li><b>Public Record Results</b></li>
-		<li>
-		<span id="sfcount">
-		<?php echo $sq_footage; ?>
-		</span></li>	
-		<li><?php echo $bedrooms; ?></li>
-		<li><?php echo $bathrooms; ?></li>
-		<li><?php echo $year_built; ?></li>
-		<li><?php echo $lot_size; ?></li>
-		<li><?php echo $stories; ?></li>
-		</ul>
-		</div>
-		<div class="col-sm-6">
-		<form action="" method="post" id="measure_form">
-		<ul class="textDiv">
-		<li><b>Adjustments</b></li>
-		<li><input type="text"  name="square_footage" class="small" onkeypress="return isNumber(event)"  value="<?php echo $sq_footage; ?>" id="adjustments" pattern="^[0-9\.]+$" maxlength="8" required>
-				<span id="sq_error" style="font-weight:bold; color:red;"></span>
-		</li>
+
 		<input type="hidden" name="bedrooms" value="<?php echo $bedrooms; ?>"/>
 		<input type="hidden" name="bathrooms" value="<?php echo $bathrooms; ?>"/>
 		<input type="hidden" name="year_built" value="<?php echo $year_built; ?>"/>
@@ -188,15 +197,11 @@
 	
 
 		<input type="hidden" name="address" value="<?php echo $Add; ?>" />
-		<li>&nbsp; </li>
-		<li>&nbsp; </li>
-		<li>&nbsp; </li>
-		<li>&nbsp; </li>
-		<li>&nbsp; </li>
-		<li><button type="button" class="btn btn-success" id="searchBtn">Save & Search</button></li>
-		</ul>
-		</form>
-		</div>
+		
+		<div class="row">
+		<div class="col-sm-10 col-lg-10 col-md-10">
+			<div class="pull-right"><button type="button" class="btn btn-success" id="searchBtn">Save & Search</button>
+			</div>
 		</div>
 
 		<script type="text/javascript">

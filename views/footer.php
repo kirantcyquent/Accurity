@@ -1,15 +1,97 @@
-			
-			<div class="clearfix"></div>
 
+	<div class="clearfix"></div>
 
-		<!-- Valuation Strip -->
+	<!-- Valuation Strip -->
 	<div class="container-fluid">
 		<div class="row" id="valuation-logo">
 			<div class="pull-right" style="margin-right:4%;"><img class="img-responsive logo" src="css/images/accurity.jpg" /></div>
 		</div>
 	</div>
+	<!-- Valuation Strip -->
+
+
+<!--
+	<footer class="footer">
+		<div style="margin-left:4%; margin-right:4%;">
+			<div class="container-fluid" >
+				<div class="row footer-row">
+					<div class="col-sm-3 col-md-6 col-lg-2">
+						<h5>ABOUT US</h5>
+						<ul class="footer-list">
+							<li>Regulatory Compliance
+								<ul class="subfooter-list">
+									<li>FHA/Dodd-Frank</li>
+									<li>Compliance</li>
+									<li>UAD Compliances</li>
+								</ul>
+							</li>
+							<li>Press Releases</li>
+							<li>In the News</li>
+							<li>Events</li>
+						</ul>
+					</div>
+					<div class="col-sm-3 col-md-6 col-lg-2">
+						<h5>SPECIALTY PRACTICES</h5>
+						<ul class="footer-list">
+							<li>Forensic Reviews</li>
+							<li>Litigation Assistance</li>
+							<li>Consulting Services</li>
+							<li>Light Commercial</li>
+						</ul>
+					</div>
+					<div class="col-sm-3 col-md-6 col-lg-2">
+						<h5>APPRAISAL SERVICES</h5>
+						<ul class="footer-list">
+							<li>Mortgage Origination</li>
+							<li>Appraisals</li>
+							<li>REO Appraisals/Default</li>
+							<li>Valuation</li>
+							<li>Relocation Appraisals</li>
+							<li>Alternative Valuations</li>
+						</ul>
+					</div>
+					<div class="col-sm-3 col-md-6 col-lg-2">
+						<h5>JOIN US</h5>
+						<ul class="footer-list">
+						<li>Frachices &amp; Membership</li>
+							<li>Opportunities</li>
+							<li>Frachies Opportunities</li>
+							<li>Individual Membership</li>
+							<li>Opportunities</li>
+							<li>Opportunity Inquiry Form</li>
+							<li>Accurity Presentation</li>
+						</ul>
+					</div>
+					<div class="col-sm-3 col-md-6 col-lg-2">
+						<h5>RESOURCES</h5>
+						<ul class="footer-list">
+							<li>Member Discount Benefits</li>
+							<li>Valuation Tools</li>
+							<li>Webinars</li>
+						</ul>
+					</div>
+					<div class="col-sm-3 col-md-6 col-lg-2">
+						<h5>CONTACT US</h5>
+						<ul class="footer-list">
+							<li>Employment Opportunities</li>
+							<li>Cancellation and Refund</li>
+							<li>Policy</li>
+							<li>Membership Application</li>
+						</ul>
+					</div>
+				</div>	
+			</div>
+		</div>
 		
-		
+		<div class="clearfix"></div>
+			
+		<div class="row" style="padding-bottom:10px;">
+			<div class="pull-left" style="margin-left:4%; color:#E8E8E8;">@ 2013 Accurity </div>
+			<div class="pull-right" style="margin-right:4%;color:#E8E8E8;">Web Design by Absolute Web Services</div>
+		</div>
+	</footer>	-->
+
+	
 		<footer>
 		<div class="container" style="width:100%;">
 			<div class="row" id="footer_list" style="width:90%;margin:0 auto;">
@@ -85,6 +167,4 @@
 			</div>
 		</div>
 		</footer>
-		</div>
-	</body>
-</html>
+		

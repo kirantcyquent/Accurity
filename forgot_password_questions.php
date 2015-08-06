@@ -1,11 +1,18 @@
 <?php 
 session_start();
-	include('db/db.php');
-if(isset($_POST['forgotpasswordsubmit'])){
-	$answer1 = $_POST['answer1'];
-	$answer2 = $_POST['answer2'];
-	$answer3 = $_POST['answer3'];
+include('db/db.php');
+	
+	if(!isset($_SESSION['forgot-user'])){
+		header('Location: login.php');
+	}
+if(isset($_POST['forgotpasswordsubmit']) && isset($_SESSION['forgot-user'])){
+	$answer1 = trim($_POST['answer1']);
+	$answer2 = trim($_POST['answer2']);
+	$answer3 = trim($_POST['answer3']);
+
 	$userid = $_SESSION['userid'];
+
+
 	//$query = "SELECT Answer FROM securityquestion WHERE userID = (SELECT UserID FROM userdetail where UserName = '$emailid')";
 	$query = "SELECT Answer FROM securityquestion WHERE userID = $userid";
 	//echo $query;
@@ -19,11 +26,15 @@ if(isset($_POST['forgotpasswordsubmit'])){
 	$result2 = mysql_fetch_array($sql2);
 	$sql3 = mysql_query($query3);
 	$result3 = mysql_fetch_array($sql3);
+
 	if($result[0] == $answer1 && $result2[0] == $answer2 && $result3[0] == $answer3){
 		$_SESSION['success'] =1;
-		header("Location: change_password.php?user_id=$userid");
+		unset($_SESSION['forgot-user']);
+		header("Location: change_password.php");
+
 	}else{
-		header("Location: login.php?error_message='You did not answered all security questions correctly. Please Retry'");
+		$_SESSION['recover-error'] = "<span id='fmail'>Please answer all questions.</span>";
+		header("Location: recover.php");
 	}
 }
 ?>

@@ -1,126 +1,126 @@
 <?php 
 	include('classes/Session.php');
 	$session = new Session();
-
 	$session->destroySession();
 ?>
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en-us">
+<meta charset="utf-8" />
 <head>
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Accurity Login</title>
- <link rel="stylesheet" href="css/login/style.css">
- <link rel="stylesheet" href="css/login/modal.css"> 
- <link rel="stylesheet" href="css/bootstrap.min.css">
+<title>Accurity Valuation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" sizes="16x16" href="css/images/favicon-32x32.png">
+<link rel="stylesheet" href="css/login.css">
 </head>
-<style>
-body{
-	backgroud:#ccc;
-}
-#login-form{
-	margin:auto;
-}
-#login-form fieldset{
-	box-shadow:0 0 2px #ccc;
-}
-</style>
-<script>
-	function validateMe(){
-		var err=0;
+<body>
 
-		var mail = $('#email').val();
-		var pass = $('#pass').val();
-		
-		if(mail==""){
-			err=1;
-			$('#merr').html("<font color='red'>Enter email id</font>");
-		}else{
-			$('#merr').html("");
+<div class="msg">
+<?php 
+	if(isset($_SESSION['login-error'])){
+		echo $_SESSION['login-error'];
+		unset($_SESSION['login-error']);
+    }
+?>
+
+</div>
+<div class="form">
+<div class="header"><h2><img class="img-responsive logo" src="css/images/main-logo.jpg" width="200" /></h2></div>
+<div class="login">
+<div  id="login">
+<form action="login_check.php" method="post" autocomplete="off">
+<ul>
+<li>
+<span class="un"><i class="fa fa-user"></i></span><input type="email" name="email" required class="text" placeholder="User Name Or Email" autofocus/></li>
+<li>
+<span class="un"><i class="fa fa-lock"></i></span><input type="password" name="password" required class="text" placeholder="User Password"/></li>
+<li>
+<input type="submit" value="LOGIN" class="btn">
+</li>
+<li><div class="span"><span class="ch"><input type="checkbox" id="r"> <label for="r">Remember Me</label> </span> <span class="ch"><a id="fpass">Forgot Password?</a></span></div></li>
+</ul>
+</form>
+</div>
+
+<div id="forgot"></div>
+
+</div>
+<div class="sign">
+<div class="need">@ 2013 Accurity </div>
+<div class="up">Absolute Web Services</div>
+</div>
+</div>
+<br/><br/>
+<script src="http://code.jquery.com/jquery-latest.js"></script>  
+<script>  
+$(document).ready(function(){  
+setTimeout(function() {  
+$('.message').fadeOut('fast');  
+}, 6000); // <-- time in milliseconds  
+
+	$('#fpass').click(function() { 
+		var data = '<h4>Recover Password</h4><form action="forgot_password.php" method="post" onsubmit="return validate();" autocomplete="off"><ul><li><span class="un"><i class="fa fa-key"></i></span><input id="forgot_email" type="email" name="email" required class="text" placeholder="Enter your registered email to recover password" onblur="check_email(this.value);" autofocus/></li><div id="fmail"></div><input type="submit" value="Recover" class="btn-small"> &nbsp; &nbsp;<input type="button" onclick="revert();" value="Cancel" class="btn-small"></ul></form><br/><br/>';
+		$('#forgot').html(data);
+		$('#login').html('');
+	});
+
+
+});  
+
+function revert(){
+location = "login.php";
+}
+
+
+	function getXMLHTTP() { //fuction to return the xml http object
+		var xmlhttp=false;	
+		try{
+			xmlhttp=new XMLHttpRequest();
 		}
-
-		if(pass==""){
-			err=1;
-			$('#perr').html("<font color='red'>Enter password</font>");
-		}else{
-			$('#perr').html("");
+		catch(e)	{		
+			try{			
+				xmlhttp= new ActiveXObject("Microsoft.XMLHTTP");
+			}
+			catch(e){
+				try{
+				xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+				}
+				catch(e1){
+					xmlhttp=false;
+				}
+			}
 		}
+		 	
+		return xmlhttp;
+	}
+	
+	function check_email(email) {		
+		var strURL = "check_forgot_mail.php?mail="+email;
 
-		if(err==1){
+		var req = getXMLHTTP();
+		if (req) {
+			req.onreadystatechange = function() {
+				if (req.readyState == 4) {
+					// only if "OK"
+					if (req.status == 200) {						
+						document.getElementById('fmail').innerHTML=req.responseText;	
+					} else {
+						//alert("There was a problem while using XMLHTTP:\n" + req.statusText);
+					} 
+				}				
+			}			
+			req.open("GET", strURL, true);
+			req.send(null);
+		}				
+	}
+ 
+	function validate(){
+		var fmail = $('#fmail').html();
+		if(fmail.length>0){
 			return false;
 		}
 		return true;
 	}
-</script>
-<body>
-<div class="container">
+</script>  
 
-	<div style="margin-left:35%;"><img src="css/images/main-logo.jpg"/></div>
-  <div id="login-form">
-
-    <h3>Login</h3>
-
-    <fieldset>
-	<?php $errormsg = $_GET['error_message']; ?>
-	<?php $passwordsuccess = $_GET['password_change']; ?>
-	<?php $passwordfailure = $_GET['password_change_success']; ?>
-	   <?php if($errormsg){ ?>
-		   <div class="alert alert-danger">
-		  <strong>Error!</strong> <?php echo $errormsg; ?>
-		</div>
-	   <?php 
-	   }else if($passwordsuccess){ ?>
-		<div class="alert alert-success">
-		  <strong>Success!</strong> <?php echo $passwordsuccess; ?>
-		</div>   
-	   <?php }else if($passwordfailure) {?>
-		<div class="alert alert-warning">
-		  <strong>Warning!</strong> <?php echo $passwordfailure; ?>
-		</div>
-		<?php }else{} ?>
-		
-      <form action="login_check.php" method="post" onsubmit="return validateMe();">
-		
-        <input type="email" required  name="email" id="email" placeholder="Email" autofocus> <!-- JS because of IE support; better: placeholder="Email" -->
-        <br><span id="merr"></span>
-        <input type="password" required  id="pass" name="password"  placeholder="Password"> <!-- JS because of IE support; better: placeholder="Password" -->
-        <br><span id="perr"></span>
-        <input type="submit" name="signin" value="Login">
-
-        <footer class="clearfix">
-
-          <p><span class="info">?</span> <a href="#" data-modal-id="popup1">Forgot Password</a></p>
- 		  
-
-        </footer>
-
-      </form>
-
-    </fieldset>
-
-  </div> <!-- end login-form -->
-
-</div>
-   
-	<div id="popup1" class="modal-box">
-	  <header> <a href="#" class="js-modal-close close">×</a>
-		<h3>Forgot Password</h3>
-	  </header>
-	  <div class="modal-body">
-	   <div id="questions_div" style="">
-	   <form method="post" action="forgot_password.php">
-	  <div class="form-group">
-		<label for="question1">Your Email</label>
-		<input type="email" class="form-control" name="youremail" id="emailid" placeholder="Your Email...">
-	  </div>
-	  <input type="submit" name="forgotpasswordsubmit" class="btn btn-default" value="submit"/>
-	   </form>
-			</div>
-  <footer> <a href="#" class="btn btn-small js-modal-close">Close</a> </footer>
-</div>
-
-<script src="js/jquery.min.js"></script>
-<script src="js/modal.js"></script>
 </body>
 </html>

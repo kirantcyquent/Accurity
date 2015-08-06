@@ -12,39 +12,49 @@
 		header('Location: institutes.php');
 	}
 ?>
-<?php  include('includes/header.php'); ?>	
-<?php  include('includes/topBar.php'); ?>
-	<div class="row" id="sideMenuDiv">
-		<?php  include('includes/sideMenu.php'); ?>	
-		<div class="col-sm-10" id="pageContent">
-			<?php 
-			if($_SESSION['resumeSearch']=="refineSearch"){
-				
-				?>
-				<script>
-				var currentPage="refineSearch";
-				$.ajax({
-					type: "GET",
-					url: "home.php?page="+currentPage+"",
-					success: function(data){	
-					
-						$("#pageContent").html(data);
-						$('.nav-stacked li').removeClass('active')
-						$(".nav-stacked li:first").addClass("active");
+<?php include('views/header.php'); ?>
+<?php include('views/r3report.php'); ?>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-lg-1 col-sm-1 col-xs-1">
+			</div>
+			<div class="col-lg-11 col-sm-11 col-xs-11">			
+				<div class="row">
+					<div class="col-sm-3 col-xs-12 col-lg-2">
+						<?php include('views/sidebar.php'); ?>
+					</div>
+					<div class="col-sm-9 col-xs-12 col-lg-9" id="pageContent">
+					<?php 
+					if($_SESSION['resumeSearch']=="refineSearch"){
+						
+						?>
+						<script>
+						var currentPage="refineSearch";
+						$.ajax({
+							type: "GET",
+							url: "home.php?page="+currentPage+"",
+							success: function(data){	
+							
+								$("#pageContent").html(data);
+								$('.nav-stacked li').removeClass('active')
+								$(".nav-stacked li:first").addClass("active");
+							}
+						});
+						
+					</script>
+						<?php
 					}
-				});
-				
-			</script>
-				<?php
-			}
-			else{			
-				include('search.php');
-			}
-
-			 ?>	
-		</div>	
+					else{			
+						include('search.php');
+					}
+						 ?>	
+					</div>
+					</div>
+				</div>
+				<div class="col-lg-1 col-sm-1 col-xs-1">
+				</div>
+		</div>
 	</div>
-</div>
 <?php  include('includes/footer.php'); ?>
 <script type="text/javascript">
 		$(document).ready(function(){
