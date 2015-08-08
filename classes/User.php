@@ -14,6 +14,8 @@ class User {
 
 
 	public function createLog($address){
+
+		echo "I am here---$address"; die;
 		$path = preg_replace("@\s+@","_",$address);
 		if(!file_exists ("/tmp/logs/" ))
 			mkdir("/tmp/logs/", 777);
