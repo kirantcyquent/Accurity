@@ -15,7 +15,7 @@ class User {
 
 	public function createLog($address){
 		$path = preg_replace("@\s+@","_",$address);
-		$path = "logs/".$path.".html";
+		$path = "/tmp/logs/".$path.".html";
 		if(file_exists($path)){
 			unset($path);
 		}
