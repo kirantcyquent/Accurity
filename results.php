@@ -1,6 +1,5 @@
 <?php
 	session_start();
-	echo "<pre>gairav"; print_r($_SESSION);
 	$sessiondata = $_SESSION['email'];
 
 	include('db/db.php');

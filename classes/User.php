@@ -73,7 +73,7 @@ class User {
 		session_start();
 		echo "<pre>sadasdasdasd"; print_r($_SESSION);
 		$sid  = $_SESSION['search_id_s'];
-		$path = $_SESSION[$sid]['path'];
+		$path = $_SESSION['path'];
 		echo "----$path---------"; die;
 		$fp = fopen($path,"a");
 		$count = count($xml_result);
