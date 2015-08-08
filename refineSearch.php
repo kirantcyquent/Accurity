@@ -65,7 +65,7 @@
 
 		$searchId = $us->saveSearch($Add, 0, $_SESSION);
 		
-		echo $log = $us->createLog($Add);
+		$log = $us->createLog($Add);
 		
 		$_SESSION['search_id_s'] = $searchId;
 		$_SESSION['path'] = $log;
