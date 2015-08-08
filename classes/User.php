@@ -69,7 +69,7 @@ class User {
 		fclose($fp);
 	}
 
-	public function storeXMLResultLog($xml_result){
+	public function storeXMLResultLog($xml_result,$c1, $c2,$c3){
 		session_start();
 		$sid  = $_SESSION['search_id_s'];
 		$path = $_SESSION['path'];
@@ -98,19 +98,6 @@ class User {
 			$cn2 = time() - (365*24*60*60);
 
 			if($rows['POOL']==""){ $rows['POOL']="No";}
-			if(($rows['SQ_FT'] > $C1Rangesqrft['Min'] && $rows['SQ_FT'] < $C1Rangesqrft['Max'] ) && ($rows['LOTSIZEACRES'] > $C1Rangelot['Min'] && $rows['LOTSIZEACRES'] < $C1Rangelot['Max']) && ($rows['YEARBUILT'] > $C1RangeAge['Min'] && $rows['YEARBUILT'] < $C1RangeAge['Max']) && ($ydate> $cn1) && $rows['DIST']<$C1Proximity)
-			{
-				$c1[] = array('address'=>$rows['ADDRESS'], 'distance'=>$rows['DIST'],'bedsBaths'=>$rows['BEDS'].' Bd /'.$rows['BATHS'].' Ba','sq_size'=>$rows['SQ_FT'],'year_built'=>$rows['YEARBUILT'],'lot_size'=>$rows['LOTSIZEACRES'],'stories'=>$rows['STRUCTURESTORIES'],'dateSold'=>$rows['LISTDATE'], 'amount'=>$rows['LISTPRICE'], 'latitude'=>$rows['LAT'], 'longitude'=>$rows['LON'],'pool'=>$rows['POOL'], 'basement'=>"No");
-			}
-			else 
-			if(($rows['SQ_FT'] > $C2Rangesqrft['Min'] && $rows['SQ_FT'] < $C2Rangesqrft['Max'] ) && ($rows['LOTSIZEACRES'] > $C2Rangelot['Min'] && $rows['LOTSIZEACRES'] < $C2Rangelot['Max']) && ($rows['YEARBUILT'] > $C2RangeAge['Min'] && $rows['YEARBUILT'] < $C2RangeAge['Max']) && ($ydate> $cn2) && $rows['DIST']<$C2Proximity)
-			{
-				$c2[] = array('address'=>$rows['ADDRESS'], 'distance'=>$rows['DIST'],'bedsBaths'=>$rows['BEDS'].' Bd /'.$rows['BATHS'].' Ba','sq_size'=>$rows['SQ_FT'],'year_built'=>$rows['YEARBUILT'],'lot_size'=>$rows['LOTSIZEACRES'],'stories'=>$rows['STRUCTURESTORIES'],'dateSold'=>$rows['LISTDATE'], 'amount'=>$rows['LISTPRICE'],'latitude'=>$rows['LAT'], 'longitude'=>$rows['LON'],'pool'=>$rows['POOL'], 'basement'=>"No");
-			}else 
-			if(($rows['SQ_FT'] > $C3Rangesqrft['Min'] && $rows['SQ_FT'] < $C3Rangesqrft['Max'] ) && ($rows['LOTSIZEACRES'] > $C3Rangelot['Min'] && $rows['LOTSIZEACRES'] < $C3Rangelot['Max']) && ($rows['YEARBUILT'] > $C3RangeAge['Min'] && $rows['YEARBUILT'] < $C3RangeAge['Max']) && ($ydate> $cn2) && $rows['DIST']<$C3Proximity)
-			{
-				$c3[] = array('address'=>$rows['ADDRESS'], 'distance'=>$rows['DIST'],'bedsBaths'=>$rows['BEDS'].' Bd /'.$rows['BATHS'].' Ba','sq_size'=>$rows['SQ_FT'],'year_built'=>$rows['YEARBUILT'],'lot_size'=>$rows['LOTSIZEACRES'],'stories'=>$rows['STRUCTURESTORIES'],'dateSold'=>$rows['LISTDATE'], 'amount'=>$rows['LISTPRICE'],'latitude'=>$rows['LAT'], 'longitude'=>$rows['LON'], 'pool'=>$rows['POOL'], 'basement'=>"No");
-			}
 			$data  = $data."".$tr;
 		}
 

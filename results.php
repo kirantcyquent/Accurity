@@ -102,7 +102,7 @@
 				$street = preg_replace("@\s+@","+",$street);
 				$arr  = array ('street'=>$street,'city'=>$city, 'state'=>$state, 'zip'=>$zip,'beds'=>$bedrooms, 'baths'=>$bathrooms,'square_footage'=>$square_footage,'lot_size'=>$lot_size, 'sale_date'=> '','amount_min'=>'','amount_max'=>'', 'built_year'=>$year_built);
 				$xml_result = get_xml_data($arr);
-
+				$this->storeXMLResultLog($xml_result);
 
 				$results = array();
 
@@ -129,7 +129,7 @@
 				$c1=array(); 
 				$c2=array(); 
 				$c3=array();
-				$us->storeXMLResultLog($xml_result);
+				
 				foreach($xml_result as $rows)
 				{
 					//print_r($rows);
@@ -166,7 +166,7 @@
 					
 				}
 				
-			
+				$us->storeXMLResultLog($xml_result,$c1, $c2,$c3);
 				$aSearchProp = array_merge($c1, $c2);
 				$aSearchProp =array_merge($aSearchProp, $c3);
 
@@ -258,7 +258,7 @@
 		$c1=array(); 
 		$c2=array(); 
 		$c3=array();
-		$us->storeXMLResultLog($xml_result);
+		//$us->storeXMLResultLog($xml_result);
 		foreach($xml_result as $rows)
 		{
 			$rows['LOTSIZEACRES'] = $rows['LOTSIZEACRES'] * 43560;
@@ -285,7 +285,7 @@
 			}			
 		}
 		 
-
+		$us->storeXMLResultLog($xml_result,$c1, $c2,$c3);
 		$aSearchProp = array_merge($c1, $c2);
 		$aSearchProp =array_merge($aSearchProp, $c3);
 
@@ -315,7 +315,8 @@
 
 		$street = preg_replace("@\s+@","+",$street);
 		$arr  = array ('street'=>$street,'city'=>$city, 'state'=>$state, 'zip'=>$zip,'beds'=>$bedrooms, 'baths'=>$bathrooms,'square_footage'=>$square_footage,'lot_size'=>$lot_size, 'sale_date'=> '','amount_min'=>'','amount_max'=>'', 'built_year'=>$year_built);
-		$res = get_xml_data($arr);		
+		$res = get_xml_data($arr);	
+		$this->storeXMLResultLog($res);
 	}
 	else if(isset($_SESSION['results']['matchResult'])){	
 		$result=unserialize(urldecode($_SESSION['results']['matchResult']));
