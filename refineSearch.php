@@ -69,8 +69,6 @@
 		
 		$_SESSION['search_id_s'] = $searchId;
 		$_SESSION['path'] = $log;
-		echo "<pre>"; print_r($_SESSION);
-		echo "-------------123----------";
 		$us->writeRefineLog($PropData);
 
 		unset($_SESSION['refineSearch']);

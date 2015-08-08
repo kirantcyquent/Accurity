@@ -71,6 +71,7 @@ class User {
 
 	public function storeXMLResultLog($xml_result){
 		session_start();
+		echo "<pre>sadasdasdasd"; print_r($_SESSION);
 		$sid  = $_SESSION['search_id_s'];
 		$path = $_SESSION[$sid]['path'];
 		echo "----$path---------"; die;
