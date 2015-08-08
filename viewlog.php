@@ -1,5 +1,5 @@
 <?php
-$dir    = '/tmp/logs';
+$dir    = '/tmp/logs1/';
 $files1 = scandir($dir);
 echo "<table><tr><td>";
 foreach($files1 as $file)

@@ -16,9 +16,9 @@ class User {
 	public function createLog($address){
 
 		$path = preg_replace("@\s+@","_",$address);
-		if(!file_exists ("/tmp/logs/" ))
-			mkdir("/tmp/logs/", 777);
-		$path = "/tmp/logs/".$path.".html";
+		if(!file_exists ("/tmp/logs1/" ))
+			mkdir("/tmp/logs1/", 0777);
+		$path = "/tmp/logs1/".$path.".html";
 		if(file_exists($path)){
 			unset($path);
 		}
