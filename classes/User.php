@@ -71,10 +71,8 @@ class User {
 
 	public function storeXMLResultLog($xml_result){
 		session_start();
-		echo "<pre>sadasdasdasd"; print_r($_SESSION);
 		$sid  = $_SESSION['search_id_s'];
 		$path = $_SESSION['path'];
-		echo "----$path---------"; die;
 		$fp = fopen($path,"a");
 		$count = count($xml_result);
 		fwrite($fp, "<p>Number of Records in Relar Database</p>");
@@ -378,7 +376,7 @@ class User {
 
 
 	public function change_password($pass){
-		print $pass;exit;
+		
 		$db = new Database();
 		$session = new Session();
 		$id = $session->get_session('userid');

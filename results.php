@@ -129,7 +129,6 @@
 				$c1=array(); 
 				$c2=array(); 
 				$c3=array();
-				print_r($_SESSION);
 				$us->storeXMLResultLog($xml_result);
 				foreach($xml_result as $rows)
 				{
@@ -259,7 +258,6 @@
 		$c1=array(); 
 		$c2=array(); 
 		$c3=array();
-		print_r($_SESSION);
 		$us->storeXMLResultLog($xml_result);
 		foreach($xml_result as $rows)
 		{
