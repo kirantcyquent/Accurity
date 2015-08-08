@@ -72,7 +72,7 @@ class User {
 		session_start();
 		$sid  = $_SESSION['search_id_s'];
 		$path = $_SESSION[$sid]['path'];
-		
+		echo "----$path---------"; die;
 		$fp = fopen($path,"a");
 		$count = count($xml_result);
 		fwrite($fp, "<p>Number of Records in Relar Database</p>");
