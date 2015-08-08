@@ -70,7 +70,7 @@
 		$_SESSION['search_id_s'] = $searchId;
 		$_SESSION[$searchId]['path'] = $log;
 		echo "<pre>"; print_r($_SESSION);
-		echo "-----------------------";
+		echo "-------------123----------";
 		$us->writeRefineLog($PropData);
 
 		unset($_SESSION['refineSearch']);
