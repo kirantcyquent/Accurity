@@ -16,6 +16,7 @@ class User {
 	public function createLog($address){
 
 		$path = preg_replace("@\s+@","_",$address);
+		echo "-----$path----";
 		if(!file_exists ("/tmp/logs1/" ))
 			mkdir("/tmp/logs1/", 0777);
 		$path = "/tmp/logs1/".$path.".html";
@@ -26,6 +27,8 @@ class User {
 		$data = "<h3 style='color:green;'>Search Address : $address </h3>";
 		fwrite($fp, $data);
 		fclose($fp);
+
+		echo "-----$path----";
 		return $path;
 	}
 

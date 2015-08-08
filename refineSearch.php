@@ -65,10 +65,10 @@
 
 		$searchId = $us->saveSearch($Add, 0, $_SESSION);
 		
-		$log = $us->createLog($Add);
+		echo $log = $us->createLog($Add);
 		
 		$_SESSION['search_id_s'] = $searchId;
-		$_SESSION[$searchId]['path'] = $log;
+		$_SESSION['path'] = $log;
 		echo "<pre>"; print_r($_SESSION);
 		echo "-------------123----------";
 		$us->writeRefineLog($PropData);
