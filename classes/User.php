@@ -42,7 +42,7 @@ class User {
 		$stories = $PropData['STORIESCOUNT'];
 
 		$data = "<h5>Data Returned from DLP API for Search Address</h5>";
-		$data = $data .'<table class="table table-bordered" style="border: 1px solid black;">
+		$data = $data .'<table class="table table-bordered" border="1">
 			<tr>
 				<td>Address</td>
 				<td>Sq Ft</td>
@@ -76,7 +76,7 @@ class User {
 		$fp = fopen($path,"a");
 		$count = count($xml_result);
 		fwrite($fp, "<p>Number of Records in Relar Database</p>");
-		$data = '<table class="table table-bordered" style="border: 1px solid black;"> 
+		$data = '<table class="table table-bordered" border="1"> 
 		<tr>
 			<td>SL</td><td>Address </td><td>Distance </td><td>Bed/baths </td><td>Sqft</td><td>Year Built</td><td>Lot Size</td><td>Stories</td><td>List Date</td><td>Price</td><td>Pool</td>
 		</tr>
@@ -121,7 +121,7 @@ class User {
 
 		$c1data = "<h5>Properties matching criteria 1 </h5>";
 		$fp = fopen($path,"a");
-		$c1data = $c1data.'<table class="table table-bordered" style="border: 1px solid black;"> 
+		$c1data = $c1data.'<table class="table table-bordered" border="1"> 
 		<tr>
 			<td>SL</td><td>Address </td><td>Distance </td><td>Bed/baths </td><td>Sqft</td><td>Year Built</td><td>Lot Size</td><td>Stories</td><td>List Date</td><td>Price</td><td>Pool</td>
 		</tr>
@@ -138,7 +138,7 @@ class User {
 
 		$c1data = "<h5>Properties matching criteria 2 </h5>";
 		$fp = fopen($path,"a");
-		$c1data = $c1data.'<table class="table table-bordered" style="border: 1px solid black;"> 
+		$c1data = $c1data.'<table class="table table-bordered" border="1"> 
 		<tr>
 			<td>SL</td><td>Address </td><td>Distance </td><td>Bed/baths </td><td>Sqft</td><td>Year Built</td><td>Lot Size</td><td>Stories</td><td>List Date</td><td>Price</td><td>Pool</td>
 		</tr>
@@ -155,7 +155,7 @@ class User {
 
 		$c1data = "<h5>Properties matching criteria 3 </h5>";
 		$fp = fopen($path,"a");
-		$c1data = $c1data.'<table class="table table-bordered" style="border: 1px solid black;"> 
+		$c1data = $c1data.'<table class="table table-bordered" border="1"> 
 		<tr>
 			<td>SL</td><td>Address </td><td>Distance </td><td>Bed/baths </td><td>Sqft</td><td>Year Built</td><td>Lot Size</td><td>Stories</td><td>List Date</td><td>Price</td><td>Pool</td>
 		</tr>
