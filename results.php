@@ -130,7 +130,7 @@
 				$c2=array(); 
 				$c3=array();
 
-
+				$us->storeXMLResultLog($xml_result);
 				foreach($xml_result as $rows)
 				{
 					//print_r($rows);
@@ -260,7 +260,7 @@
 		$c2=array(); 
 		$c3=array();
 
-
+		$us->storeXMLResultLog($xml_result);
 		foreach($xml_result as $rows)
 		{
 			$rows['LOTSIZEACRES'] = $rows['LOTSIZEACRES'] * 43560;

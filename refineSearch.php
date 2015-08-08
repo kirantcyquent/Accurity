@@ -64,6 +64,13 @@
 		$sale_type = "Full Value";
 
 		$searchId = $us->saveSearch($Add, 0, $_SESSION);
+		
+		$log = $us->createLog($Add);
+		
+		$_SESSION['search_id_s'] = $searchId;
+		$_SESSION[$searchId]['path'] = $log;
+
+		$us->writeRefineLog($PropData);
 
 		unset($_SESSION['refineSearch']);
 	}
