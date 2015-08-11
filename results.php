@@ -102,7 +102,7 @@
 				$street = preg_replace("@\s+@","+",$street);
 				$arr  = array ('street'=>$street,'city'=>$city, 'state'=>$state, 'zip'=>$zip,'beds'=>$bedrooms, 'baths'=>$bathrooms,'square_footage'=>$square_footage,'lot_size'=>$lot_size, 'sale_date'=> '','amount_min'=>'','amount_max'=>'', 'built_year'=>$year_built);
 				$xml_result = get_xml_data($arr);
-				$this->storeXMLResultLog($xml_result);
+				$us->storeXMLResultLog($xml_result);
 
 				$results = array();
 
@@ -316,7 +316,7 @@
 		$street = preg_replace("@\s+@","+",$street);
 		$arr  = array ('street'=>$street,'city'=>$city, 'state'=>$state, 'zip'=>$zip,'beds'=>$bedrooms, 'baths'=>$bathrooms,'square_footage'=>$square_footage,'lot_size'=>$lot_size, 'sale_date'=> '','amount_min'=>'','amount_max'=>'', 'built_year'=>$year_built);
 		$res = get_xml_data($arr);	
-		$this->storeXMLResultLog($res);
+		$us->storeXMLResultLog($res);
 	}
 	else if(isset($_SESSION['results']['matchResult'])){	
 		$result=unserialize(urldecode($_SESSION['results']['matchResult']));
