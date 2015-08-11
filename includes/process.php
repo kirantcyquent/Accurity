@@ -59,7 +59,11 @@
 	{
 		$StreetAddr = urlencode($StreetAddr);
 		$URL = "http://dlpapi.realtytrac.com/Reports/Get?ApiKey=a2d3e2aa-9c9b-4aab-af3a-56785ae67e25&Login=accurity&Password=1cyquent!&JobID=&LoanNumber=&PreparedBy=&ResellerID=&PreparedFor=&OwnerFirstName=&OwnerLastName=&AddressType=&PropertyStreetAddress=$StreetAddr&AddressNumber=&StartAddressNumberRange=&EndAddressNumberRange=&StreetDir=&StreetName=&StreetSuffix=&City=$City&StateCode=$State&County=&ZipCode=$Zip&PropertyParcelID=&APN=&ApnRangeStart=&ApnRangeEnd=&GeoCodeX=&GeoCodeY=&GeoCodeRadius=&SearchType=&NumberOfRecords=&Format=XML&ReportID=102";
-		
+
+		$path = $_SESSION['path'];
+		$fp = fopen($path,"a");
+		fwrite($fp, "<p>Query To Get Main Property - <b>$URL </b></p>");
+		fclose($fp);
 		$data = file_get_contents($URL);
 
 
@@ -203,6 +207,11 @@
 		CURLOPT_POST => true,
 		CURLOPT_POSTFIELDS => "login=bjones1&password=relar88&address=$address&city=$city&state=$state&zipCode=$zip&landUse=$landUse&date=$date",
 		));
+
+		$path = $_SESSION['path'];
+		$fp = fopen($path,"a");
+		fwrite($fp, "<p>Query To Get RELAR Property - <b>http://www.relar.com/RelarService/RelarReportService.asmx/GetListingsForRelarReport?login=bjones1&password=relar88&address=$address&city=$city&state=$state&zipCode=$zip&landUse=$landUse&date=$date </b></p>");
+		fclose($fp);
 		$resp = curl_exec($curl);
 		curl_close($curl);
 
@@ -222,6 +231,11 @@
 
 	function get_xml_data($arrParam){		
 		$url = 'http://dlpapi.realtytrac.com/Reports/Get?ApiKey=a2d3e2aa-9c9b-4aab-af3a-56785ae67e25&Login=accurity&Password=1cyquent!&JobID=&LoanNumber=&PreparedBy=&ResellerID=&PreparedFor=&OwnerFirstName=&OwnerLastName=&AddressType=&PropertyStreetAddress='.$arrParam['street'].'&AddressNumber=&StartAddressNumberRange=&EndAddressNumberRange=&StreetDir=&StreetName=&StreetSuffix=&City='.$arrParam['city'].'&StateCode='.$arrParam['state'].'&County=&ZipCode=&PropertyParcelID=&SAPropertyID=&APN=&ApnRangeStart=&ApnRangeEnd=&GeoCodeX=&GeoCodeY=&GeoCodeRadius=&SearchType=&NumberOfRecords=&Format=XML&ReportID=104&R104_SettingsMode=';
+
+			$path = $_SESSION['path'];
+		$fp = fopen($path,"a");
+		fwrite($fp, "<p>Query To Get Comparable Property - <b>$url</b></p>");
+		fclose($fp);
 		$curl = curl_init();
 		curl_setopt_array($curl, array(
 		CURLOPT_RETURNTRANSFER => 1,
