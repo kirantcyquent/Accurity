@@ -26,7 +26,7 @@ input,textarea,select { border:1px solid #cfcfcf;}
 }
 
 body{
-	font-family: \'Helvetica Neue\';
+	
 }
 .borderless td, .borderless th {
     border: none;
@@ -49,12 +49,19 @@ td{ font-size:12px; height:30px;}
 
 #ucomps{ }
 #ucomps td{ font-size:12px; height:30px;  }
-.headAddress { font-family: \'Helvetica Neue\'; font-size:16px; }
-.headAdd { font-family: \'Helvetica Neue\'; font-size:14px; }
+.headAddress { font-size:16px; }
+.headAdd {  font-size:14px; }
 
 #graph td{ height:5px;}
 </style>'.$_POST['cc'];
-$html = preg_replace("@style=\"padding:20px 0px 20px 30px;\"@", "", $html);
+
+$html = $_POST['cc'];
+
+preg_match("@downloadReport\s*<br>(.*?)downloadReport@is",$html,$matches);
+$html = $matches[1];
+$html = preg_replace("@src=\"http.*?\".*?>@","src='$id.jpg' width='400'>", $html);
+
+/*$html = preg_replace("@style=\"padding:20px 0px 20px 30px;\"@", "", $html);
 $html = preg_replace("@<div id=\"repbtn\".*?<\/form>|<button type=\"button.*><\/button>@is", "", $html);
 $html = str_replace('<button type="button" class="btn btn-success" style="margin:3px;" onclick="convert_pdf();">Create Report</button>', "", $html);
 $html = preg_replace("@id=\"aclogo\">.*?</div>@is", 'id="aclogo"><img src="css/images/main_logo.jpg" width="200" class="img-responsive" alt="Logo" id="main_logo" style="padding-left:0px;"></div>',$html);
@@ -62,15 +69,17 @@ $html = preg_replace("@id=\"ad1\s*class.*?\"\s*style.*?\"@is",'',$html);
 $html = str_replace('style="padding:20px 80px 0px 30px;"',"",$html);
 $html = preg_replace("@repAddress\">@is",'id="repAddress"><table style="width:100%;"><tr><td>',$html);
 $html = preg_replace("@</div>\s*<div id=\"repBy\".*?>@is",'</div></td><td>',$html);
-$html = preg_replace("@<span id=\"repClose\"></span>@","</td></tr></table>",$html);
-$html = preg_replace("@id=\"mp\">.*?</div>@is","><img src='".$id.".jpg' width='400'></div>",$html);
-$html = preg_replace("@<div id=\"break\"></div>@is","<div><br/><br/><br/></div>",$html);
+$html = preg_replace("@<span id=\"repClose\"></span>@","</td></tr></table>",$html);*/
+
+/*$html = preg_replace("@<div id=\"break\"></div>@is","<div><br/><br/><br/></div>",$html);*/
+
 
 include("dompdf/dompdf_config.inc.php");
 $html = $css.$html;
+
+
 $dompdf = new DOMPDF();
-$dompdf->set_base_path(realpath(APPLICATION_PATH . 'css/bootstrap.css'));
-$dompdf->set_base_path(realpath(APPLICATION_PATH . 'css/bootstrap-theme.css'));
+
 $dompdf->set_base_path(realpath(APPLICATION_PATH . 'css/style.css'));
 $dompdf->load_html($html);
 $dompdf->render();

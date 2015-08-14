@@ -44,6 +44,7 @@
 		$PropData['TOTALBATHROOMCOUNT']=round($PropData['TOTALBATHROOMCOUNT']);
 		$Add =  $PropData['_STREETADDRESS'] .' '.$PropData['_CITY'].' '.$PropData['_STATE'].' '.$PropData['_POSTALCODE'];	
 		$sq_footage =  $PropData['GROSSLIVINGAREASQUAREFEETCOUNT'];
+		$org_footage =  $PropData['GROSSLIVINGAREASQUAREFEETCOUNT'];
 		$bedrooms = $PropData['TOTALBEDROOMCOUNT'];
 		$bathrooms=$PropData['TOTALBATHROOMCOUNT'];
 		$year_built =$PropData['PROPERTYSTRUCTUREBUILTYEAR'];
@@ -74,7 +75,9 @@
 		unset($_SESSION['refineSearch']);
 	}
 	else if(isset($_SESSION['refineSearch']['address'])) {
+		
 		$sq_footage = isset($_SESSION['refineSearch']['square_footage']) ? $_SESSION['refineSearch']['square_footage'] : $PropData['GROSSLIVINGAREASQUAREFEETCOUNT'];
+		$org_footage = isset($_SESSION['refineSearch']['original_footage']) ? $_SESSION['refineSearch']['original_footage'] : $PropData['GROSSLIVINGAREASQUAREFEETCOUNT'];
 
 		$bedrooms = isset($_SESSION['refineSearch']['bedrooms']) ? $_SESSION['refineSearch']['bedrooms'] : $PropData['TOTALBEDROOMCOUNT'];
 		$bathrooms=isset($_SESSION['refineSearch']['bathrooms']) ? $_SESSION['refineSearch']['bathrooms'] :$PropData['TOTALBATHROOMCOUNT'];
@@ -123,9 +126,12 @@
 		<div class="col-sm-12">
 			<?php 
 			if(isset($_REQUEST['referror'])){ 
+				$sq_footage = $org_footage;
 				echo '<div class="alert alert-danger fade in">Please adjust the square footage to the possible nearest value.</div>'; 
 				unset($_REQUEST['referror']); 
 			}
+
+
 			?>
 		</div>
 		</div>
@@ -147,6 +153,7 @@
 						<td><span id="sfcount">
 						<?php echo $sq_footage; ?>
 						</span></td>
+						<input type="hidden" name="original_footage" id="original_footage" value="<?php echo $org_footage;?>" />
 						<td class="style-4"> <input type="text"  name="square_footage" onkeypress="return isNumber(event)"  value="<?php echo $sq_footage; ?>" id="adjustments" pattern="^[0-9\.]+$" maxlength="8" required>
 				<span id="sq_error" style="font-weight:bold; color:red;"></td>
 					</tr>
@@ -290,8 +297,8 @@
 				var baths_to = $('#baths_to').val();
 				var sale_range = $('#sale_range').val();
 				var sale_type = $('#sale_type').val();
-
-				var dataString = 'sq_f='+sq_f+'&radius='+radius+'&age='+age+'&l_size='+l_size+'&story='+story +'&pool='+pool+'&basement='+basement+'&beds_from='+beds_from+'&beds_to='+ beds_to+'&baths_from='+baths_from+'&baths_to='+baths_to+'&sale_range='+ sale_range+'&sale_type='+sale_type+'&square_footage='+square_footage+'&bedrooms=<?php echo $bedrooms;?>&bathrooms=<?php echo $bathrooms;?>&stories=<?php echo $stories;?>&lot_size=<?php echo $lot_size;?>&year_built=<?php echo $year_built;?>&address=<?php echo $Add;?>&street=<?php echo $a = isset($PropData["_STREETADDRESS"]) ? urlencode($PropData["_STREETADDRESS"]) : $_SESSION["refineSearch"]["street"]; ?>&state=<?php echo $b = isset($PropData["_STATE"]) ? $PropData["_STATE"] :  $_SESSION["refineSearch"]["state"];?>&city=<?php echo $c = isset($PropData["_CITY"]) ? $PropData["_CITY"] :  $_SESSION["refineSearch"]["city"];?>&zip=<?php echo $c = isset($PropData["_POSTALCODE"]) ? $PropData["_POSTALCODE"] :  $_SESSION["refineSearch"]["zip"];?>';
+				var org_footage = $('#original_footage').val();
+				var dataString = 'sq_f='+sq_f+'&radius='+radius+'&age='+age+'&l_size='+l_size+'&story='+story +'&pool='+pool+'&basement='+basement+'&beds_from='+beds_from+'&beds_to='+ beds_to+'&baths_from='+baths_from+'&baths_to='+baths_to+'&sale_range='+ sale_range+'&sale_type='+sale_type+'&square_footage='+square_footage+'&bedrooms=<?php echo $bedrooms;?>&bathrooms=<?php echo $bathrooms;?>&stories=<?php echo $stories;?>&lot_size=<?php echo $lot_size;?>&year_built=<?php echo $year_built;?>&address=<?php echo $Add;?>&street=<?php echo $a = isset($PropData["_STREETADDRESS"]) ? urlencode($PropData["_STREETADDRESS"]) : $_SESSION["refineSearch"]["street"]; ?>&state=<?php echo $b = isset($PropData["_STATE"]) ? $PropData["_STATE"] :  $_SESSION["refineSearch"]["state"];?>&city=<?php echo $c = isset($PropData["_CITY"]) ? $PropData["_CITY"] :  $_SESSION["refineSearch"]["city"];?>&zip=<?php echo $c = isset($PropData["_POSTALCODE"]) ? $PropData["_POSTALCODE"] :  $_SESSION["refineSearch"]["zip"];?>&original_footage='+org_footage+'';
 
 				var currentPage="results";
 				$.ajax({

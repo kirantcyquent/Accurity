@@ -71,14 +71,22 @@
 		xml_parse_into_struct($p, $data, $vals, $index);
 		xml_parser_free($p);
 		
-
 		
+		
+	
+
 		foreach($vals as $aval)
 		{
+			
+
 			if($aval['type'] == 'open' && isset($aval['attributes']))
 			{
-				foreach($aval['attributes'] as $key=>$val)
+				foreach($aval['attributes'] as $key=>$val){
+					if($aval['tag']=="MAILING_ADDRESS_EXT")
+						continue;
 					$aProp[$key] = $val;
+				}
+
 			}
 				
 		}
@@ -215,6 +223,10 @@
 		$resp = curl_exec($curl);
 		curl_close($curl);
 
+		$fs = fopen("data.xml","w");
+		fwrite($fs,$resp);
+		fclose($fs);
+		
 		$p = xml_parser_create();
 		xml_parse_into_struct($p, $resp, $vals, $index);
 		xml_parser_free($p);

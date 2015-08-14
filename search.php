@@ -60,8 +60,11 @@
 						box3.remove();
 						$("#pageContent").html(data);
 						$("#backBtn").css("display","");
+						
+						
 						$('.nav-stacked li').removeClass('active')
 						$(".nav-stacked li:eq(1)").addClass("active");
+
 					}
 				});
 				return false;
