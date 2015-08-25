@@ -1,5 +1,6 @@
 <?php
 	session_start();
+	unset($_SESSION['trackerror']);
 	$user_type=$_SESSION['user_type'];
 	if(!isset($_SESSION['email']) || !isset($_SESSION['sessionid'])){
 		header('Location: login.php');

@@ -13,7 +13,17 @@
 	$prepared_by = $us->getUserDetails();        
 		
 
-	
+		function subval_sort($a,$subkey) {
+			foreach($a as $k=>$v) {
+				$b[$k] = strtolower($v[$subkey]);
+			}
+			asort($b);
+			foreach($b as $key=>$val) {
+				$c[] = $a[$key];
+			}
+			return $c;
+		}
+		
 	$paramAdd = serialize($_REQUEST['paramAdd']);
 	$paramCom = serialize($_REQUEST['paramComments']);
 	$paramCom = preg_replace("@matchResult.*?\}\}@","",$paramCom);
@@ -104,7 +114,42 @@ if(isset($_SESSION['results']['matchResult'])){
 	 	}
 		
 	 }
+
+	 	$comps = subval_sort($comps,'distance'); 
+	 	$not_comps = subval_sort($not_comps,'distance'); 
 	
+	 	$markers = $_SESSION['markers'];
+		$count = 1;
+		foreach($comps as $key=>$value){
+			foreach($markers as $k=>$m){
+			
+				if($m['address']==$value['address']){
+					$markers[$k]['id']=$count;
+					$markers[$k]['color']="blue";
+				}
+			}
+			$count++;
+		}	
+		foreach($not_comps as $key=>$value){
+			foreach($markers as $k=>$m){
+				if($m['address']==$value['address']){
+					$markers[$k]['id']=$count;
+					$markers[$k]['color']= "red";
+				}
+			}
+			$count++;
+		}
+
+		foreach($markers as $m){
+        	if($m['id']=="C"){
+        		$color = "purple";
+        	}
+        	else { $color = $m['color'];}
+	        $locstring=$locstring.'&markers=color:'.$color.'%7Clabel:'.$m['id'].'%7C'.$m['latitude'].','.$m['longitude'];
+        }
+        $url="http://maps.googleapis.com/maps/api/staticmap?zoom=15&size=800x400&maptype=ROADMAP&".urlencode("center")."=".$locstring."&sensor=false";
+		$_SESSION['results']['map'] = $url;
+
 	$_SESSION['results']['matchResult'] = urlencode(serialize($matchResult));
 	$us->updateSearch($address, 1, $_SESSION, $_SESSION['searchId']);
 }else{
@@ -418,8 +463,8 @@ Please list any other sales that should be addressed that weren't used in apprai
 		<div class="row">
 		<div class="col-lg-8 col-sm-8 col-xs-12 col-md-8 repaddress">
 				<h5 class="report-header"><?php echo $address; ?></h5>
-				<h6><?php echo $bedrooms; ?> Bd | <?php echo $bathrooms; ?> Ba | <?php echo $square_footage;?> Sq Ft</h6>
-				<h6><?php echo $stories; ?> Stories | Lot Size <?php echo $lot_size; ?></h6>
+				<h6><?php echo $bedrooms; ?> Bd | <?php echo $bathrooms; ?> Ba | <?php echo number_format($square_footage);?> Sq Ft</h6>
+				<h6><?php echo $stories; ?> Stories | Lot Size <?php echo number_format($lot_size); ?></h6>
 				<h6><?php echo "Pool ".$pool; ?> |  <?php echo "Basement ".$basement; ?></h6>
 				<h6>Built <?php echo $year_built;?>
 				</h6>
@@ -444,20 +489,25 @@ Please list any other sales that should be addressed that weren't used in apprai
 						<div class="pull-left indicate-text">
 							Subject Property
 						</div>
-					
+					<?php if(count($comps)>0){?>
 						<div class="pull-left indicate blue">
 						
 						</div>
+
+
 						<div class="pull-left indicate-text">
 							 Potential Comparable Sales Used
 						</div>
-					
+					<?php } ?>
+
+					<?php if(count($not_comps)>0){?>
 						<div class="pull-left indicate pink">
 						
 						</div>
 						<div class="pull-left indicate-text">
 							Potential Comparable Sales Not Used 
 						</div>
+						<?php } ?>
 					
 		
 	</div>
@@ -467,6 +517,8 @@ Please list any other sales that should be addressed that weren't used in apprai
 			<div class="row">
 		<div class="col-lg-8 col-sm-8 col-xs-12 col-md-8 repaddress">
 		<div id="mp">
+		
+
 		<img src="<?php if(isset($_SESSION['results']['map']) || isset($_SESSION['map'])){ $map = isset($_SESSION['results']['map']) ? $_SESSION['results']['map'] : $_SESSION['map']; echo $map; } ?>" width="100%;"/>
 		</div>
 		
@@ -496,6 +548,7 @@ Please list any other sales that should be addressed that weren't used in apprai
 		
 		<?php
 
+		$count=1;
 	if(count($comps)>0){
 		?>
 		<div class="row">
@@ -555,6 +608,7 @@ Please list any other sales that should be addressed that weren't used in apprai
 	
 		//for($i=0;$i<$riskCount;$i++){
 	$odd=1;
+	
 			foreach($comps as $key=>$detail){
 				if($odd%2==0){ $color= "#ffffff;";}else{ $color= "#f6f6f6;";}
 			$odd++;
@@ -563,17 +617,17 @@ Please list any other sales that should be addressed that weren't used in apprai
 			
 	?>
       <tr >
-	  <td><?php echo $key.". ".$detail['address'];?></td>
+	  <td><?php echo $count.". ".$detail['address'];?></td>
         <td><?php echo  sprintf('%0.2f', $detail['distance']);?>miles</td>
         <td><?php echo $detail['bedsBaths'];?></td>
-		<td><?php echo $detail['sq_size'];?></td>
+		<td><?php echo number_format($detail['sq_size']);?></td>
         <td><?php echo $detail['year_built'];?></td>
-        <td><?php echo $detail['lot_size'];?></td>
+        <td><?php echo number_format($detail['lot_size']);?></td>
 		<td><?php echo $detail['stories'];?></td>
 		<td><?php echo $detail['pool'];?></td>
 		<td><?php echo $detail['basement'];?></td>
         <td><?php echo $detail['dateSold'];?></td>
-        <td>$<?php echo $detail['amount'];?></td>
+        <td>$<?php echo number_format($detail['amount']);?></td>
 		
 
 		<?php
@@ -587,6 +641,7 @@ Please list any other sales that should be addressed that weren't used in apprai
 		<td></td>
       </tr>
 	  <?php
+	  $count++;
 		}
 	  ?>
 	  
@@ -636,6 +691,7 @@ Please list any other sales that should be addressed that weren't used in apprai
     <tbody>
 	<?php
 	$odd=1;
+
 		foreach($not_comps as $key=>$detail){
 				
 			if($detail['reason']==1){$reason = "Poor Condition of Subject/Good Condition of Comp"; } else{ $reason="None"; }
@@ -649,17 +705,17 @@ Please list any other sales that should be addressed that weren't used in apprai
 			//$detail['basement']=$basement;
 	?>
       <tr style="background:<?php  echo $color;?>">
-        <td><?php echo $key.". ";?><?php echo $detail['address'];?></td>
+        <td><?php echo $count.". ";?><?php echo $detail['address'];?></td>
         <td><?php echo  sprintf('%0.2f', $detail['distance']); ?>miles</td>
         <td><?php echo $detail['bedsBaths'];?></td>
-		<td><?php echo $detail['sq_size'];?></td>
+		<td><?php echo number_format($detail['sq_size']);?></td>
         <td><?php echo $detail['year_built'];?></td>
-        <td><?php echo $detail['lot_size'];?></td>
+        <td><?php echo number_format($detail['lot_size']);?></td>
 		<td><?php echo $detail['stories'];?></td>
 		<td><?php echo $detail['pool'];?></td>
 		<td><?php echo $detail['basement'];?></td>
         <td><?php echo $detail['dateSold'];?></td>
-        <td>$<?php echo $detail['amount'];?></td>
+        <td>$<?php echo number_format($detail['amount']);?></td>
 		
 		<td><?php echo $detail['dy'] ?></td>
 		<td><?php echo $detail['ay'] ?></td>
@@ -669,6 +725,7 @@ Please list any other sales that should be addressed that weren't used in apprai
 	  <td colspan="15"><span style="color:red;"><?php echo $reason;?></span>  &nbsp; <span style="color:red;">Notes: <?php echo $note;?></span></td>
 	  </tr>
 	  <?php
+	  $count++;
 		}
 		
 	  ?>	
