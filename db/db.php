@@ -1,10 +1,10 @@
 <?php
     $host = 'localhost'; 
-    $db_name = 'login';
-    $db_username = 'root';
-    $db_password = 'secret';
-    mysql_connect("localhost","root","secret");
-	$db = mysql_select_db("loan");
+    $db_name = 'loan';
+    $db_username = 'loan_user';
+    $db_password = 'l0an';
+    mysql_connect("localhost",$db_username, $db_password);
+	$db = mysql_select_db($db_name);
 	/*if($db){
 		echo "conected";
 	}else{
