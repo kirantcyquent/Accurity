@@ -11,6 +11,9 @@ $map = file_get_contents($mp);
 $fp = fopen("$id.jpg",'w');
 fwrite($fp,$map);
 fclose($fp);
+
+chmod("$id.jpg", 0755);
+
 $html = '<style>
 
 .btn-success { padding:6px 5px 6px 5px; }
@@ -28,6 +31,40 @@ input,textarea,select { border:1px solid #cfcfcf;}
 body{
 	
 }
+
+.clearfix:before,
+.clearfix:after,
+.dl-horizontal dd:before,
+.dl-horizontal dd:after,
+.container:before,
+.container:after,
+.container-fluid:before,
+.container-fluid:after,
+.row:before,
+.row:after,
+.form-horizontal .form-group:before,
+.form-horizontal .form-group:after,
+.btn-toolbar:before,
+.btn-toolbar:after,
+.btn-group-vertical > .btn-group:before,
+.btn-group-vertical > .btn-group:after,
+.nav:before,
+.nav:after,
+.navbar:before,
+.navbar:after,
+.navbar-header:before,
+.navbar-header:after,
+.navbar-collapse:before,
+.navbar-collapse:after,
+.pager:before,
+.pager:after,
+.panel-body:before,
+.panel-body:after,
+.modal-footer:before,
+.modal-footer:after {
+  display: table;
+  content: " ";
+}
 .borderless td, .borderless th {
     border: none;
 }
@@ -42,13 +79,13 @@ body{
 }
 
 th{ font-size:12px; height:30px;}
-td{ font-size:12px; height:30px;}
+td{ font-size:10px; height:30px;}
 #comps{ }
 
-#comps td{ font-size:12px; height:30px; }
+#comps td{ font-size:10px; height:30px; }
 
 #ucomps{ }
-#ucomps td{ font-size:12px; height:30px;  }
+#ucomps td{ font-size:10px; height:30px;  }
 .headAddress { font-size:16px; }
 .headAdd {  font-size:14px; }
 
