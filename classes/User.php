@@ -12,21 +12,35 @@ class User {
 
 	}
 
-
 	public function createLog($address){
+		
+		session_start();
+		$user_type = $_SESSION['user_type'];
+		$sessionid = $_SESSION['sessionid'];
+
+		if($user_type == 1){
+			$user_type="AP";
+		}else{
+			$user_type="LO";
+		}
+
+		$spath = "_".$sessionid."_".$user_type;
 
 		$path = preg_replace("@\s+@","_",$address);
 		if(!file_exists ("/tmp/logs1/" ))
 			mkdir("/tmp/logs1/", 0777);
-		$path = "/tmp/logs1/".$path.".html";
+		$path = "/tmp/logs1/".$path.$spath.".html";
 		if(file_exists($path)){
 			unlink($path);
 		}
-		$fp = fopen($path,"a");
-		$data = "<h3 style='color:green;'>Search Address : $address </h3>";
+
+		$fp = fopen($path,"w");
+		$data = '<link rel="stylesheet" href="bootstrap/css/bootstrap.css">		
+		<link rel="stylesheet" href="bootstrap/css/bootstrap-theme.css">';
+		$data = $data."<h3 style='color:green;'>Search Address : $address </h3>";
 		fwrite($fp, $data);
 		fclose($fp);
-
+		
 		return $path;
 	}
 
@@ -42,7 +56,7 @@ class User {
 		$stories = $PropData['STORIESCOUNT'];
 
 		$data = "<h5>Data Returned from DLP API for Search Address</h5>";
-		$data = $data .'<table class="table table-bordered" border="1">
+		$data = $data .'<table class="table table-bordered">
 			<tr>
 				<td>Address</td>
 				<td>Sq Ft</td>
@@ -68,6 +82,74 @@ class User {
 		fwrite($fp, $data);
 		fclose($fp);
 	}
+
+	public function openFile($path){
+		$fp = fopen($path,"a");
+		return $fp;
+	}
+
+	public function writeFile($fp,$data){
+		fwrite($fp,$data);
+	}
+
+
+	/*public function storeCriterias($c1,$c2,$c3){
+		session_start();
+		$sid  = $_SESSION['search_id_s'];
+		$path = $_SESSION[$sid]['path'];
+		$fp = fopen($path,"a");
+
+		$c1data = "<h5>Properties matching criteria 1 </h5>";
+		$c1data = $c1data.'<table class="table table-bordered"> 
+		<tr>
+			<td>SL</td><td>Address </td><td>Distance </td><td>Bed/baths </td><td>Sqft</td><td>Year Built</td><td>Lot Size</td><td>Stories</td><td>List Date</td><td>Price</td><td>Pool</td>
+		</tr>
+		';
+		$count=1;
+		foreach($c1 as $rows){
+			$tr = '<tr><td>'.$count.'</td><td>'.$rows['address'].'</td><td>'.$rows['distance'].'</td><td>'.$rows['bedsBaths'].' </td><td>'.$rows['sq_size'].' </td><td>'.$rows['year_built'].'</td><td>'.$rows['lot_size'].'</td><td>'.$rows['Sstories'].'</td><td>'.$rows['dateSold'].'</td><td>'.$rows['amount'].'</td><td>'.$rows['pool'].'</td></tr>';
+			$count++;
+			$c1data = $c1data .''.$tr;
+		}
+		$c1data  = $c1data.'</table>';
+
+		fwrite($fp,$c1data);
+
+		$c2data = "<h5>Properties matching criteria 2 </h5>";
+		$c2data = $c2data.'<table class="table table-bordered"> 
+		<tr>
+			<td>SL</td><td>Address </td><td>Distance </td><td>Bed/baths </td><td>Sqft</td><td>Year Built</td><td>Lot Size</td><td>Stories</td><td>List Date</td><td>Price</td><td>Pool</td>
+		</tr>
+		';
+		$count=1;
+		foreach($c2 as $rows){
+			$tr = '<tr><td>'.$count.'</td><td>'.$rows['address'].'</td><td>'.$rows['distance'].'</td><td>'.$rows['bedsBaths'].' </td><td>'.$rows['sq_size'].' </td><td>'.$rows['year_built'].'</td><td>'.$rows['lot_size'].'</td><td>'.$rows['Sstories'].'</td><td>'.$rows['dateSold'].'</td><td>'.$rows['amount'].'</td><td>'.$rows['pool'].'</td></tr>';
+			$count++;
+			$c2data = $c2data .''.$tr;
+		}
+		$c2data  = $c2data.'</table>';
+
+		fwrite($fp,$c2data);
+		
+
+		$c3data = "<h5>Properties matching criteria 3 </h5>";
+		$c3data = $c3data.'<table class="table table-bordered"> 
+		<tr>
+			<td>SL</td><td>Address </td><td>Distance </td><td>Bed/baths </td><td>Sqft</td><td>Year Built</td><td>Lot Size</td><td>Stories</td><td>List Date</td><td>Price</td><td>Pool</td>
+		</tr>
+		';
+		$count=1;
+		foreach($c3 as $rows){
+			$tr = '<tr><td>'.$count.'</td><td>'.$rows['address'].'</td><td>'.$rows['distance'].'</td><td>'.$rows['bedsBaths'].' </td><td>'.$rows['sq_size'].' </td><td>'.$rows['year_built'].'</td><td>'.$rows['lot_size'].'</td><td>'.$rows['Sstories'].'</td><td>'.$rows['dateSold'].'</td><td>'.$rows['amount'].'</td><td>'.$rows['pool'].'</td></tr>';
+			$count++;
+			$c3data = $c3data .''.$tr;
+		}
+		$c3data  = $c3data.'</table>';
+
+		fwrite($fp,$c3data);
+
+	}
+
 
 	public function storeXMLResultLog($xml_result,$c1, $c2,$c3){
 		session_start();
@@ -158,7 +240,7 @@ class User {
 	}
 
 
-
+*/
 
 	public function check_user(){
 		$db = new Database();

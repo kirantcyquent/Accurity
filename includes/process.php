@@ -65,6 +65,7 @@
 		$fp = fopen($path,"a");
 		fwrite($fp, "<p>Query To Get Main Property - <b>$URL </b></p>");
 		fclose($fp);
+
 		$data = file_get_contents($URL);
 
 
@@ -78,7 +79,13 @@
 		foreach($vals as $aval)
 		{
 			
-
+			if($aval['type'] == 'complete' && isset($aval['attributes']))
+			{
+				foreach($aval['attributes'] as $key=>$val){
+					if($key=="PROPERTYPARCELID_EXT")						
+					$aProp[$key] = $val;
+				}
+			}
 			if($aval['type'] == 'open' && isset($aval['attributes']))
 			{
 				foreach($aval['attributes'] as $key=>$val){
@@ -90,7 +97,6 @@
 			}
 				
 		}
-			
 
 		if(!isset($aProp)){
 			// get the property id
@@ -295,8 +301,8 @@
 	}
 
 
-	function generate_xml($address, $city, $state, $zip, $landUse,$date="2015-06-23"){
-
+	function generate_xml($address, $city, $state, $zip, $landUse,$date="2015-06-23"){		
+		$address = preg_replace("@\s+@","+",$address);
 		$curl = curl_init();
 		curl_setopt_array($curl, array(
 		CURLOPT_RETURNTRANSFER => 1,
@@ -305,17 +311,21 @@
 		CURLOPT_POSTFIELDS => "login=bjones1&password=relar88&address=$address&city=$city&state=$state&zipCode=$zip&landUse=$landUse&date=$date",
 		));
 
+
 		$path = $_SESSION['path'];
-		$fp = fopen($path,"a");
-		fwrite($fp, "<p>Query To Get RELAR Property - <b>http://www.relar.com/RelarService/RelarReportService.asmx/GetListingsForRelarReport?login=bjones1&password=relar88&address=$address&city=$city&state=$state&zipCode=$zip&landUse=$landUse&date=$date </b></p>");
-		fclose($fp);
+		$fds = fopen($path,"a");
+		$dt="<p>Query To Get RELAR Property - <b>http://www.relar.com/RelarService/RelarReportService.asmx/GetListingsForRelarReport?login=bjones1&password=relar88&address=$address&city=$city&state=$state&zipCode=$zip&landUse=$landUse&date=$date </b></p>";
+		fwrite($fds,$dt);
+		fclose($fds);
+		
 		$resp = curl_exec($curl);
 		curl_close($curl);
 
-		$fs = fopen("data.xml","w");
+/*		$fs = fopen("data.xml","w");
 		fwrite($fs,$resp);
 		fclose($fs);
 		
+*/		
 		$p = xml_parser_create();
 		xml_parse_into_struct($p, $resp, $vals, $index);
 		xml_parser_free($p);
@@ -334,10 +344,14 @@
 		//$url = 'http://dlpapi.realtytrac.com/Reports/Get?ApiKey=a2d3e2aa-9c9b-4aab-af3a-56785ae67e25&Login=accurity&Password=1cyquent!&JobID=&LoanNumber=&PreparedBy=&ResellerID=&PreparedFor=&OwnerFirstName=&OwnerLastName=&AddressType=&PropertyStreetAddress='.$arrParam['street'].'&AddressNumber=&StartAddressNumberRange=&EndAddressNumberRange=&StreetDir=&StreetName=&StreetSuffix=&City='.$arrParam['city'].'&StateCode='.$arrParam['state'].'&County=&ZipCode=&PropertyParcelID=&SAPropertyID=&APN=&ApnRangeStart=&ApnRangeEnd=&GeoCodeX=&GeoCodeY=&GeoCodeRadius=&SearchType=&NumberOfRecords=&Format=XML&ReportID=104&R104_SettingsMode=';
 
 		$url = 'http://dlpapi.realtytrac.com/Reports/Get?ApiKey=a2d3e2aa-9c9b-4aab-af3a-56785ae67e25&Login=accurity&Password=1cyquent!&JobID=&LoanNumber=&PreparedBy=&ResellerID=&PreparedFor=&OwnerFirstName=&OwnerLastName=&AddressType=&PropertyStreetAddress=&AddressNumber=&StartAddressNumberRange=&EndAddressNumberRange=&StreetDir=&StreetName=&StreetSuffix=&City=&StateCode=&County=&ZipCode=&PropertyParcelID='.$arrParam['propertyId'].'&SAPropertyID=&APN=&ApnRangeStart=&ApnRangeEnd=&Latitude=&Longitude=&Radius=&SearchType=&NumberOfRecords=&Sort=&Format=XML&ReportID=104&R104_SettingsMode=';
+
+
+
 		$path = $_SESSION['path'];
 		$fp = fopen($path,"a");
 		fwrite($fp, "<p>Query To Get Comparable Property - <b>$url</b></p>");
 		fclose($fp);
+		
 		$curl = curl_init();
 		curl_setopt_array($curl, array(
 		CURLOPT_RETURNTRANSFER => 1,
@@ -393,8 +407,9 @@ function get_xml_data_address($arrParam){
 
 		$path = $_SESSION['path'];
 		$fp = fopen($path,"a");
-		fwrite($fp, "<p>Query To Get Comparable Property - <b>$url</b></p>");
+		fwrite($fp, "<p>Query To Get Comparable Property - <b> ".$url."</b></p>");
 		fclose($fp);
+
 		$curl = curl_init();
 		curl_setopt_array($curl, array(
 		CURLOPT_RETURNTRANSFER => 1,
@@ -443,5 +458,4 @@ function get_xml_data_address($arrParam){
 			
 		return $result;
 	}
-
 ?>

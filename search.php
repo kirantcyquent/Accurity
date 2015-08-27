@@ -1,6 +1,4 @@
-<?php  session_start();
-
-?>
+<?php  session_start();?>
 <style>
 #popup { 
 display:none;
@@ -34,9 +32,18 @@ padding:5px;
 			else if(isset($_SESSION['trackerror']) && $_SESSION['trackerror']==2){
 				echo "<br/><strong><span style='color:red;'>Property not found</span></strong>";
 			} 
+		
 			else if(isset($_REQUEST['error']) && $_REQUEST['error']==1){ 
 				echo "<br/><strong><span style='color:red;'>No corresponding property found.</span></strong>";
-			}?>
+			}
+
+			else if(isset($_REQUEST['verror']) && $_REQUEST['verror']==1){
+				echo "<br/><strong><span style='color:red;'>Address not found, please check entry for errors.</span></strong>";
+			}
+			else if(isset($_REQUEST['vreferror']) && $_REQUEST['vreferror']==1){
+				echo "<br/><strong><span style='color:red;'>Your search did not return any comparable properties.</span></strong>";
+			}
+			?>
 		</div>	
 	</form>		
 

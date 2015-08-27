@@ -1,8 +1,6 @@
  <?php
 	session_start();
 ?>
-
-
 <?php
 	include('classes/User.php');
 	$us = new User();
@@ -23,8 +21,9 @@
 	{
 		unset($_SESSION['refineSearch']); unset($_SESSION['results']);
 		$aRet = ConvertAddress($Add);
+
 		$PropData = GetPropertyFromRealty($aRet['StreetAdd'],$aRet['City'],$aRet['State'],$aRet['Zip']);		
-		
+
 		if(!isset($PropData['_STREETADDRESS'])){
 			
 			if(!isset($_SESSION['trackerror'])){ 
@@ -52,6 +51,18 @@
 		}
 		unset($_SESSION['trackerror']);
 		$PropData['TOTALBATHROOMCOUNT']=round($PropData['TOTALBATHROOMCOUNT']);
+
+		$city = $PropData['_CITY'];
+		$state = $PropData['_STATE'];
+		$zip = $PropData['_POSTALCODE'];
+
+/*
+		$PropData['_STREETADDRESS']=preg_replace("@$city@is","",$PropData['_STREETADDRESS']);
+		$PropData['_STREETADDRESS']=preg_replace("@$state@is","",$PropData['_STREETADDRESS']);
+		$PropData['_STREETADDRESS']=preg_replace("@$zip@is","",$PropData['_STREETADDRESS']);
+*/
+		$PropData['_STREETADDRESS'] = trim($PropData['_STREETADDRESS']);
+
 		$Add =  $PropData['_STREETADDRESS'] .' '.$PropData['_CITY'].' '.$PropData['_STATE'].' '.$PropData['_POSTALCODE'];	
 		$sq_footage =  round($PropData['GROSSLIVINGAREASQUAREFEETCOUNT']);
 		$org_footage =  round($PropData['GROSSLIVINGAREASQUAREFEETCOUNT']);
@@ -80,7 +91,35 @@
 		
 		$_SESSION['search_id_s'] = $searchId;
 		$_SESSION['path'] = $log;
-		$us->writeRefineLog($PropData);
+
+		//$us->writeRefineLog($PropData);
+		$path = $_SESSION['path'];
+
+
+		$dt = "<h5>Data Returned from DLP API for Search Address</h5>";
+		$dt = $dt .'<table class="table table-bordered">
+			<tr>
+				<td>Address</td>
+				<td>Sq Ft</td>
+				<td>Bedrooms</td>
+				<td>Bathrooms </td>
+				<td>Year Built</td>
+				<td>Lot </td>
+				<td>Stories</td>
+			</tr>
+			<tr>
+				<td>'.$Add.'</td>
+				<td>'.$sq_footage.'</td>
+				<td>'.$bedrooms.'</td>
+				<td>'.$bathrooms.'</td>
+				<td>'.$year_built.'</td>
+				<td>'.$lot_size.'</td>
+				<td>'.$stories.'</td>
+			</tr>
+		</table>';
+		$fd = fopen($path,"a");
+		fwrite($fd,$dt);
+		fclose($fd);
 
 		unset($_SESSION['refineSearch']);
 	}
@@ -220,7 +259,7 @@
 		<input type="hidden" name="baths_to" id="baths_to" value="<?php echo $baths_to;?>" />	
 		<input type="hidden" name="sale_range" id="sale_range" value="<?php echo $sale_range;?>" />	
 		<input type="hidden" name="sale_type" id="sale_type" value="<?php echo $sale_type;?>" />	
-		
+		<input type="hidden" name="propertyId" id="propertyId" value="<?php echo $propertyId;?>" />
 	
 
 		<input type="hidden" name="address" value="<?php echo $Add; ?>" />
@@ -314,6 +353,7 @@
 				var sale_type = $('#sale_type').val();
 				var org_footage = $('#original_footage').val();
 				var propId = $('#propertyId').val();
+
 				var dataString = 'sq_f='+sq_f+'&radius='+radius+'&age='+age+'&l_size='+l_size+'&story='+story +'&pool='+pool+'&basement='+basement+'&beds_from='+beds_from+'&beds_to='+ beds_to+'&baths_from='+baths_from+'&baths_to='+baths_to+'&sale_range='+ sale_range+'&sale_type='+sale_type+'&square_footage='+square_footage+'&bedrooms=<?php echo $bedrooms;?>&bathrooms=<?php echo $bathrooms;?>&stories=<?php echo $stories;?>&lot_size=<?php echo $lot_size;?>&year_built=<?php echo $year_built;?>&address=<?php echo $Add;?>&street=<?php echo $a = isset($PropData["_STREETADDRESS"]) ? urlencode($PropData["_STREETADDRESS"]) : $_SESSION["refineSearch"]["street"]; ?>&state=<?php echo $b = isset($PropData["_STATE"]) ? $PropData["_STATE"] :  $_SESSION["refineSearch"]["state"];?>&city=<?php echo $c = isset($PropData["_CITY"]) ? $PropData["_CITY"] :  $_SESSION["refineSearch"]["city"];?>&zip=<?php echo $c = isset($PropData["_POSTALCODE"]) ? $PropData["_POSTALCODE"] :  $_SESSION["refineSearch"]["zip"];?>&original_footage='+org_footage+'&propertyId='+propId;
 
 				var currentPage="results";
