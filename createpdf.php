@@ -81,7 +81,7 @@
 		// define some HTML content with style
 		$html = $_POST['cc'];
 
-		$pdf->Image($id.'.jpg', '15', '60', 100, 60, '', '', '', false, 400, '', false, false, 0, false, false, false);
+		$pdf->Image('/tmp/'.$id.'.jpg', '15', '60', 100, 60, '', '', '', false, 400, '', false, false, 0, false, false, false);
 		preg_match("@downloadReport\s*<br>(.*?)downloadReport@is",$html,$matches);
 		$html = $matches[1];
 		//echo $html;exit;
