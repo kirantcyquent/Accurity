@@ -8,7 +8,7 @@
 		}		
 
 		$map = file_get_contents($mp);
-		$fp = fopen("$id.jpg",'w');
+		$fp = fopen("/tmp/$id.jpg",'w');
 		fwrite($fp,$map);
 		fclose($fp);
 		
