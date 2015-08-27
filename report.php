@@ -2,6 +2,7 @@
 
 	session_start();
 	$sessiondata = $_SESSION['email'];
+	
 	include('db/db.php');
 	$query = "select TypeOfUser from userdetail where UserName = '$sessiondata'";
 	$sql = mysql_query($query) or die(mysql_error());
@@ -147,7 +148,7 @@ if(isset($_SESSION['results']['matchResult'])){
         	else { $color = $m['color'];}
 	        $locstring=$locstring.'&markers=color:'.$color.'%7Clabel:'.$m['id'].'%7C'.$m['latitude'].','.$m['longitude'];
         }
-        $url="http://maps.googleapis.com/maps/api/staticmap?zoom=15&size=800x400&maptype=ROADMAP&".urlencode("center")."=".$locstring."&sensor=false";
+        $url="http://maps.googleapis.com/maps/api/staticmap?zoom=12&size=800x400&maptype=ROADMAP&".urlencode("center")."=".$locstring."&sensor=false";
 		$_SESSION['results']['map'] = $url;
 
 	$_SESSION['results']['matchResult'] = urlencode(serialize($matchResult));
@@ -176,168 +177,156 @@ $_SESSION['sessionId'] = session_id();
 
 
 ?>
-		<form action="convert.php" method="post" id="conv" name="conv">
+		<form action="createpdf.php" method="post" id="conv" name="conv">
 		<div id="content">
 		<div id="aclogo"></div>
 
 
 		<!-- downloadReport<br>
 
-		<table>
+		<table width="100%">
 			<tr>
-				<td valign="top">	
+				<td valign="top" width="60%">	
 					<h5 class="report-header"><?php echo $address; ?></h5>
-					<h6><?php echo $bedrooms; ?> Bd | <?php echo $bathrooms; ?> Ba | <?php echo $square_footage;?> Sq Ft</h6>
-					<h6><?php echo $stories; ?> Stories | Lot Size <?php echo $lot_size; ?></h6>
+					<h6><?php echo $bedrooms; ?> Bd | <?php echo $bathrooms; ?> Ba | <?php echo number_format($square_footage);?> Sq Ft</h6>
+					<h6><?php echo $stories; ?> Stories | Lot Size <?php echo number_format($lot_size); ?></h6>
 					<h6><?php echo "Pool ".$pool; ?> |  <?php echo "Basement ".$basement; ?></h6>
 					<h6>Built <?php echo $year_built;?>
 					</h6>
 				</td>
-				<td valign="top">
-				<h5 class="report-by">Report Prepared By</h5>
-				<h6><?php echo $prepared_by['Name']; ?></h6>
-				<h6><?php echo $prepared_by['Address']; ?></h6>
-				<h6  class="linkColor"><a href="mailto:<?php echo $prepared_by['UserName']; ?>"><?php echo $prepared_by['UserName']; ?></a>		
-				</h6>
-			</td>
+				<td valign="top" width="40%">
+					<h5 class="report-by">Report Prepared By</h5>
+					<h6><?php echo $prepared_by['Name']; ?></h6>
+					<h6><?php echo $prepared_by['Address']; ?></h6>
+					<h6  class="linkColor"><a href="mailto:<?php echo $prepared_by['UserName']; ?>"><?php echo $prepared_by['UserName']; ?></a>		
+					</h6>
+				</td>
 			</tr>	
+			<tr style="height:25px;"><td colspan=2>&nbsp;</td></tr>
 		</table>
 
-		<br>
-
-		<table style="width:100%;">
+		<table width="60%" style="font-size:6px;">
 			<tr>
-				<td style="width:5%; height:10px;background-color:#A689B6;"></td>
-				<td>Subject Property</td>
-				<td style="width:5%; height:10px;background-color:#99BEFD;"></td>
-				<td>Potential Comparable Sales Used</td>
-				<td style="width:5%; height:10px;background-color:#F5635B;"></td>
-				<td>Potential Comparable Sales Not Used </td>
+				<td width="4%"><div style="width:10px; height:10px;background-color:#A689B6;"></div></td>
+				<td width="16%">&nbsp;<strong>Subject Property</strong></td>
+				<td width="4%"><div style="width:13px; height:10px;background-color:#99BEFD;"></div></td>
+				<td width="33%">&nbsp;<strong>Potential Comparable Sales Used</strong></td>
+				<td width="4%"><div style="width:13px; height:10px;background-color:#F5635B;"></div></td>
+				<td width="35%">&nbsp;<strong>Potential Comparable Sales Not Used</strong> </td>
 			</tr>
+			<tr style="height:25px;"><td colspan=2>&nbsp;</td></tr>
 		</table>
 
-
-		<br>
-
-		<table>
-		<tr>
-			<td valign="top" id="mp">
-				
-				<img src="<?php if(isset($_SESSION['results']['map']) || isset($_SESSION['map'])){ $map = isset($_SESSION['results']['map']) ? $_SESSION['results']['map'] : $_SESSION['map']; echo $map; } ?>" width="100%;"/>
-				
-			</td>
-		    <td valign="top">
-			<h5 class="mapSearch">Final Search Parameters</h5>
-				<?php
-				if(!isset($finalParameters)){
-					$finalParameters = $_SESSION['finalParameters'];
-				}
-			?>
-				<table class="table table-borderless">
-					<tr><td> Square Footage</td><td> <?php echo $finalParameters['square_footage'];?></td></tr>
-					<tr><td>Radius</td><td> <?php echo $finalParameters['radius'];?> </td></tr>
-					<tr><td>Age</td><td> <?php echo $finalParameters['age'];?></td></tr>
-					<tr><td>Lot Size</td><td> <?php echo $finalParameters['lotSize'];?></td></tr>
-					<tr><td>Stories</td><td> <?php echo $finalParameters['stories'];?></td></tr>
-					<tr><td> Date of Sale</td><td>  <?php echo $finalParameters['dateSale'];?> </td></tr>
-				</table>
-		</td>
-		</tr>	
+		<table width="100%" valign="top">
+			<tr>
+				<td valign="top" id="mp" width="60%">
+					
+					<img src="<?php if(isset($_SESSION['results']['map']) || isset($_SESSION['map'])){ $map = isset($_SESSION['results']['map']) ? $_SESSION['results']['map'] : $_SESSION['map']; echo $map; } ?>" width="100%;"/>
+					
+				</td>
+				<td valign="top" width="40%" valign="top">
+				<h5 class="mapSearch">Final Search Parameters</h5>
+					<?php
+					if(!isset($finalParameters)){
+						$finalParameters = $_SESSION['finalParameters'];
+					}
+				?>
+					<table style="font-size:10px !important;"  width="100%">
+						<tr style="height:30px !important;"><td>Square Footage</td><td> <?php echo $finalParameters['square_footage'];?></td></tr>
+						<tr style="height:25px !important;"><td>Radius</td><td> <?php echo $finalParameters['radius'];?> </td></tr>
+						<tr style="height:25px !important;"><td>Age</td><td> <?php echo $finalParameters['age'];?></td></tr>
+						<tr style="height:25px !important;"><td>Lot Size</td><td> <?php echo $finalParameters['lotSize'];?></td></tr>
+						<tr style="height:25px !important;"><td>Stories</td><td> <?php echo $finalParameters['stories'];?></td></tr>
+						<tr style="height:25px !important;"><td>Date of Sale</td><td>  <?php echo $finalParameters['dateSale'];?> </td></tr>
+					</table>
+				</td>
+			</tr>	
+			<tr style="height:25px;"><td colspan=2>&nbsp;</td></tr>
 		</table>
-
-		<br>
 
 		<?php
 
 	if(count($comps)>0){
 		?>
-		
+		<br><br><br><br><br><br><br><br>
 		<h4 class="resultHeading">Potential Comparable Sales</h4>
 		<br>
-		<table class="table table-striped" id="compTable">
-   <thead>
-   	 <?php
-			if($user==2){
+		<table id="compTable" width="100%" style="font-size:9px;">
+			<thead>
+				<?php
+					if($user==2){
 
-			}else{?>
-     <tr rowspan="2">
-    <th colspan="11" style="border:none;"></th>
-    <th colspan="2" style="border:none;">Public Record Match</th>
-    <th style="border:none;"></th>
-    </tr>
-    <?php }?>
-      <tr>
-	 
-        <th>Address</th>
-        <th>Distance</th>
-        <th>Bd/Ba</th>
-		<th>SF</th>
-        <th>Yr</th>
-        <th>Lot</th>
-		<th>Stories</th>
-		<th>Pool</th>
-		<th>Bsmnt</th>
-        <th>Date Sold</th>
-        <th>Amount</th>
-        <?php
-			if($user==2){
+					}else{?>
+				<tr bgcolor="#ccc" style="font-size:7px !important;">
+					<th colspan="11" width="84%">&nbsp;</th>
+					<th colspan="3" width="12%" style="border-right:1px solid #ccc;"><strong>Public Record Match</strong></th>
+					<th width="6%">&nbsp;</th>
+				</tr>
+				<?php }?>
+				<tr bgcolor="#ccc" style="font-size:7px !important;">
+					<th width="20%" style="border-right:1px solid #ccc;"><strong>Address</strong></th>
+					<th width="8%" style="border-right:1px solid #ccc;"><strong>Distance</strong></th>
+					<th width="9%" style="border-right:1px solid #ccc;"><strong>Bd/Ba</strong></th>
+					<th width="5%" style="border-right:1px solid #ccc;"><strong>SF</strong></th>
+					<th width="5%" style="border-right:1px solid #ccc;"><strong>Yr</strong></th>
+					<th width="5%" style="border-right:1px solid #ccc;"><strong>Lot</strong></th>
+					<th width="5%" style="border-right:1px solid #ccc;"><strong>Stories</strong></th>
+					<th width="5%" style="border-right:1px solid #ccc;"><strong>Pool</strong></th>
+					<th width="5%" style="border-right:1px solid #ccc;"><strong>Bsmnt</strong></th>
+					<th width="9%" style="border-right:1px solid #ccc;"><strong>Date Sold</strong></th>
+					<th width="8%" style="border-right:1px solid #ccc;"><strong>Amount</strong></th>
+					<?php
+						if($user==2){
 
-			}else{
-		?>
-		<th>Sales $</th>
-		<th>Sales Date</th>
-		<?php
-	}
-		?>
-		
-		<th>Concessions</th>
-      </tr>
-    </thead>
-    <tbody>
-		
-      </tr>
-    </thead>
-    <tbody>
-	<?php
-	
-		//for($i=0;$i<$riskCount;$i++){
-	$odd=1;
-			foreach($comps as $key=>$detail){
-				if($odd%2==0){ $color= "#ffffff;";}else{ $color= "#f6f6f6;";}
-			$odd++;
-		//	$detail['pool']=$pool;
-		//	$detail['basement']=$basement;
+						}else{
+					?>
+					<th width="6%" style="border-right:1px solid #ccc;"><strong>Sales $</strong></th>
+					<th width="6%" style="border-right:1px solid #ccc;"><strong>Sales Date</strong></th>
+					<?php
+					}
+					?>
+					<th width="6%" style="border-right:1px solid #ccc;"><strong>Concessions</strong></th>
+				</tr>
+			</thead>
+			<tbody>
+			<?php
 			
-	?>
-      <tr >
-	  <td><?php echo $key.". ".$detail['address'];?></td>
-        <td><?php echo  sprintf('%0.2f', $detail['distance']);?>miles</td>
-        <td><?php echo $detail['bedsBaths'];?></td>
-		<td><?php echo $detail['sq_size'];?></td>
-        <td><?php echo $detail['year_built'];?></td>
-        <td><?php echo $detail['lot_size'];?></td>
-		<td><?php echo $detail['stories'];?></td>
-		<td><?php echo $detail['pool'];?></td>
-		<td><?php echo $detail['basement'];?></td>
-        <td><?php echo $detail['dateSold'];?></td>
-        <td>$<?php echo $detail['amount'];?></td>
-		
+				//for($i=0;$i<$riskCount;$i++){
+			$odd=1;
+					foreach($comps as $key=>$detail){
+						if($odd%2==0){ $color= "#ffffff;";}else{ $color= "#f6f6f6;";}
+					$odd++;
+				//	$detail['pool']=$pool;
+				//	$detail['basement']=$basement;
+					
+			?>
+			  <tr bgcolor="<?php echo $color;?>">
+			  <td width="20%" style="border-right:1px solid #ccc;"><?php echo $key+1 .") ".$detail['address'];?></td>
+				<td width="8%" style="border-right:1px solid #ccc;"><?php echo  sprintf('%0.2f', $detail['distance']);?>miles</td>
+				<td width="9%" style="border-right:1px solid #ccc;"><?php echo $detail['bedsBaths'];?></td>
+				<td width="5%" style="border-right:1px solid #ccc;"><?php echo number_format($detail['sq_size']);?></td>
+				<td width="5%" style="border-right:1px solid #ccc;"><?php echo $detail['year_built'];?></td>
+				<td width="5%" style="3px;border-right:1px solid #ccc;"><?php echo number_format($detail['lot_size']);?></td>
+				<td width="5%" style="3px;border-right:1px solid #ccc;"><?php echo $detail['stories'];?></td>
+				<td width="5%" style="3px;border-right:1px solid #ccc;"><?php echo $detail['pool'];?></td>
+				<td width="5%" style="border-right:1px solid #ccc;"><?php echo $detail['basement'];?></td>
+				<td width="9%" style="border-right:1px solid #ccc;"><?php echo $detail['dateSold'];?></td>
+				<td width="8%" style="border-right:1px solid #ccc;">$<?php echo number_format($detail['amount']);?></td>	
+				<?php
+					if($user==2){
 
-		<?php
-			if($user==2){
-
-			}else{
-		?>
-		<td><?php echo $detail['dy'] ?></td>
-		<td><?php echo $detail['ay'] ?></td>
-		<?php } ?>
-		<td></td>
-      </tr>
-	  <?php
-		}
-	  ?>
-	  
-    </tbody>
+					}else{
+				?>
+				<td width="6%" style="border-right:1px solid #ccc;"><?php echo $detail['dy'] ?></td>
+				<td width="6%" style="border-right:1px solid #ccc;"><?php echo $detail['ay'] ?></td>
+				<?php } ?>
+				<td width="6%">&nbsp;</td>
+			  </tr>
+			  <?php
+				}
+			  ?>
+			  
+			</tbody>
   </table>
 		
 		<?php } ?>
@@ -347,29 +336,28 @@ $_SESSION['sessionId'] = session_id();
 		?>
 		<h4 class="resultHeading">Potential Comparable Sales Not Used</h4>
 
-		<table class="table table-striped" id="compTable">
+		<table id="compTable" width="100%" style="font-size:9px;">
     <thead>
-        <tr rowspan="2">
-    <th colspan="11" style="border:none;"></th>
-    <th colspan="2" style="border:none;">Public Record Match</th>
-    <th style="border:none;"></th>
-    </tr>
-      <tr>
-	 
-        <th>Address</th>
-        <th>Distance</th>
-        <th>Bd/Ba</th>
-		<th>SF</th>
-        <th>Yr</th>
-        <th>Lot</th>
-		<th>Stories</th>
-		<th>Pool</th>
-		<th>Bsmnt</th>
-        <th>Date Sold</th>
-        <th>Amount</th>
-		<th>Sales $</th>
-		<th>Sales Date</th>
-		<th>Concessions</th>
+        <tr bgcolor="#ccc" style="font-size:7px !important;">
+					<th colspan="11" width="84%">&nbsp;</th>
+					<th colspan="3" width="12%" style="border-right:1px solid #ccc;"><strong>Public Record Match</strong></th>
+					<th width="6%">&nbsp;</th>
+		</tr>
+      <tr bgcolor="#ccc" style="font-size:7px !important;">	 
+        <th width="20%" style="border-right:1px solid #ccc;"><strong>Address</strong></th>
+		<th width="8%" style="border-right:1px solid #ccc;"><strong>Distance</strong></th>
+		<th width="9%" style="border-right:1px solid #ccc;"><strong>Bd/Ba</strong></th>
+		<th width="5%" style="border-right:1px solid #ccc;"><strong>SF</strong></th>
+		<th width="5%" style="border-right:1px solid #ccc;"><strong>Yr</strong></th>
+		<th width="5%" style="border-right:1px solid #ccc;"><strong>Lot</strong></th>
+		<th width="5%" style="border-right:1px solid #ccc;"><strong>Stories</strong></th>
+		<th width="5%" style="border-right:1px solid #ccc;"><strong>Pool</strong></th>
+		<th width="5%" style="border-right:1px solid #ccc;"><strong>Bsmnt</strong></th>
+		<th width="9%" style="border-right:1px solid #ccc;"><strong>Date Sold</strong></th>
+		<th width="8%" style="border-right:1px solid #ccc;"><strong>Amount</strong></th>
+		<th width="6%" style="border-right:1px solid #ccc;"><strong>Sales $</strong></th>
+		<th width="6%" style="border-right:1px solid #ccc;"><strong>Sales Date</strong></th>
+		<th width="6%" style="border-right:1px solid #ccc;"><strong>Concessions</strong></th>
       </tr>
     </thead>
     <tbody>
@@ -377,7 +365,7 @@ $_SESSION['sessionId'] = session_id();
 	$odd=1;
 		foreach($not_comps as $key=>$detail){
 				
-			if($detail['reason']==1){$reason = "Poor Condition of Subject/Good Condition of Comp"; } else{ $reason="None"; }
+			if($detail['reason']==1){$reason = "Poor Condition of Subject/Good Condition of Comp &nbsp;&nbsp;&nbsp;"; } else{ $reason="None"; }
 			if($detail['note']==1){ $note = "I didn't use this property because"; } else{ $note="None"; }
 
 
@@ -387,22 +375,22 @@ $_SESSION['sessionId'] = session_id();
 			//$detail['pool']=$pool;
 			//$detail['basement']=$basement;
 	?>
-      <tr style="background:<?php  echo $color;?>">
-        <td><?php echo $key.". ";?><?php echo $detail['address'];?></td>
-        <td><?php echo  sprintf('%0.2f', $detail['distance']);?>miles</td>
-        <td><?php echo $detail['bedsBaths'];?></td>
-		<td><?php echo $detail['sq_size'];?></td>
-        <td><?php echo $detail['year_built'];?></td>
-        <td><?php echo $detail['lot_size'];?></td>
-		<td><?php echo $detail['stories'];?></td>
-		<td><?php echo $detail['pool'];?></td>
-		<td><?php echo $detail['basement'];?></td>
-        <td><?php echo $detail['dateSold'];?></td>
-        <td>$<?php echo $detail['amount'];?></td>
+      <tr bgcolor="<?php echo $color;?>">
+	  <td width="20%" style="border-right:1px solid #ccc;"><?php echo $key+1 .") ".$detail['address'];?></td>
+		<td width="8%" style="border-right:1px solid #ccc;"><?php echo  sprintf('%0.2f', $detail['distance']);?>miles</td>
+		<td width="9%" style="border-right:1px solid #ccc;"><?php echo $detail['bedsBaths'];?></td>
+		<td width="5%" style="border-right:1px solid #ccc;"><?php echo number_format($detail['sq_size']);?></td>
+		<td width="5%" style="border-right:1px solid #ccc;"><?php echo $detail['year_built'];?></td>
+		<td width="5%" style="3px;border-right:1px solid #ccc;"><?php echo number_format($detail['lot_size']);?></td>
+		<td width="5%" style="3px;border-right:1px solid #ccc;"><?php echo $detail['stories'];?></td>
+		<td width="5%" style="3px;border-right:1px solid #ccc;"><?php echo $detail['pool'];?></td>
+		<td width="5%" style="border-right:1px solid #ccc;"><?php echo $detail['basement'];?></td>
+		<td width="9%" style="border-right:1px solid #ccc;"><?php echo $detail['dateSold'];?></td>
+		<td width="8%" style="border-right:1px solid #ccc;">$<?php echo number_format($detail['amount']);?></td>
 		
-		<td><?php echo $detail['dy'] ?></td>
-		<td><?php echo $detail['ay'] ?></td>
-		<td></td>
+		<td width="6%" style="border-right:1px solid #ccc;"><?php echo $detail['dy'] ?></td>
+		<td width="6%" style="border-right:1px solid #ccc;"><?php echo $detail['ay'] ?></td>
+		<td>&nbsp;</td>
       </tr>
 	   <tr style="background:<?php  echo $color;?>">
 	  <td colspan="15"><span style="color:red;"><?php echo $reason;?></span>  &nbsp; <span style="color:red;">Notes: <?php echo $note;?></span></td>
@@ -419,12 +407,11 @@ $_SESSION['sessionId'] = session_id();
 
 		<br>
 		<h5 style="color:black;font-weight:bold;">I used the following parameters for my comparable selection in the appraisal report:
-		
-<?php echo $_SESSION['results']['compSq'];?> square footage , date of sale <?php echo $_SESSION['results']['compSale'];?>, <?php echo $_SESSION['results']['compRadius'];?>. 
-Please list any other sales that should be addressed that weren't used in appraisal:
+		<br>
+<?php echo $_SESSION['results']['compSq'];?> square footage , date of sale <?php echo str_replace('<',' less than ',$_SESSION['results']['compSale']);?>, <?php echo str_replace('<',' less than ',$_SESSION['results']['compRadius']);?>. Please list any other sales that should be addressed that weren't used in appraisal:
 </h5>
 
-
+<br><br>
 <table style="width:100%;">
 	<tr>
 		<td valign="top">
@@ -694,7 +681,7 @@ Please list any other sales that should be addressed that weren't used in apprai
 
 		foreach($not_comps as $key=>$detail){
 				
-			if($detail['reason']==1){$reason = "Poor Condition of Subject/Good Condition of Comp"; } else{ $reason="None"; }
+			if($detail['reason']==1){$reason = "Poor Condition of Subject/Good Condition of Comp &nbsp;&nbsp;&nbsp;"; } else{ $reason="None"; }
 			if($detail['note']==1){ $note = "I didn't use this property because"; } else{ $note="None"; }
 
 
@@ -745,12 +732,12 @@ Please list any other sales that should be addressed that weren't used in apprai
 <?php echo $_SESSION['results']['compSq'];?> square footage , date of sale <?php echo $_SESSION['results']['compSale'];?>, <?php echo $_SESSION['results']['compRadius'];?>. 
 Please list any other sales that should be addressed that weren't used in appraisal:
 </h5>
-<div class="row" style="padding:20px 0px 20px 20px;">
+<div class="row" style="">
 			<div class="col-sm-6">
 			<?php
 			if(count($_SESSION['results']['paramAdd'])>0){
 			?>
-			<p style="font-weight:bold;color:black;">Address:</p>
+			<p style="font-weight:bold;color:black; text-align:left;">Address:</p>
 				<table class="table table-striped">
 					<?php 	$count=1; foreach($_SESSION['results']['paramAdd'] as $res): ?>
 					<tr><td><?php echo $count; $count++;?>. <?php echo $res;?></td></tr>
@@ -763,7 +750,7 @@ Please list any other sales that should be addressed that weren't used in apprai
 			<?php
 			if(count($_SESSION['results']['paramComments'])>0){
 			?>
-			<p style="font-weight:bold;color:black;">Comments:</p>
+			<p style="font-weight:bold;color:black;text-align:left;">Comments:</p>
 			<table class="table table-striped">
 					<?php 	$count=1; foreach($_SESSION['results']['paramComments'] as $res): ?>
 					<tr><td><?php echo $count; $count++;?>. <?php echo $res;?></td></tr>
@@ -772,13 +759,7 @@ Please list any other sales that should be addressed that weren't used in apprai
 				<?php } ?>
 				
 			</div>
-		</div>
-
-		
-		
-
-		
-		
+		</div>	
 
 	<div class="row">
         <div class="col-sm-12" >
@@ -791,7 +772,8 @@ Please list any other sales that should be addressed that weren't used in apprai
 
 		<input type="hidden" name="cc" value="" id="cc"/>
 </form>
-		<script>
+
+<script>
 		function convert_pdf(){
 			var data = document.getElementById('content').innerHTML;
 			var dataString = data;
@@ -799,5 +781,6 @@ Please list any other sales that should be addressed that weren't used in apprai
 			conv.submit();
 		}
 		</script>
+
 		
 		
