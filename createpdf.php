@@ -16,9 +16,28 @@
 		
 		// Include the main TCPDF library (search for installation path).
 		include($doc_path.'/tcpdf/examples/tcpdf_include.php');
+		
+		class MYPDF extends TCPDF 
+		{
+			public function Header() {
+				// get the current page break margin
+				$bMargin = $this->getBreakMargin();
+				// get current auto-page-break mode
+				$auto_page_break = $this->AutoPageBreak;
+				// disable auto-page-break
+				$this->SetAutoPageBreak(false, 0);
+				$headerData = $this->getHeaderData();
+				$this->SetFont('helvetica', 'B', 10);
+				$this->writeHTML($headerData['string']);
+				 // restore auto-page-break status
+				$this->SetAutoPageBreak($auto_page_break, $bMargin);
+				// set the starting point for the page content
+				$this->setPageMark();
+			}
+		}
 
 		// create new PDF document
-		$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+		$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 		
 
 		// set document information
@@ -29,7 +48,29 @@
 		//$pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 		// set default header data
-		$pdf->SetHeaderData(PDF_HEADER_LOGO, 55, false, false);
+		if($_SESSION['user_type']!=2)
+		{
+			$head_descr = false;
+			$head_title = false;
+		}
+		else
+		{
+			$head_title = "Accurity Valuation";
+			$head1 = "“I developed R3 because the future became clear:";
+			$head_descr = " Loan officers and \n their REALTOR® business partners needed a search engine to identify \n potential appraisal issues and “red flag” sales BEFORE the transaction.”";
+		}
+		//$pdf->SetHeaderData(PDF_HEADER_LOGO, 60, false, $head_descr);
+		$logo = K_PATH_IMAGES.PDF_HEADER_LOGO;
+		$hedader_data = '<table cellspacing="0" cellpadding="1" border="0" width="100%">
+						<tr>
+							<td rowspan="3" width="35%">
+								<img src="'.$logo.'" width="200" height:"130"/>
+							</td>
+							<td width="65%" align="justify">
+								<span color="#60226B">'.$head1.'</span>'.$head_descr.'							
+							</td></tr>
+						</table>';
+		$pdf->setHeaderData($ln='', $lw=0, $ht='', $hs=$hedader_data, $tc=array(0,0,0), $lc=array(0,0,0));
 
 		// set header and footer fonts
 		$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -80,8 +121,11 @@
 
 		// define some HTML content with style
 		$html = $_POST['cc'];
-
-		$pdf->Image('/tmp/'.$id.'.jpg', '15', '60', 100, 60, '', '', '', false, 400, '', false, false, 0, false, false, false);
+		if($_SESSION['user_type']!=2)
+		$pdf->Image('/tmp/'.$id.'.jpg', '15', '65', 100, 60, '', '', '', false, 400, '', false, false, 0, false, false, false);
+		else
+		$pdf->Image('/tmp/'.$id.'.jpg', '15', '145', 180, 90, '', '', '', false, 400, '', false, false, 0, false, false, false);
+	
 		preg_match("@downloadReport\s*<br>(.*?)downloadReport@is",$html,$matches);
 		$html = $matches[1];
 		//echo $html;exit;
