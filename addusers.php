@@ -14,7 +14,7 @@
 		$status = mysql_real_escape_string(@$_POST['status']);
 		$sponsor_code = mysql_fetch_row(mysql_query("select max(SponserCode) from userdetail"));
 		$sponsor_code = $sponsor_code[0]+1;
-		$insert = mysql_query("insert into userdetail values ('','$email','$password','$name','$address','$sponsor_code','$status','','','','$type_user','$lid') ")or die(mysql_error());
+		$insert = mysql_query("insert into userdetail values ('','$email','$password','$name','$address','$sponsor_code','$status','','','','$type_user','$lid','','','','') ")or die(mysql_error());
 		if($insert){
 			$_SESSION['add_success']='<div class="alert alert-success">
 		 	 <strong>Success!</strong> User has been added successfully.

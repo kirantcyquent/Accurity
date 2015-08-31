@@ -23,6 +23,7 @@
 			<table class="table table-bordered">
 				<thead>
 					<th>SL </th>
+					<th>Company Name</th>
 					<th>User Name</th>
 					<th>Name </th>
 					<th>Address</th>
@@ -43,7 +44,7 @@
 							$completed = $us->lendingSearches($res['UserID'],1);
 							$incomplete = $us->lendingSearches($res['UserID'],0);
 							if($res['Active']==1){ $status = "<span class='btn btn-info'>&nbsp;Active&nbsp;</span>";} else if($res['Active']==0) { $status = "<span class='btn btn-danger'>Inactive</span>"; } 
-							echo '<tr><td>'.$count.'</td><td><a href="viewinstitute.php?id='.$res['UserID'].'">'.$res['UserName'].'</a></a></td><td>'.$res['Name'].'</td><td>'.$res['Address'].'</td>';
+							echo '<tr><td>'.$count.'</td><td>'.$res['company_name'].'</td><td><a href="viewinstitute.php?id='.$res['UserID'].'">'.$res['UserName'].'</a></a></td><td>'.$res['Name'].'</td><td>'.$res['Address'].'</td>';
 							echo '<td>';
 							if($appraisers>0){
 								echo '<a href="viewappraisers.php?id='.$res['UserID'].'" style="text-decoration:underline;">'.$appraisers.'</a>';

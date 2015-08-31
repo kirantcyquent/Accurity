@@ -6,7 +6,7 @@
 	if(!isset($_GET['id'])){
 		header('Location: users.php');
 	}
-	include('db/db.php');
+		include('db/db.php');
 	include('classes/User.php');
 	$user_type=$_SESSION['user_type'];
 	$id = $_GET['id'];
@@ -84,26 +84,26 @@
 				<tbody>
 					<tr>
 						<td>UserName</td>
-						<td><input type="text" class="form-control"  value="<?php echo trim($udetail['UserName']);?>" required readonly/></td>
+						<td><input type="text" class="form-control input-sm"  value="<?php echo trim($udetail['UserName']);?>" required readonly/></td>
 					</tr>					
 					<tr>
 						<td>Name</td>
-						<td><input type="text" class="form-control" name="username" value="<?php echo trim($udetail['Name']);?>" required></td>
+						<td><input type="text" class="form-control input-sm" name="username" value="<?php echo trim($udetail['Name']);?>" required></td>
 					</tr>
 					<tr>
 						<td>Address</td>
-						<td><textarea class="form-control" name="address"   required><?php echo trim($udetail['Address']);?></textarea></td>
+						<td><textarea class="form-control input-sm" name="address"   required><?php echo trim($udetail['Address']);?></textarea></td>
 					</tr>
 					<tr>
 						<td>Type of User</td>
-						<td><select class="form-control" name="type_user">
+						<td><select class="form-control  input-sm" name="type_user">
 			<option value="1" <?php if($usertype==1){ echo " selected";}?>>Appraiser</option>
 			<option value="2" <?php if($usertype==2){ echo " selected";}?>>Loan Officer</option>
 		</select></td>
 					</tr>															
 					<tr>
 						<td>Status</td>
-						<td><select class="form-control" name="status">
+						<td><select class="form-control  input-sm" name="status">
 			<option value="1" <?php if($status==1){echo " selected"; } ?>>Active</option>
 			<option value="0" <?php if($status==0){echo " selected"; } ?>>Inactive</option>
 		</select></td>

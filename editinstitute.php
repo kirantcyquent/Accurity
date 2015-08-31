@@ -6,7 +6,7 @@
 	if(!isset($_GET['id'])){
 		header('Location: users.php');
 	}
-	include('db/db.php');
+		include('db/db.php');
 	include('classes/User.php');
 	$user_type=$_SESSION['user_type'];
 	$id = $_GET['id'];
@@ -16,12 +16,18 @@
 		if($usname != strip_tags($usname)) {
  	   		$errors[] = 'Username ';
 		}
-		$address = mysql_real_escape_string(@$_POST['address']);
-		if($address != strip_tags($address)) {
+		$address = mysql_real_escape_string(nl2br(@$_POST['address']));
+		$add = preg_replace("@<br\s*\/>@","",$address);
+		if($add != strip_tags($add)) {
  	   		$errors[] = 'Address';
 		}
 		$usertype = 3;
 		$status = mysql_real_escape_string(@$_POST['status']);
+		$company_name =mysql_real_escape_string(@$_POST['company_name']);
+    	$city = mysql_real_escape_string(@$_POST['city']);
+    	$state = mysql_real_escape_string(@$_POST['state']);
+	    $zip = mysql_real_escape_string(@$_POST['zip']);
+
 
 		if(count($errors)>0){
 			$string= '';
@@ -33,7 +39,14 @@
 			$_SESSION['status_success']='<div class="alert alert-danger">
 		 	 <strong>'.$string.'</strong></div>';
 		}else{
-			$update = mysql_query("update userdetail set Name='$usname', Address='$address', TypeOfUser='$usertype', Active='$status' where UserID='$id'");
+			$update = mysql_query("update userdetail set Name='$usname', Address='$address', TypeOfUser='$usertype', Active='$status', company_name='$company_name', city='$city', state='$state', zip='$zip' where UserID='$id'");
+			if($update){
+				header('Location:viewinstitute.php?id='.$id);
+			}else{
+				$_SESSION['status_success']='<div class="alert alert-danger">
+		 	 <strong>Error in updating User </strong>.
+			</div>';
+			}
 		}
 	}
 
@@ -79,28 +92,45 @@
 			<table class="table table-bordered"> 
 				<tbody>
 					<tr>
+						<td>Company Name</td>
+						<td><input type="text" class="form-control  input-sm"  value="<?php echo trim($udetail['company_name']);?>" required name="company_name"/></td>
+					</tr>	
+					<tr>
 						<td>UserName</td>
-						<td><input type="text" class="form-control"  value="<?php echo trim($udetail['UserName']);?>" required readonly/></td>
+						<td><input type="text" class="form-control  input-sm"  value="<?php echo trim($udetail['UserName']);?>" required readonly/></td>
 					</tr>					
 					<tr>
 						<td>Name</td>
-						<td><input type="text" class="form-control" name="username" value="<?php echo trim($udetail['Name']);?>" required></td>
+						<td><input type="text" class="form-control  input-sm" name="username" value="<?php echo trim($udetail['Name']);?>" required></td>
 					</tr>
 					<tr>
 						<td>Address</td>
-						<td><input type="text" class="form-control" name="address"  value="<?php echo trim($udetail['Address']);?>" required></td>
+						<td><textarea class="form-control input-sm" name="address"  required> <?php echo trim(preg_replace("@<br\s*\/>@","",$udetail['Address']));?></textarea></td>
 					</tr>
-																				
+					<tr>
+						<td>City</td>
+						<td><input type="text" class="form-control input-sm" name="city"  value="<?php echo trim($udetail['city']);?>" required></td>
+					</tr>
+					<tr>
+						<td>State</td>
+						<td><input type="text" class="form-control input-sm" name="state"  value="<?php echo trim($udetail['state']);?>" required></td>
+					</tr>
+					<tr>
+						<td>Zip</td>
+						<td><input type="text" class="form-control input-sm" name="zip"  value="<?php echo trim($udetail['zip']);?>"pattern="^[0-9]+" required></td>
+					</tr>													
 					<tr>
 						<td>Status</td>
-						<td><select class="form-control" name="status">
+						<td><select class="form-control input-sm" name="status">
 			<option value="1" <?php if($status==1){echo " selected"; } ?>>Active</option>
 			<option value="0" <?php if($status==0){echo " selected"; } ?>>Inactive</option>
 		</select></td>
 					</tr>	
 
 					<tr>
-						<td colspan="2"><input type="submit" class="btn btn-primary" name="submit" value="Update" /></td>
+						<td colspan="2">
+								<button type="submit" id="bt" class="btn btn-success" onclick=""> Update </button>
+						</td>
 					</tr>									
 				</tbody>			
 			</table>

@@ -3,7 +3,7 @@
 	if(!isset($_SESSION['email']) || !isset($_SESSION['sessionid'])){
 		header('Location: login.php');
 	}
-	include('db/db.php');
+		include('db/db.php');
 	include('classes/User.php');
 	$user_type=$_SESSION['user_type'];
 	
@@ -33,6 +33,11 @@
 			<table class="table table-bordered"> 
 				<tbody>
 					<tr>
+						<td>Company Name</td>
+						<td><?php echo $udetail['company_name'];?></td>
+					</tr>	
+
+					<tr>
 						<td>UserName</td>
 						<td><?php echo $udetail['UserName'];?></td>
 					</tr>					
@@ -45,9 +50,18 @@
 						<td><?php echo $udetail['Address'];?></td>
 					</tr>
 					<tr>
-						<td>Type of User</td>
-						<td><?php echo $usertype;?></td>
-					</tr>															
+						<td>City</td>
+						<td><?php echo $udetail['city'];?></td>
+					</tr>
+					<tr>
+						<td>State</td>
+						<td><?php echo $udetail['state'];?></td>
+					</tr>
+					<tr>
+						<td>Zip</td>
+						<td><?php echo $udetail['zip'];?></td>
+					</tr>
+																			
 					<tr>
 						<td>Status</td>
 						<td><?php echo $status;?></td>
