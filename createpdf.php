@@ -52,23 +52,38 @@
 		{
 			$head_descr = false;
 			$head_title = false;
+			$pdf_creator_name = '';
+			$designation = '';
+			$qualification = '';
 		}
 		else
 		{
 			$head_title = "Accurity Valuation";
 			$head1 = "“I developed R3 because the future became clear:";
 			$head_descr = " Loan officers and \n their REALTOR® business partners needed a search engine to identify \n potential appraisal issues and “red flag” sales BEFORE the transaction.”";
+			$pdf_creator_name = "BRENT JONES &nbsp;&nbsp;|";
+			$designation = 'CEO &nbsp;&nbsp;|';
+			$qualification = 'FORMER FANNIE MAE SENIOR ANALYST';
 		}
 		//$pdf->SetHeaderData(PDF_HEADER_LOGO, 60, false, $head_descr);
 		$logo = K_PATH_IMAGES.PDF_HEADER_LOGO;
-		$hedader_data = '<table cellspacing="0" cellpadding="1" border="0" width="100%">
-						<tr>
-							<td rowspan="3" width="35%">
-								<img src="'.$logo.'" width="200" height:"130"/>
-							</td>
-							<td width="65%" align="justify">
-								<span color="#60226B">'.$head1.'</span>'.$head_descr.'							
-							</td></tr>
+		$hedader_data = '<table cellspacing="0" cellpadding="1" border="0" width="100%" style="font-size:11px; font-weight:normal !important;">
+							<tr>
+								<td rowspan="3" width="40%">
+									<img src="'.$logo.'" width="235" height:"180"/>
+								</td>
+								<td width="60%" align="justify">
+									<span color="#60226B"><b>'.$head1.'</b></span>'.$head_descr.'	
+									<br/><br/>
+									<table>
+										<tr>
+											<td width="100px" color="#60226B"><b>'.$pdf_creator_name.' </b></td>
+											<td width="50px" color="#60226B"><b>'.$designation.' </b></td>
+											<td width="350px" color="#60226B"><b>'.$qualification.'</b></td>
+										</tr>
+									</table>
+								</td>
+							</tr>
 						</table>';
 		$pdf->setHeaderData($ln='', $lw=0, $ht='', $hs=$hedader_data, $tc=array(0,0,0), $lc=array(0,0,0));
 
@@ -100,7 +115,7 @@
 		// ---------------------------------------------------------
 
 		// set font
-		$pdf->SetFont('helvetica', '', 10);
+		$pdf->SetFont('dejavusans', '', 10);
 
 		// add a page
 		$pdf->AddPage();
@@ -122,9 +137,9 @@
 		// define some HTML content with style
 		$html = $_POST['cc'];
 		if($_SESSION['user_type']!=2)
-		$pdf->Image('/tmp/'.$id.'.jpg', '15', '65', 100, 60, '', '', '', false, 400, '', false, false, 0, false, false, false);
+		$pdf->Image('/tmp/'.$id.'.jpg', '15', '70', 100, 60, '', '', '', false, 400, '', false, false, 0, false, false, false);
 		else
-		$pdf->Image('/tmp/'.$id.'.jpg', '15', '145', 180, 90, '', '', '', false, 400, '', false, false, 0, false, false, false);
+		$pdf->Image('/tmp/'.$id.'.jpg', '15', '160', 180, 90, '', '', '', false, 400, '', false, false, 0, false, false, false);
 	
 		preg_match("@downloadReport\s*<br>(.*?)downloadReport@is",$html,$matches);
 		$html = $matches[1];

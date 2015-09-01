@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS `main_settings` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `from_email` varchar(150) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+INSERT INTO `loan`.`main_settings` (`id`, `from_email`) VALUES (1, 'preeti.savant@cyquent.com');
