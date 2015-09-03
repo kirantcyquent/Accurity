@@ -44,8 +44,8 @@
   <table class="table table-bordered">
     <thead>
         <tr>
-          <th><h4>Info</h4></th>
-          <th><h4>Details</h4></th>
+          <th width="50%"><h4>Info</h4></th>
+          <th width="50%"><h4>Details</h4></th>
         </tr>
       </thead>
 	  <tbody>
@@ -91,23 +91,34 @@
           <?php
         }
       ?>
-	     	<tr>
-          <th scope="row"><input type="hidden" name="questionid1" value="<?php echo $result[0]; ?>" /><input type="text" required class="form-control input-sm" placeholder="Question1.." name="question1" value="<?php echo $result['Question']; ?>" /></th>
-          <td><input type="text" class="form-control input-sm" required placeholder="Answer1.." name="answer1" value="<?php echo $result['Answer']; ?>" /></td>
+	</tbody>
+	</table>
+	
+<div class="table-responsive">
+	<table class="table table-bordered" style="border:1px solid #dddddd !important;">
+		<thead>
+			<tr>
+			  <th width="50%"><h4>Security Questions</h4></th>
+			  <th width="50%"><h4>Security Answers</h4></th>
+			</tr>
+		</thead>
+	    <tr>
+          <th scope="row" style="valign:middele;"><span>Q1) &nbsp;&nbsp;&nbsp;&nbsp;<input type="hidden" name="questionid1" value="<?php echo $result[0]; ?>" /><input type="text" required class="form-control input-sm" placeholder="Question1.." name="question1" value="<?php echo $result['Question']; ?>" /></th>
+          <th><span>A1) &nbsp;&nbsp;&nbsp;&nbsp;<input type="text" class="form-control input-sm" required placeholder="Answer1.." name="answer1" value="<?php echo $result['Answer']; ?>" /></span></th>
         </tr>
 		    <tr>
-          <th scope="row"><input type="hidden" name="questionid2" value="<?php echo $result2[0]; ?>" /><input type="text" class="form-control input-sm" required placeholder="Question2.." name="question2" value="<?php echo $result2['Question']; ?>" /></th>
-          <td><input type="text" name="answer2" placeholder="Answer2.." class="form-control input-sm" required value="<?php echo $result2['Answer']; ?>" /></td>
+          <th scope="row"><span>Q2) &nbsp;&nbsp;&nbsp;&nbsp;<input type="hidden" name="questionid2" value="<?php echo $result2[0]; ?>" /><input type="text" class="form-control input-sm" required placeholder="Question2.." name="question2" value="<?php echo $result2['Question']; ?>" /></span></th>
+          <th><span>A2) &nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="answer2" placeholder="Answer2.." class="form-control input-sm" required value="<?php echo $result2['Answer']; ?>" /></span></th>
         </tr>
 		<tr>
-          <th scope="row"><input type="hidden" name="questionid3" value="<?php echo $result3[0]; ?>" /><input type="text" required class="form-control input-sm" placeholder="Question3.." name="question3" value="<?php echo $result3['Question']; ?>" /></th>
-          <td><input type="text" class="form-control input-sm" placeholder="Answer3.." required name="answer3" value="<?php echo $result3['Answer']; ?>" /></td>
+          <th scope="row"><span>Q3) &nbsp;&nbsp;&nbsp;&nbsp;<input type="hidden" name="questionid3" value="<?php echo $result3[0]; ?>" /><input type="text" required class="form-control input-sm" placeholder="Question3.." name="question3" value="<?php echo $result3['Question']; ?>" /></span></th>
+          <th><span>A3) <span style="padding-left:10px;"><input type="text" class="form-control input-sm" placeholder="Answer3.." required name="answer3" value="<?php echo $result3['Answer']; ?>" /></span></th>
         </tr>
+  </table>
+  <table>
 		<tr>
-          <th scope="row"><a style="" href="profile.php" class="btn btn-danger">Cancel</a></th>
-          <td><input type="submit" name="update" class="btn btn-success" value="Update" /></td>
+          <td colspan=2 style="text-align:center;"><input type="submit" name="update" class="btn btn-success" value="Update" />&nbsp;&nbsp;&nbsp;&nbsp;<a style="" href="profile.php" class="btn btn-danger">Cancel</a></td>
         </tr>
-      </tbody>
   </table>
 </div>
 </form>

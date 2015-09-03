@@ -139,7 +139,7 @@
 		if($_SESSION['user_type']!=2)
 		$pdf->Image('/tmp/'.$id.'.jpg', '15', '70', 100, 60, '', '', '', false, 400, '', false, false, 0, false, false, false);
 		else
-		$pdf->Image('/tmp/'.$id.'.jpg', '15', '160', 180, 90, '', '', '', false, 400, '', false, false, 0, false, false, false);
+		$pdf->Image('/tmp/'.$id.'.jpg', '15', '153', 180, 90, '', '', '', false, 400, '', false, false, 0, false, false, false);
 	
 		preg_match("@downloadReport\s*<br>(.*?)downloadReport@is",$html,$matches);
 		$html = $matches[1];

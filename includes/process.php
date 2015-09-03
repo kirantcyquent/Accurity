@@ -58,8 +58,9 @@
 	function GetPropertyFromRealty($StreetAddr,$City,$State,$Zip)
 	{
 		$StreetAddr = urlencode($StreetAddr);
+
+		$URL  = "http://dlpapi.realtytrac.com/Reports/Get?ApiKey=a2d3e2aa-9c9b-4aab-af3a-56785ae67e25&Login=accurity&Password=1cyquent!&JobID=&LoanNumber=&PreparedBy=&ResellerID=&PreparedFor=&OwnerFirstName=&OwnerLastName=&AddressType=&PropertyStreetAddress=$StreetAddr&AddressNumber=&StartAddressNumberRange=&EndAddressNumberRange=&StreetDir=&StreetName=&StreetSuffix=&City=$City&StateCode=$State&County=&ZipCode=$Zip&PropertyParcelID=&APN=&ApnRangeStart=&ApnRangeEnd=&GeoCodeX=&GeoCodeY=&GeoCodeRadius=&SearchType=&NumberOfRecords=&Format=XML&ReportID=102";
 	
-		$URL = "http://dlpapi.realtytrac.com/Reports/Get?ApiKey=a2d3e2aa-9c9b-4aab-af3a-56785ae67e25&Login=accurity&Password=1cyquent!&JobID=&LoanNumber=&PreparedBy=&ResellerID=&PreparedFor=&OwnerFirstName=&OwnerLastName=&AddressType=&PropertyStreetAddress=$StreetAddr&AddressNumber=&StartAddressNumberRange=&EndAddressNumberRange=&StreetDir=&StreetName=&StreetSuffix=&City=$City&StateCode=$State&County=&ZipCode=$Zip&PropertyParcelID=&APN=&ApnRangeStart=&ApnRangeEnd=&GeoCodeX=&GeoCodeY=&GeoCodeRadius=&SearchType=&NumberOfRecords=&Format=XML&ReportID=102";
 	
 		$path = $_SESSION['path'];
 		$fp = fopen($path,"a");
@@ -75,7 +76,6 @@
 		
 		
 	
-
 		foreach($vals as $aval)
 		{
 			
@@ -86,17 +86,35 @@
 					$aProp[$key] = $val;
 				}
 			}
+
+			if($aval['type'] == 'complete' && isset($aval['attributes']) && $aval['tag']=="PARSED_STREET_ADDRESS")
+			{
+				foreach($aval['attributes'] as $key=>$val){
+					if(array_key_exists($key, $aProp)){
+						continue;	
+					}
+
+				   $aProp[$key] = $val;				   
+				}
+			
+			}
+
+
+			
 			if($aval['type'] == 'open' && isset($aval['attributes']))
 			{
 				foreach($aval['attributes'] as $key=>$val){
 					if($aval['tag']=="MAILING_ADDRESS_EXT")
-						continue;
+						continue;				
+				
 					$aProp[$key] = $val;
 				}
 
 			}
 				
 		}
+
+
 
 		if(!isset($aProp)){
 			// get the property id
@@ -107,7 +125,6 @@
 	}
 
 	function getByPropertyId($id){
-
 		$URL = "http://dlpapi.realtytrac.com/Reports/Get?ApiKey=a2d3e2aa-9c9b-4aab-af3a-56785ae67e25&Login=accurity&Password=1cyquent!&JobID=&LoanNumber=&PreparedBy=&ResellerID=&PreparedFor=&OwnerFirstName=&OwnerLastName=&AddressType=&PropertyStreetAddress=&AddressNumber=&StartAddressNumberRange=&EndAddressNumberRange=&StreetDir=&StreetName=&StreetSuffix=&City=&StateCode=&County=&ZipCode=&PropertyParcelID=".$id."&SAPropertyID=&APN=&ApnRangeStart=&ApnRangeEnd=&Latitude=&Longitude=&Radius=&SearchType=&NumberOfRecords=&Sort=&Format=XML&ReportID=102";
 
 		$data = file_get_contents($URL);
@@ -129,6 +146,12 @@
 				}
 			}
 
+			if($aval['type'] == 'complete' && isset($aval['attributes']) && $aval['tag']=="PARSED_STREET_ADDRESS")
+			{
+				foreach($aval['attributes'] as $key=>$val){
+				   $aProp[$key] = $val;
+				}
+			}
 			if($aval['type'] == 'open' && isset($aval['attributes']))
 			{
 				foreach($aval['attributes'] as $key=>$val){
@@ -321,11 +344,11 @@
 		$resp = curl_exec($curl);
 		curl_close($curl);
 
-/*		$fs = fopen("data.xml","w");
+		$fs = fopen("data.xml","w");
 		fwrite($fs,$resp);
 		fclose($fs);
 		
-*/		
+		
 		$p = xml_parser_create();
 		xml_parse_into_struct($p, $resp, $vals, $index);
 		xml_parser_free($p);
@@ -341,6 +364,8 @@
 	}
 
 	function get_xml_data($arrParam){		
+		
+
 		//$url = 'http://dlpapi.realtytrac.com/Reports/Get?ApiKey=a2d3e2aa-9c9b-4aab-af3a-56785ae67e25&Login=accurity&Password=1cyquent!&JobID=&LoanNumber=&PreparedBy=&ResellerID=&PreparedFor=&OwnerFirstName=&OwnerLastName=&AddressType=&PropertyStreetAddress='.$arrParam['street'].'&AddressNumber=&StartAddressNumberRange=&EndAddressNumberRange=&StreetDir=&StreetName=&StreetSuffix=&City='.$arrParam['city'].'&StateCode='.$arrParam['state'].'&County=&ZipCode=&PropertyParcelID=&SAPropertyID=&APN=&ApnRangeStart=&ApnRangeEnd=&GeoCodeX=&GeoCodeY=&GeoCodeRadius=&SearchType=&NumberOfRecords=&Format=XML&ReportID=104&R104_SettingsMode=';
 
 		$url = 'http://dlpapi.realtytrac.com/Reports/Get?ApiKey=a2d3e2aa-9c9b-4aab-af3a-56785ae67e25&Login=accurity&Password=1cyquent!&JobID=&LoanNumber=&PreparedBy=&ResellerID=&PreparedFor=&OwnerFirstName=&OwnerLastName=&AddressType=&PropertyStreetAddress=&AddressNumber=&StartAddressNumberRange=&EndAddressNumberRange=&StreetDir=&StreetName=&StreetSuffix=&City=&StateCode=&County=&ZipCode=&PropertyParcelID='.$arrParam['propertyId'].'&SAPropertyID=&APN=&ApnRangeStart=&ApnRangeEnd=&Latitude=&Longitude=&Radius=&SearchType=&NumberOfRecords=&Sort=&Format=XML&ReportID=104&R104_SettingsMode=';
@@ -395,7 +420,7 @@
 			 $transfer[1] = preg_replace("@T.*?$@is", "", $transfer[1]);
 			 preg_match("@StoriesCount=\"(.*?)\"@is",$arr[1],$stories);
 			 $stories = $stories[1];
-			 $result[] = array('address'=>$address,'distance'=>$distance[1], 'beds'=>$beds[1].' Bd /'.$baths[1].' Ba','sq_size'=>$size[1],'year_built'=>$built[1], 'lot_size'=>$lot[1], 'stories'=>$story[1], 'dateSold'=>$sale_date[1], 'amount'=>$sale_amount[1], 'street'=>$matches[2],'city'=>$matches[1],'state'=>$matches[3], 'zip'=>$matches[4],'latitude'=>$latitude, 'longitude'=>$longitude, 'pool'=>$pool[1], 'basement'=>$basement[1], 'transferDate'=>$transfer[1],'stories'=>$stories);			
+			 $result[] = array('address'=>$address,'distance'=>$distance[1], 'beds'=>trim(floor($beds[1])).'/'.floor($baths[1]).'','sq_size'=>$size[1],'year_built'=>$built[1], 'lot_size'=>$lot[1], 'stories'=>$story[1], 'dateSold'=>$sale_date[1], 'amount'=>$sale_amount[1], 'street'=>$matches[2],'city'=>$matches[1],'state'=>$matches[3], 'zip'=>$matches[4],'latitude'=>$latitude, 'longitude'=>$longitude, 'pool'=>$pool[1], 'basement'=>$basement[1], 'transferDate'=>$transfer[1],'stories'=>$stories);			
 		}
 			
 		return $result;
@@ -453,7 +478,7 @@ function get_xml_data_address($arrParam){
 			 $transfer[1] = preg_replace("@T.*?$@is", "", $transfer[1]);
 			 preg_match("@StoriesCount=\"(.*?)\"@is",$arr[1],$stories);
 			 $stories = $stories[1];
-			 $result[] = array('address'=>$address,'distance'=>$distance[1], 'beds'=>$beds[1].' Bd /'.$baths[1].' Ba','sq_size'=>$size[1],'year_built'=>$built[1], 'lot_size'=>$lot[1], 'stories'=>$story[1], 'dateSold'=>$sale_date[1], 'amount'=>$sale_amount[1], 'street'=>$matches[2],'city'=>$matches[1],'state'=>$matches[3], 'zip'=>$matches[4],'latitude'=>$latitude, 'longitude'=>$longitude, 'pool'=>$pool[1], 'basement'=>$basement[1], 'transferDate'=>$transfer[1],'stories'=>$stories);			
+			 $result[] = array('address'=>$address,'distance'=>$distance[1], 'beds'=>floor($beds[1]).' /'.floor($baths[1]).' ','sq_size'=>$size[1],'year_built'=>$built[1], 'lot_size'=>$lot[1], 'stories'=>$story[1], 'dateSold'=>$sale_date[1], 'amount'=>$sale_amount[1], 'street'=>$matches[2],'city'=>$matches[1],'state'=>$matches[3], 'zip'=>$matches[4],'latitude'=>$latitude, 'longitude'=>$longitude, 'pool'=>$pool[1], 'basement'=>$basement[1], 'transferDate'=>$transfer[1],'stories'=>$stories);			
 		}
 			
 		return $result;

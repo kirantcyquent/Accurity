@@ -123,7 +123,7 @@ if(isset($_SESSION['results']['matchResult'])){
 			{			
 				if(strtolower($m['address'])==strtolower($value['address'])){
 					$markers[$k]['id']=$count;
-					$markers[$k]['color']="blue";
+					$markers[$k]['color']="0x003F7F";
 				}
 			}
 			$count++;
@@ -147,7 +147,7 @@ if(isset($_SESSION['results']['matchResult'])){
         	else { $color = $m['color'];}
 	        $locstring=$locstring.'&markers=color:'.$color.'%7Clabel:'.$m['id'].'%7C'.$m['latitude'].','.$m['longitude'];
         }
-        $url="http://maps.googleapis.com/maps/api/staticmap?zoom=12&size=800x400&maptype=ROADMAP&".urlencode("center")."=".$locstring."&sensor=false";
+        $url="http://maps.googleapis.com/maps/api/staticmap?zoom=13&size=800x400&maptype=ROADMAP&".urlencode("center")."=".$locstring."&sensor=false";
 		$_SESSION['results']['map'] = $url;
 		
 	$_SESSION['results']['matchResult'] = urlencode(serialize($matchResult));

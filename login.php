@@ -21,8 +21,11 @@
 		unset($_SESSION['login-error']);
     }
 ?>
-
+<div class="success message" <?php if(!isset($_REQUEST['msg'])){?>style="display:none;"<?php }?>>
+	<h3>Your login credentials are sent to your email.</h3>
 </div>
+</div>
+
 <div class="form">
 <div class="header"><h2><img class="img-responsive logo" src="css/images/main-logo.jpg" width="200" /></h2></div>
 <div class="login">
@@ -101,8 +104,15 @@ location = "login.php";
 			req.onreadystatechange = function() {
 				if (req.readyState == 4) {
 					// only if "OK"
-					if (req.status == 200) {						
-						document.getElementById('fmail').innerHTML=req.responseText;	
+					if (req.status == 200) {
+						if(req.responseText == "noquestions")
+						{
+							location = "login.php?msg=lcss";
+						}
+						else
+						{
+							document.getElementById('fmail').innerHTML=req.responseText;
+						}	
 					} else {
 						//alert("There was a problem while using XMLHTTP:\n" + req.statusText);
 					} 

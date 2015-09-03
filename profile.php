@@ -53,8 +53,8 @@ $query4 = "select Name,Address,company_name,city, state,zip from userdetail wher
   <table class="table table-bordered">
     <thead>
         <tr>
-          <th>Info</th>
-          <th>Details</th>
+          <th width="50%"><h4>Info</h4></th>
+          <th width="50%"><h4>Details</h4></th>
         </tr>
       </thead>
 	  <tbody>
@@ -104,19 +104,30 @@ $query4 = "select Name,Address,company_name,city, state,zip from userdetail wher
 	  			<?php
 	  		}
 	  	?>
-		<tr>
-          <th scope="row"><?php if($result[0]){echo $result[0];}else{echo "Question Not Filled.Please Update.";} ?></th>
-          <td><?php if($result[1]){echo $result[1];}else{echo "Answer Not Filled.Please Update.";} ?></td>
-        </tr>
-		<tr>
-          <th scope="row"><?php if($result2[0]){echo $result2[0];}else{echo "Question Not Filled.Please Update.";} ?></th>
-          <td><?php if($result2[1]){echo $result2[1];}else{echo "Answer Not Filled.Please Update.";} ?></td>
-        </tr>
-		<tr>
-          <th scope="row"><?php if($result3[0]){echo $result3[0];}else{echo "Question Not Filled.Please Update.";} ?></th>
-          <td><?php if($result3[1]){echo $result3[1];}else{echo "Answer Not Filled.Please Update.";} ?></td>
-        </tr>
-      </tbody>
+	</tbody>
+	</table>
+</div>
+
+<div class="table-responsive">
+	<table class="table table-bordered" style="border:1px solid #dddddd !important;">
+			<thead>
+				<tr>
+				  <th width="50%"><h4>Security Questions</h4></th>
+				  <th width="50%"><h4>Security Answers</h4></th>
+				</tr>
+		    </thead>
+			<tr>
+			  <th scope="row">Q1) <span style="padding-left:10px;"><?php if($result[0]){echo $result[0];}else{echo "Question Not Filled.Please Update.";} ?></span></th>
+			  <th>A1) <span style="padding-left:10px;"><?php if($result[1]){echo $result[1];}else{echo "Answer Not Filled.Please Update.";} ?></span></th>
+			</tr>
+			<tr>
+			  <th scope="row">Q2) <span style="padding-left:10px;"><?php if($result2[0]){echo $result2[0];}else{echo "Question Not Filled.Please Update.";} ?></span></th>
+			  <th>A2) <span style="padding-left:10px;"><?php if($result2[1]){echo $result2[1];}else{echo "Answer Not Filled.Please Update.";} ?></span></th>
+			</tr>
+			<tr>
+			  <th scope="row">Q3) <span style="padding-left:10px;"><?php if($result3[0]){echo $result3[0];}else{echo "Question Not Filled.Please Update.";} ?></span></th>
+			  <th>A3) <span style="padding-left:10px;"><?php if($result3[1]){echo $result3[1];}else{echo "Answer Not Filled.Please Update.";} ?></span></th>
+			</tr>
   </table>
 </div>
 <a style="margin-bottom:20px;" href="edit-profile.php" class="btn btn-success">Edit Profile</a>

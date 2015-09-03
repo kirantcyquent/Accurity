@@ -84,7 +84,7 @@
 					<tr><td>Radius</td><td> <?php echo $finalParameters['radius'];?> </td></tr>
 					<tr><td>Age</td><td> <?php echo $finalParameters['age'];?></td></tr>
 					<tr><td>Lot Size</td><td> <?php echo $finalParameters['lotSize'];?></td></tr>
-					<tr><td>Stories</td><td> <?php echo $finalParameters['stories'];?></td></tr>
+					<tr><td>STY</td><td> <?php echo $finalParameters['stories'];?></td></tr>
 					<tr><td> Date of Sale</td><td>  <?php echo $finalParameters['dateSale'];?> </td></tr>
 				</table>
 		</div>
@@ -109,19 +109,19 @@
 							<th>Address</th>
 							<th>Distance</th>
 							<th>Bd/Ba</th>
-							<th>SF</th>
-							<th>Yr</th>
-							<th>Lot</th>
-							<th>Stories</th>
-							<th>Pool</th>
-							<th>Bsmnt</th>
-							<th>Date Sold</th>
-							<th>Amount</th>
+							<th  style="text-align:center;">SF</th>
+							<th  style="text-align:center;">Yr</th>
+							<th  style="text-align:center;">Lot</th>
+							<th  style="text-align:center;">STY</th>
+							<th  style="text-align:center;">Pool</th>
+							<th  style="text-align:center;">BSMT</th>
+							<th  style="text-align:center;">Date Sold</th>
+							<th  style="text-align:center;">Amount</th>
 							<?php if($user==1){?>
-							<th>Sales $</th>
-							<th>Sales Date</th>
+							<th  style="text-align:center;">Sales $</th>
+							<th  style="text-align:center;">Sales Date</th>
 							
-							<th></th>
+							<th  style="text-align:center;">Use?</th>
 							<?php }?>
 					  </tr>
 					 </thead>
@@ -185,28 +185,36 @@
 									}
 								}
 							}	
-$address = ucwords(strtolower($row['address']));
-$state = $row['state'];
+							$address = ucwords(strtolower($row['address']));
+							$state = $row['state'];
 
-$address = preg_replace("@$state@is",$state, $address);
-$row['address'] = $address;
+							$address = preg_replace("@$state@is",$state, $address);
+							$row['address'] = $address;
+
+							if(strtolower($row['pool'])=="no" || strtolower($row['pool'])=="none"){
+								$row['pool']="N";
+							}else{
+								$row['pool']="Y";
+							}
+
+							
 							echo '<tr>';
 							echo '<td>'.$seq.'. '.$address.'</td>';
 							echo '<td>';
 							echo sprintf('%0.2f', $row['distance']);
-							echo 'miles</td>';
+							echo ' mi</td>';
 							echo '<td>'.$row['bedsBaths'].'</td>';
-							echo '<td>'.number_format($row['sq_size']).'</td>';
-							echo '<td>'.$row['year_built'].'</td>';
-							echo '<td>'.number_format($row['lot_size']).'</td>';
-							echo '<td>'.$row['stories'].'</td>';
-							echo '<td>'.$row['pool'].'</td>';
-							echo '<td>'.$row['basement'].'</td>';							
-							echo '<td>'.$row['dateSold'].'</td>';
-							echo '<td>$'.number_format($row['amount']).'</td>';
+							echo '<td  style="text-align:center;">'.number_format($row['sq_size']).'</td>';
+							echo '<td  style="text-align:center;">'.$row['year_built'].'</td>';
+							echo '<td  style="text-align:center;">'.number_format($row['lot_size']).'</td>';
+							echo '<td  style="text-align:center;">'.$row['stories'].'</td>';
+							echo '<td  style="text-align:center;">'.$row['pool'].'</td>';
+							echo '<td  style="text-align:center;">'.$row['basement'].'</td>';							
+							echo '<td  style="text-align:center;">'.$row['dateSold'].'</td>';
+							echo '<td  style="text-align:center;">$'.number_format($row['amount']).'</td>';
 							if($user==1){ 
-								echo '<td>'.$row['ay'].'</td>';
-								echo '<td>'.$row['dy'].'</td>';
+								echo '<td  style="text-align:center;">'.$row['ay'].'</td>';
+								echo '<td  style="text-align:center;">'.$row['dy'].'</td>';
 
 
 								if(isset($_SESSION['results']['utilizes'][$seq])){
@@ -292,7 +300,7 @@ $row['address'] = $address;
 			}
 	        $locstring=$locstring.'&markers=color:'.$color.'%7Clabel:'.$m['id'].'%7C'.$m['latitude'].','.$m['longitude'];
         }
-        $url="http://maps.googleapis.com/maps/api/staticmap?zoom=13&size=800x400&maptype=ROADMAP&".urlencode("center")."=".$locstring."&sensor=false";
+        $url="http://maps.googleapis.com/maps/api/staticmap?zoom=15&size=800x400&maptype=ROADMAP&".urlencode("center")."=".$locstring."&sensor=false";
 
 	
 		$_SESSION['results']['map'] = $url;

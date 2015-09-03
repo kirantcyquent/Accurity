@@ -1,4 +1,4 @@
- <?php
+<?php
 	session_start();
 ?>
 <?php
@@ -56,14 +56,13 @@
 		$state = $PropData['_STATE'];
 		$zip = $PropData['_POSTALCODE'];
 
-/*
-		$PropData['_STREETADDRESS']=preg_replace("@$city@is","",$PropData['_STREETADDRESS']);
-		$PropData['_STREETADDRESS']=preg_replace("@$state@is","",$PropData['_STREETADDRESS']);
-		$PropData['_STREETADDRESS']=preg_replace("@$zip@is","",$PropData['_STREETADDRESS']);
-*/
 		$PropData['_STREETADDRESS'] = trim($PropData['_STREETADDRESS']);
 
-		$Add =  $PropData['_STREETADDRESS'] .' '.$PropData['_CITY'].' '.$PropData['_STATE'].' '.$PropData['_POSTALCODE'];	
+		$street  = $PropData['_HOUSENUMBERFRACTION_EXT']." ".$PropData['_HOUSENUMBER']." ".$PropData['_DIRECTIONSUFFIX']." ".$PropData['_STREETNAME']." ".$PropData['_STREETSUFFIX']." ".$PropData['_APARTMENTORUNITPREFIX_EXT']." ".$PropData['_APARTMENTORUNIT'];
+
+		$street = trim($street);
+
+		$Add =  $street.' '.$PropData['_CITY'].' '.$PropData['_STATE'].' '.$PropData['_POSTALCODE'];	
 		$sq_footage =  round($PropData['GROSSLIVINGAREASQUAREFEETCOUNT']);
 		$org_footage =  round($PropData['GROSSLIVINGAREASQUAREFEETCOUNT']);
 		$bedrooms = round($PropData['TOTALBEDROOMCOUNT']);
@@ -94,7 +93,6 @@
 
 		//$us->writeRefineLog($PropData);
 		$path = $_SESSION['path'];
-
 
 		$dt = "<h5>Data Returned from DLP API for Search Address</h5>";
 		$dt = $dt .'<table class="table table-bordered">
@@ -179,7 +177,7 @@
 			<?php 
 			if(isset($_REQUEST['referror'])){ 
 				$sq_footage = $org_footage;
-				echo '<div class="alert alert-danger fade in">Your search did not return any comparable properties. You could adjust the square footage and try searching again.</div>'; 
+				echo '<div class="alert alert-danger fade in">Your search did not return any comparable properties.</div>'; 
 				unset($_REQUEST['referror']); 
 			}
 
@@ -201,13 +199,13 @@
 				</thead>
 				<tbody>
 					<tr>
-						<td>Measured Square Footage *</td>
+						<td>Measured Square Footage</td>
 						<td><span id="sfcount">
 						<?php echo number_format($sq_footage); ?>
 						</span></td>
 						<input type="hidden" name="propertyId" id="propertyId" value="<?php echo $propertyId; ?>"/>
 						<input type="hidden" name="original_footage" id="original_footage" value="<?php echo $org_footage;?>" />
-						<td class="style-4"> <input type="text"  name="square_footage" onkeypress="return isNumber(event)"  value="<?php echo $sq_footage; ?>" id="adjustments" pattern="^[0-9\.]+$" maxlength="8" required>
+						<td class="style-4"> <input type="text" name="square_footage" onkeypress="return isNumber(event)"  value="<?php echo $sq_footage; ?>" id="adjustments" pattern="^[0-9\.]+$" maxlength="8" required style="height:21;">
 				<span id="sq_error" style="font-weight:bold; color:red;"></td>
 					</tr>
 					<tr>
@@ -327,13 +325,13 @@
 				
 				var square_footage = $("#adjustments").val();
 				if(square_footage==""){
-					document.getElementById('sq_error').innerHTML = 'please enter square footage';
+					document.getElementById('sq_error').innerHTML = 'Please enter square footage';
 					return false;
 				}else{
 					document.getElementById('sq_error').innerHTML = '';
 				}
 				if(isNaN(square_footage)){ 
-					document.getElementById('sq_error').innerHTML = 'please enter square footage';
+					document.getElementById('sq_error').innerHTML = 'Please enter square footage';
 					$("#adjustments").val("");
 					return false;
 				}

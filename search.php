@@ -21,7 +21,7 @@ padding:5px;
 		else {  } ?>" placeholder=" Search Address or Assessor Parcel " autofocus required/>	
 											
 			<button type="button" value="search" class="btn btn-success" id="searchBtn" name="searchdata" style="margin-bottom:3px;">Search</button>
-			<br/><span >(* provide address in STREET CITY STATE ZIP format) <img src="icon.png" width="25" height="25" onmouseover="displayAddress();" onmouseout="removeAddress();" /></span>
+			<br/><span >(Provide address in STREET CITY STATE ZIP format) <img src="icon.png" width="25" height="25" onmouseover="displayAddress();" onmouseout="removeAddress();" /></span>
 		</div>
 
 		<div id="error" class="form-group" style="padding:5px 0px 0px 0px;">

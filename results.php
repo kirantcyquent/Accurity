@@ -58,7 +58,13 @@
 				$_SESSION['search']['searchAddress']=$address;
 				$PropData['TOTALBATHROOMCOUNT']=round($PropData['TOTALBATHROOMCOUNT']);
 				
-				$Add =  $PropData['_STREETADDRESS'] .' '.$PropData['_CITY'].' '.$PropData['_STATE'].' '.$PropData['_POSTALCODE'];	
+
+				$street  = $PropData['_HOUSENUMBERFRACTION_EXT']." ".$PropData['_HOUSENUMBER']." ".$PropData['_DIRECTIONSUFFIX']." ".$PropData['_STREETNAME']." ".$PropData['_STREETSUFFIX']." ".$PropData['_APARTMENTORUNITPREFIX_EXT']." ".$PropData['_APARTMENTORUNIT'];
+
+				$street = trim($street);
+
+
+				$Add =  $street .' '.$PropData['_CITY'].' '.$PropData['_STATE'].' '.$PropData['_POSTALCODE'];	
 				$street = $aRet['StreetAdd'];
 				$city = $PropData['_CITY'];
 				$state  = $PropData['_STATE'];
@@ -176,9 +182,16 @@
 
 				/*criteria- 3   ******** sqft->10+- age 5+-  saledate<180 prox0.5mile lot size 50+-   ***********/
 				$C3Rangesqrft = MinMax(20,$sq_footage);
-				$C3RangeAge = MinMaxAge(50,$year_built);
+				$C3RangeAge = MinMaxAgePer(50,$year_built);
 				$C3Rangelot = MinMax(50,$lot_size);
 				$C3Proximity = "2.5";
+
+
+				/*criteria 4 ********/
+                $C4Rangesqrft = MinMax(20,$sq_footage);
+				$C4RangeAge = MinMaxAgePer(100,$year_built);
+				$C4Rangelot = MinMax(100,$lot_size);
+				$C4Proximity = "2.5";
 
 
 				$aSearchProp = array();
@@ -190,7 +203,7 @@
 			$count=1;
 
 
-
+				$filter = array();
 				foreach($xml_result as $rows)
 				{
 					
@@ -244,6 +257,7 @@
 							//echo '<tr style="background-color:aqua;"><td>'.$count.'</td><td>'.$rows['ADDRESS'].'</td><td>'.$rows['DIST'].'</td><td>'.$rows['SQ_FT'].'</td><td>'.$rows['LOTSIZEACRES'].'</td><td>'.$rows['YEARBUILT'].'</td><td>'.$rows['LISTDATE'].'</td><td>'.$rows['STRUCTURESTORIES'].'</td><td>Criteria 3</td></tr>';						
 					}
 					else{
+							$filter[] = $rows;
 						$dt = $dt.'<tr style="background-color:pink;"><td>'.$count.'</td><td>'.$rows['address'].'</td><td>'.$rows['distance'].'</td><td>'.$rows['sq_size'].'</td><td>'.$rows['lot_size'].'</td><td>'.$rows['year_built'].'</td><td>'.$rows['dateSold'].'</td><td>'.$rows['stories'].'</td><td>No match</td></tr>';
 					//	echo '<tr style="background-color:pink;"><td>'.$count.'</td><td>'.$rows['ADDRESS'].'</td><td>'.$rows['DIST'].'</td><td>'.$rows['SQ_FT'].'</td><td>'.$rows['LOTSIZEACRES'].'</td><td>'.$rows['YEARBUILT'].'</td><td>'.$rows['LISTDATE'].'</td><td>'.$rows['STRUCTURESTORIES'].'</td><td>No match</td></tr>';
 					}
@@ -255,7 +269,66 @@
 		$fd = fopen($path,"a");
 		fwrite($fd,$dt);
 				
+						$count=1;
+				$c4lot = array();
+				$c4age = array();
+				if(count($aSearchProp)<5){
+                foreach($filter as $rows)
+				{
 				
+					if(in_array($rows['address'],$aSearchProp)){
+                         continue;
+					}
+					$listdate = $rows['dateSold'];
+					$listdate = preg_replace("@T.*?$@","",$listdate);
+					list($m,$d,$y) = preg_split("@-@",$listdate);
+					
+					
+					$ydate = strtotime("$y-$m-$d");
+
+					$cn1 = time() - (180*24*60*60);
+					$cn2 = time() - (365*24*60*60);
+
+					$adr = preg_replace("@\s+@","+",$Add);
+					$coords = getLatitudeLongitude($adr);
+
+
+					if($rows['sq_size']<=0 || $rows['sq_size']==""){ continue;}
+					if($rows['lot_size']<=0 || $rows['lot_size']==""){   $rows['lot_size'] = $lot_size;}
+					if($rows['stories']<=0 || $rows['stories']==""){ $rows['stories'] = $stories;}
+					if($rows['year_built']<=0 || $rows['year_built']==""){  $rows['year_built'] = $year_built;}
+
+
+					if($rows['distance']< 0 || $rows['distance']==""){  continue;}
+					if($rows['dateSold']==""){  continue;}
+
+
+					$rows['dateSold'] = preg_replace("@T.*?$@","",$rows['dateSold']);
+					list($y,$m,$d) = preg_split("@-@",$rows['dateSold']);
+					$rows['dateSold']=$m."/".$d."/".$y;
+
+
+					if(($rows['sq_size'] >= $C4Rangesqrft['Min'] && $rows['sq_size'] <= $C4Rangesqrft['Max'] ) && ($rows['lot_size'] >= $C4Rangelot['Min'] && $rows['lot_size'] <= $C4Rangelot['Max'])  && $rows['distance']<=$C4Proximity && $rows['stories']==$stories)
+					{
+							
+							$c4lot[] = array('address'=>$rows['address'], 'distance'=>$rows['distance'],'bedsBaths'=>$rows['beds'],'sq_size'=>$rows['sq_size'],'year_built'=>$rows['year_built'],'lot_size'=>$rows['lot_size'],'stories'=>$rows['stories'],'dateSold'=>$rows['dateSold'], 'amount'=>$rows['amount'],'latitude'=>$rows['latitude'], 'longitude'=>$rows['longitude'], 'pool'=>$rows['pool'], 'basement'=>$rows['basement'],'criteria'=>'4lot','criteria4lot'=>'cr4');
+							
+							$aSearchProp[] = array('address'=>$rows['address'], 'distance'=>$rows['distance'],'bedsBaths'=>$rows['beds'],'sq_size'=>$rows['sq_size'],'year_built'=>$rows['year_built'],'lot_size'=>$rows['lot_size'],'stories'=>$rows['stories'],'dateSold'=>$rows['dateSold'], 'amount'=>$rows['amount'],'latitude'=>$rows['latitude'], 'longitude'=>$rows['longitude'], 'pool'=>$rows['pool'], 'basement'=>$rows['basement'],'criteria'=>'4lot','criteria4lot'=>'cr4');
+              
+							$dt = $dt.'<tr style="background-color:aqua;"><td>'.$count.'</td><td>'.$rows['address'].'</td><td>'.$rows['distance'].'</td><td>'.$rows['sq_size'].'</td><td>'.$rows['lot_size'].'</td><td>'.$rows['year_built'].'</td><td>'.$rows['dateSold'].'</td><td>'.$rows['stories'].'</td><td>Criteria 4</td></tr>';
+					}
+					else if(($rows['sq_size'] >= $C4Rangesqrft['Min'] && $rows['sq_size'] <= $C4Rangesqrft['Max'] ) && ($rows['year_built'] >= $C4RangeAge['Min'] && $rows['year_built'] <= $C4RangeAge['Max']) && $rows['distance']<=$C4Proximity && $rows['stories']==$stories){
+							$c4age[] = array('address'=>$rows['address'], 'distance'=>$rows['distance'],'bedsBaths'=>$rows['beds'],'sq_size'=>$rows['sq_size'],'year_built'=>$rows['year_built'],'lot_size'=>$rows['lot_size'],'stories'=>$rows['stories'],'dateSold'=>$rows['dateSold'], 'amount'=>$rows['amount'],'latitude'=>$rows['latitude'], 'longitude'=>$rows['longitude'], 'pool'=>$rows['pool'], 'basement'=>$rows['basement'],'criteria'=>'4age','criteria4age'=>'cr4');
+							
+							$aSearchProp[] = array('address'=>$rows['address'], 'distance'=>$rows['distance'],'bedsBaths'=>$rows['beds'],'sq_size'=>$rows['sq_size'],'year_built'=>$rows['year_built'],'lot_size'=>$rows['lot_size'],'stories'=>$rows['stories'],'dateSold'=>$rows['dateSold'], 'amount'=>$rows['amount'],'latitude'=>$rows['latitude'], 'longitude'=>$rows['longitude'], 'pool'=>$rows['pool'], 'basement'=>$rows['basement'],'criteria'=>'4age','criteria4age'=>'cr4');
+              
+							$dt = $dt.'<tr style="background-color:aqua;"><td>'.$count.'</td><td>'.$rows['address'].'</td><td>'.$rows['distance'].'</td><td>'.$rows['sq_size'].'</td><td>'.$rows['lot_size'].'</td><td>'.$rows['year_built'].'</td><td>'.$rows['dateSold'].'</td><td>'.$rows['stories'].'</td><td>Criteria 4</td></tr>';
+					}							
+					$count++;
+				   }
+				}
+
+
 
 				function subval_sort($a,$subkey) {
 					foreach($a as $k=>$v) {
@@ -280,8 +353,42 @@
 					return $c;
 				}
 
-			 
-		
+
+				$c4age = subval_sort($c4age, 'distance');
+				$c4lot = subval_sort($c4lot,'distance');
+
+				$c4lotdata = "<h5>Properties matching criteria 4 - lot size </h5>";
+				$c4lotdata = $c4lotdata.'<table class="table table-bordered"> 
+				<tr>
+					<td>SL</td><td>Address </td><td>Distance </td><td>Bed/baths </td><td>Sqft</td><td>Year Built</td><td>Lot Size</td><td>Stories</td><td>List Date</td><td>Price</td><td>Pool</td>
+				</tr>
+				';
+				$count=1;
+				foreach($c4lot as $rows){
+					$tr = '<tr><td>'.$count.'</td><td>'.$rows['address'].'</td><td>'.$rows['distance'].'</td><td>'.$rows['bedsBaths'].' </td><td>'.$rows['sq_size'].' </td><td>'.$rows['year_built'].'</td><td>'.$rows['lot_size'].'</td><td>'.$rows['stories'].'</td><td>'.$rows['dateSold'].'</td><td>'.$rows['amount'].'</td><td>'.$rows['pool'].'</td></tr>';
+					$count++;
+					$c4lotdata = $c4lotdata .''.$tr;
+				}
+				$c4lotdata  = $c4lotdata.'</table>';
+				fwrite($fd,$c4lotdata);
+
+                //----------------------------------//
+				$c4agedata = "<h5>Properties matching criteria 4 - Age Home </h5>";
+				$c4agedata = $c4agedata.'<table class="table table-bordered"> 
+				<tr>
+					<td>SL</td><td>Address </td><td>Distance </td><td>Bed/baths </td><td>Sqft</td><td>Year Built</td><td>Lot Size</td><td>Stories</td><td>List Date</td><td>Price</td><td>Pool</td>
+				</tr>
+				';
+				$count=1;
+				foreach($c4age as $rows){
+					$tr = '<tr><td>'.$count.'</td><td>'.$rows['address'].'</td><td>'.$rows['distance'].'</td><td>'.$rows['bedsBaths'].' </td><td>'.$rows['sq_size'].' </td><td>'.$rows['year_built'].'</td><td>'.$rows['lot_size'].'</td><td>'.$rows['stories'].'</td><td>'.$rows['dateSold'].'</td><td>'.$rows['amount'].'</td><td>'.$rows['pool'].'</td></tr>';
+					$count++;
+					$c4agedata = $c4agedata .''.$tr;
+				}
+				$c4agedata  = $c4agedata.'</table>';
+				fwrite($fd,$c4agedata);
+
+				//---------------------------------//
 				$c3 = subval_sort($c3,'distance'); 
 
 				$c3data = "<h5>Properties matching criteria 3 </h5>";
@@ -299,14 +406,7 @@
 				$c3data  = $c3data.'</table>';
 				fwrite($fd,$c3data);
 
-				//$us->storeXMLResultLog($xml_result,$c1,$c2,$c3);
-				//$aSearchProp = array_merge($c1, $c2);
-				//$aSearchProp =array_merge($aSearchProp, $c3);
-
-				//$aSearchProp = subval_sort($aSearchProp,'criteria');
-	
-				$cnt=0;
-				
+				$cnt=0;			
 
 				foreach($c3 as $cr3){
 					$aSearchProp[$cnt] = $cr3;
@@ -314,11 +414,23 @@
 				}
 		
 
+		         foreach($c4lot as $cr4){
+					$aSearchProp[$cnt] = $cr4;
+					$cnt++;
+				}
+
+				foreach($c4age as $cr5){
+					$aSearchProp[$cnt] = $cr5;
+					$cnt++;
+				}
+
+
 				/* top 5 */	
 				$top = $aSearchProp;
 				$top_array = array_slice($top, 0, $maxRecords);
 				$top_array = subval_asort($top_array,'criteria');
 				foreach($top_array as $tp){			
+
 					if(array_key_exists("criteria3", $tp)){
 						$fParam = 3;
 						break;
@@ -333,7 +445,45 @@
 					}
 				}
 
-				if ($fParam==3) {
+				foreach($top_array as $tp){								
+					if(array_key_exists("criteria4age", $tp)){
+						$sParam = 5;
+						break;
+					}
+
+					if(array_key_exists("criteria4lot", $tp)){
+						$sParam = 4;					
+						break;
+					}
+				}
+
+
+
+				if($sParam == 5){
+						if ($fParam==3) {
+							$finalParameters = array("square_footage"=>"+/- 20%", "radius"=>"< 2.5 Miles", "age"=>"50% of age rounded up", "lotSize"=>"+/- 50%", "stories"=>$stories,  "dateSale"=>"< 1 year");
+						}
+						elseif ($fParam==2) {
+							$finalParameters = array("square_footage"=>"+/- 15%", "radius"=>"< 1 Mile", "age"=>"+/- 10years", "lotSize"=>"+/- 50%", "stories"=>$stories,  "dateSale"=>"< 1 year");
+						}
+						elseif ($fParam==1) {
+							$finalParameters = array("square_footage"=>"+/- 10%", "radius"=>"< 0.5 Miles", "age"=>"+/- 5years", "lotSize"=>"+/- 50%", "stories"=>$stories,  "dateSale"=>"< 180 days");
+						}
+						$finalParameters ["age"]= "50% of age rounded up";
+				}
+				else if($sParam == 4){
+						if ($fParam==3) {
+							$finalParameters = array("square_footage"=>"+/- 20%", "radius"=>"< 2.5 Miles", "age"=>"50% of age rounded up", "lotSize"=>"+/- 50%", "stories"=>$stories,  "dateSale"=>"< 1 year");
+						}
+						elseif ($fParam==2) {
+							$finalParameters = array("square_footage"=>"+/- 15%", "radius"=>"< 1 Mile", "age"=>"+/- 10years", "lotSize"=>"+/- 50%", "stories"=>$stories,  "dateSale"=>"< 1 year");
+						}
+						elseif ($fParam==1) {
+							$finalParameters = array("square_footage"=>"+/- 10%", "radius"=>"< 0.5 Miles", "age"=>"+/- 5years", "lotSize"=>"+/- 50%", "stories"=>$stories,  "dateSale"=>"< 180 days");
+						}					
+						$finalParameters ["lotSize"]= "+/- 50%";
+				}
+				else if ($fParam==3) {
 		    		$finalParameters = array("square_footage"=>"+/- 20%", "radius"=>"< 2.5 Miles", "age"=>"50% of age rounded up", "lotSize"=>"+/- 50%", "stories"=>$stories,  "dateSale"=>"< 1 year");
 				}
 				elseif ($fParam==2) {
@@ -427,6 +577,12 @@
 		$C3Rangelot = MinMax(50,$lot_size);
 		$C3Proximity = "2.5";
 
+		/*criteria 4 ********/
+        $C4Rangesqrft = MinMax(20,$square_footage);
+		$C4RangeAge = MinMaxAgePer(100,$year_built);
+		$C4Rangelot = MinMax(100,$lot_size);
+		$C4Proximity = "2.5";
+
 		$aSearchProp = array();
 		$c1=array(); 
 		$c2=array(); 
@@ -458,6 +614,7 @@
 			<?php
 			exit;
 		}
+		$filter = array();
 		foreach($xml_result as $rows)
 		{	
 
@@ -493,30 +650,95 @@
 			$rows['ADDRESS'] = $rows['ADDRESS']." ".$rows['CITY']." ".$rows['STATE']." ".$rows['ZIP'];
 			if(($rows['SQ_FT'] >= $C1Rangesqrft['Min'] && $rows['SQ_FT'] <= $C1Rangesqrft['Max'] ) && ($rows['LOTSIZEACRES'] >= $C1Rangelot['Min'] && $rows['LOTSIZEACRES'] <= $C1Rangelot['Max']) && ($rows['YEARBUILT'] >= $C1RangeAge['Min'] && $rows['YEARBUILT'] <= $C1RangeAge['Max']) && ($ydate>= $cn1) && $rows['DIST']<=$C1Proximity && $rows['STRUCTURESTORIES']==$stories)
 			{
-				$c1[] = array('city'=>$rows['CITY'], 'state'=>$rows['STATE'],  'zip'=>$rows['ZIP'],'address'=>$rows['ADDRESS'], 'distance'=>$rows['DIST'],'bedsBaths'=>$rows['BEDS'].' Bd /'.$rows['BATHS'].' Ba','sq_size'=>$rows['SQ_FT'],'year_built'=>$rows['YEARBUILT'],'lot_size'=>$rows['LOTSIZEACRES'],'stories'=>$rows['STRUCTURESTORIES'],'dateSold'=>$rows['DATE'], 'amount'=>$rows['PRICE'], 'latitude'=>$rows['LAT'], 'longitude'=>$rows['LON'],'pool'=>$rows['POOL'], 'basement'=>"No", 'criteria'=>'1','criteria1'=>'cr1');
-				$aSearchProp[] = array('city'=>$rows['CITY'], 'state'=>$rows['STATE'],  'zip'=>$rows['ZIP'], 'address'=>$rows['ADDRESS'],  'distance'=>$rows['DIST'],'bedsBaths'=>$rows['BEDS'].' Bd /'.$rows['BATHS'].' Ba','sq_size'=>$rows['SQ_FT'],'year_built'=>$rows['YEARBUILT'],'lot_size'=>$rows['LOTSIZEACRES'],'stories'=>$rows['STRUCTURESTORIES'],'dateSold'=>$rows['DATE'], 'amount'=>$rows['PRICE'], 'latitude'=>$rows['LAT'], 'longitude'=>$rows['LON'],'pool'=>$rows['POOL'], 'basement'=>"No", 'criteria'=>'1','criteria1'=>'cr1');
+				$c1[] = array('city'=>$rows['CITY'], 'state'=>$rows['STATE'],  'zip'=>$rows['ZIP'],'address'=>$rows['ADDRESS'], 'distance'=>$rows['DIST'],'bedsBaths'=>$rows['BEDS'].'/'.$rows['BATHS'].' ','sq_size'=>$rows['SQ_FT'],'year_built'=>$rows['YEARBUILT'],'lot_size'=>$rows['LOTSIZEACRES'],'stories'=>$rows['STRUCTURESTORIES'],'dateSold'=>$rows['DATE'], 'amount'=>$rows['PRICE'], 'latitude'=>$rows['LAT'], 'longitude'=>$rows['LON'],'pool'=>$rows['POOL'], 'basement'=>"No", 'criteria'=>'1','criteria1'=>'cr1');
+				$aSearchProp[] = array('city'=>$rows['CITY'], 'state'=>$rows['STATE'],  'zip'=>$rows['ZIP'], 'address'=>$rows['ADDRESS'],  'distance'=>$rows['DIST'],'bedsBaths'=>$rows['BEDS'].' /'.$rows['BATHS'].' ','sq_size'=>$rows['SQ_FT'],'year_built'=>$rows['YEARBUILT'],'lot_size'=>$rows['LOTSIZEACRES'],'stories'=>$rows['STRUCTURESTORIES'],'dateSold'=>$rows['DATE'], 'amount'=>$rows['PRICE'], 'latitude'=>$rows['LAT'], 'longitude'=>$rows['LON'],'pool'=>$rows['POOL'], 'basement'=>"No", 'criteria'=>'1','criteria1'=>'cr1');
 				$dt = $dt.'<tr style="background-color:green;"><td>'.$count.'</td><td>'.$rows['ADDRESS'].'</td><td>'.$rows['DIST'].'</td><td>'.$rows['SQ_FT'].'</td><td>'.$rows['LOTSIZEACRES'].'</td><td>'.$rows['YEARBUILT'].'</td><td>'.$rows['DATE'].'</td><td>'.$rows['STRUCTURESTORIES'].'</td><td>Criteria 1</td></tr>';
 			}
 			else 
 			if(($rows['SQ_FT'] >= $C2Rangesqrft['Min'] && $rows['SQ_FT'] <= $C2Rangesqrft['Max'] ) && ($rows['LOTSIZEACRES'] >= $C2Rangelot['Min'] && $rows['LOTSIZEACRES'] <= $C2Rangelot['Max']) && ($rows['YEARBUILT'] >= $C2RangeAge['Min'] && $rows['YEARBUILT'] <= $C2RangeAge['Max']) && ($ydate>= $cn2) && $rows['DIST']<=$C2Proximity && $rows['STRUCTURESTORIES']==$stories)
 			{
-				$c2[] = array('city'=>$rows['CITY'], 'state'=>$rows['STATE'],  'zip'=>$rows['ZIP'],'address'=>$rows['ADDRESS'], 'distance'=>$rows['DIST'],'bedsBaths'=>$rows['BEDS'].' Bd /'.$rows['BATHS'].' Ba','sq_size'=>$rows['SQ_FT'],'year_built'=>$rows['YEARBUILT'],'lot_size'=>$rows['LOTSIZEACRES'],'stories'=>$rows['STRUCTURESTORIES'],'dateSold'=>$rows['DATE'], 'amount'=>$rows['PRICE'],'latitude'=>$rows['LAT'], 'longitude'=>$rows['LON'],'pool'=>$rows['POOL'], 'basement'=>"No",'criteria'=>'2','criteria2'=>'cr2');
-				$aSearchProp[] = array('city'=>$rows['CITY'], 'state'=>$rows['STATE'], 'zip'=>$rows['ZIP'], 'address'=>$rows['ADDRESS'], 'distance'=>$rows['DIST'],'bedsBaths'=>$rows['BEDS'].' Bd /'.$rows['BATHS'].' Ba','sq_size'=>$rows['SQ_FT'],'year_built'=>$rows['YEARBUILT'],'lot_size'=>$rows['LOTSIZEACRES'],'stories'=>$rows['STRUCTURESTORIES'],'dateSold'=>$rows['DATE'], 'amount'=>$rows['PRICE'],'latitude'=>$rows['LAT'], 'longitude'=>$rows['LON'],'pool'=>$rows['POOL'], 'basement'=>"No",'criteria'=>'2','criteria2'=>'cr2');
+				$c2[] = array('city'=>$rows['CITY'], 'state'=>$rows['STATE'],  'zip'=>$rows['ZIP'],'address'=>$rows['ADDRESS'], 'distance'=>$rows['DIST'],'bedsBaths'=>$rows['BEDS'].'/'.$rows['BATHS'].' ','sq_size'=>$rows['SQ_FT'],'year_built'=>$rows['YEARBUILT'],'lot_size'=>$rows['LOTSIZEACRES'],'stories'=>$rows['STRUCTURESTORIES'],'dateSold'=>$rows['DATE'], 'amount'=>$rows['PRICE'],'latitude'=>$rows['LAT'], 'longitude'=>$rows['LON'],'pool'=>$rows['POOL'], 'basement'=>"No",'criteria'=>'2','criteria2'=>'cr2');
+				$aSearchProp[] = array('city'=>$rows['CITY'], 'state'=>$rows['STATE'], 'zip'=>$rows['ZIP'], 'address'=>$rows['ADDRESS'], 'distance'=>$rows['DIST'],'bedsBaths'=>$rows['BEDS'].' /'.$rows['BATHS'].' ','sq_size'=>$rows['SQ_FT'],'year_built'=>$rows['YEARBUILT'],'lot_size'=>$rows['LOTSIZEACRES'],'stories'=>$rows['STRUCTURESTORIES'],'dateSold'=>$rows['DATE'], 'amount'=>$rows['PRICE'],'latitude'=>$rows['LAT'], 'longitude'=>$rows['LON'],'pool'=>$rows['POOL'], 'basement'=>"No",'criteria'=>'2','criteria2'=>'cr2');
 
 				$dt = $dt.'<tr style="background-color:yellow;"><td>'.$count.'</td><td>'.$rows['ADDRESS'].'</td><td>'.$rows['DIST'].'</td><td>'.$rows['SQ_FT'].'</td><td>'.$rows['LOTSIZEACRES'].'</td><td>'.$rows['YEARBUILT'].'</td><td>'.$rows['DATE'].'</td><td>'.$rows['STRUCTURESTORIES'].'</td><td>Criteria 2</td></tr>';
 			}else 
 			if(($rows['SQ_FT'] >= $C3Rangesqrft['Min'] && $rows['SQ_FT'] <= $C3Rangesqrft['Max'] ) && ($rows['LOTSIZEACRES'] >= $C3Rangelot['Min'] && $rows['LOTSIZEACRES'] <= $C3Rangelot['Max']) && ($rows['YEARBUILT'] >= $C3RangeAge['Min'] && $rows['YEARBUILT'] <= $C3RangeAge['Max']) && ($ydate>= $cn2) && $rows['DIST']<=$C3Proximity && $rows['STRUCTURESTORIES']==$stories)
 			{
-				$c3[] = array('city'=>$rows['CITY'], 'state'=>$rows['STATE'], 'zip'=>$rows['ZIP'],'address'=>$rows['ADDRESS'], 'distance'=>$rows['DIST'],'bedsBaths'=>$rows['BEDS'].' Bd /'.$rows['BATHS'].' Ba','sq_size'=>$rows['SQ_FT'],'year_built'=>$rows['YEARBUILT'],'lot_size'=>$rows['LOTSIZEACRES'],'stories'=>$rows['STRUCTURESTORIES'],'dateSold'=>$rows['DATE'], 'amount'=>$rows['PRICE'],'latitude'=>$rows['LAT'], 'longitude'=>$rows['LON'], 'pool'=>$rows['POOL'], 'basement'=>"No",'criteria'=>'3','criteria3'=>'cr3');
-				$aSearchProp[] = array('city'=>$rows['CITY'], 'state'=>$rows['STATE'], 'zip'=>$rows['ZIP'], 'address'=>$rows['ADDRESS'], 'distance'=>$rows['DIST'],'bedsBaths'=>$rows['BEDS'].' Bd /'.$rows['BATHS'].' Ba','sq_size'=>$rows['SQ_FT'],'year_built'=>$rows['YEARBUILT'],'lot_size'=>$rows['LOTSIZEACRES'],'stories'=>$rows['STRUCTURESTORIES'],'dateSold'=>$rows['DATE'], 'amount'=>$rows['PRICE'],'latitude'=>$rows['LAT'], 'longitude'=>$rows['LON'], 'pool'=>$rows['POOL'], 'basement'=>"No",'criteria'=>'3','criteria3'=>'cr3');
+				$c3[] = array('city'=>$rows['CITY'], 'state'=>$rows['STATE'], 'zip'=>$rows['ZIP'],'address'=>$rows['ADDRESS'], 'distance'=>$rows['DIST'],'bedsBaths'=>$rows['BEDS'].'/'.$rows['BATHS'].' ','sq_size'=>$rows['SQ_FT'],'year_built'=>$rows['YEARBUILT'],'lot_size'=>$rows['LOTSIZEACRES'],'stories'=>$rows['STRUCTURESTORIES'],'dateSold'=>$rows['DATE'], 'amount'=>$rows['PRICE'],'latitude'=>$rows['LAT'], 'longitude'=>$rows['LON'], 'pool'=>$rows['POOL'], 'basement'=>"No",'criteria'=>'3','criteria3'=>'cr3');
+				$aSearchProp[] = array('city'=>$rows['CITY'], 'state'=>$rows['STATE'], 'zip'=>$rows['ZIP'], 'address'=>$rows['ADDRESS'], 'distance'=>$rows['DIST'],'bedsBaths'=>$rows['BEDS'].' /'.$rows['BATHS'].' ','sq_size'=>$rows['SQ_FT'],'year_built'=>$rows['YEARBUILT'],'lot_size'=>$rows['LOTSIZEACRES'],'stories'=>$rows['STRUCTURESTORIES'],'dateSold'=>$rows['DATE'], 'amount'=>$rows['PRICE'],'latitude'=>$rows['LAT'], 'longitude'=>$rows['LON'], 'pool'=>$rows['POOL'], 'basement'=>"No",'criteria'=>'3','criteria3'=>'cr3');
 				$dt = $dt.'<tr style="background-color:aqua;"><td>'.$count.'</td><td>'.$rows['ADDRESS'].'</td><td>'.$rows['DIST'].'</td><td>'.$rows['SQ_FT'].'</td><td>'.$rows['LOTSIZEACRES'].'</td><td>'.$rows['YEARBUILT'].'</td><td>'.$rows['DATE'].'</td><td>'.$rows['STRUCTURESTORIES'].'</td><td>Criteria 3</td></tr>';
 			}	else{
-
+				$filter[] = $rows;
 				$dt = $dt. '<tr style="background-color:pink;"><td>'.$count.'</td><td>'.$rows['ADDRESS'].'</td><td>'.$rows['DIST'].'</td><td>'.$rows['SQ_FT'].'</td><td>'.$rows['LOTSIZEACRES'].'</td><td>'.$rows['YEARBUILT'].'</td><td>'.$rows['DATE'].'</td><td>'.$rows['STRUCTURESTORIES'].'</td><td>No match</td></tr>';
 			}
 			$count++;		
 		}
+		
 		 
+		$count=1;
+		$c4lot = array();
+		$c4age = array();
+		if(count($aSearchProp)<5){
+
+
+
+			foreach($filter as $rows)
+			{	
+
+
+				if($rows['RAWLISTINGSTATUS'] !="Sold"){
+					continue;
+				}
+				
+				
+				$listdate = $rows['DATE'];
+				//$listdate = $rows['DATE'];
+				list($m,$d,$y) = preg_split("@\/@",$listdate);
+				$ydate = strtotime("$y-$m-$d");
+				$cn1 = time() - (180*24*60*60);
+				$cn2 = time() - (365*24*60*60);
+
+				if($rows['POOL']==""){ $rows['POOL']="No";}
+
+				
+				/*if($lot_size<=0 || $lot_size==""){ $rows['LOTSIZEACRES'] = $lot_size;}
+				if($year_built<=0 || $year_built==""){ $rows['YEARBUILT'] = $year_built;}
+				if($stories<=0 || $stories==""){ $rows['STRUCTURESTORIES'] = $stories;}
+				*/
+				if($rows['SQ_FT']<=0 || $rows['SQ_FT']==""){ continue;}
+				if($rows['LOTSIZEACRES']<=0 || $rows['LOTSIZEACRES']==""){   $rows['LOTSIZEACRES'] = $lot_size;}
+				if($rows['STRUCTURESTORIES']<=0 || $rows['STRUCTURESTORIES']==""){ $rows['STRUCTURESTORIES'] = $stories;}
+				if($rows['YEARBUILT']<=0 || $rows['YEARBUILT']==""){  $rows['YEARBUILT'] = $year_built;}
+
+
+				if($rows['DIST']< 0 || $rows['DIST']==""){  continue;}
+				if($rows['DATE']==""){  continue;}
+
+				$rows['ADDRESS'] = $rows['ADDRESS']." ".$rows['CITY']." ".$rows['STATE']." ".$rows['ZIP'];
+
+ 
+				if(($rows['SQ_FT'] >= $C4Rangesqrft['Min'] && $rows['SQ_FT'] <= $C4Rangesqrft['Max'] ) && ($rows['LOTSIZEACRES'] >= $C4Rangelot['Min'] && $rows['LOTSIZEACRES'] <= $C4Rangelot['Max']) && ($ydate>= $cn2) && $rows['DIST']<=$C4Proximity && $rows['STRUCTURESTORIES']==$stories)
+				{
+					$c4lot[] = array('city'=>$rows['CITY'], 'state'=>$rows['STATE'], 'zip'=>$rows['ZIP'],'address'=>$rows['ADDRESS'], 'distance'=>$rows['DIST'],'bedsBaths'=>$rows['BEDS'].' /'.$rows['BATHS'].' ','sq_size'=>$rows['SQ_FT'],'year_built'=>$rows['YEARBUILT'],'lot_size'=>$rows['LOTSIZEACRES'],'stories'=>$rows['STRUCTURESTORIES'],'dateSold'=>$rows['DATE'], 'amount'=>$rows['PRICE'],'latitude'=>$rows['LAT'], 'longitude'=>$rows['LON'], 'pool'=>$rows['POOL'], 'basement'=>"No",'criteria'=>'4','criteria4lot'=>'cr4');
+
+					$aSearchProp[] = array('city'=>$rows['CITY'], 'state'=>$rows['STATE'], 'zip'=>$rows['ZIP'], 'address'=>$rows['ADDRESS'], 'distance'=>$rows['DIST'],'bedsBaths'=>$rows['BEDS'].' /'.$rows['BATHS'].' ','sq_size'=>$rows['SQ_FT'],'year_built'=>$rows['YEARBUILT'],'lot_size'=>$rows['LOTSIZEACRES'],'stories'=>$rows['STRUCTURESTORIES'],'dateSold'=>$rows['DATE'], 'amount'=>$rows['PRICE'],'latitude'=>$rows['LAT'], 'longitude'=>$rows['LON'], 'pool'=>$rows['POOL'], 'basement'=>"No",'criteria'=>'4','criteria4lot'=>'cr4');
+
+					$dt = $dt.'<tr style="background-color:aqua;"><td>'.$count.'</td><td>'.$rows['ADDRESS'].'</td><td>'.$rows['DIST'].'</td><td>'.$rows['SQ_FT'].'</td><td>'.$rows['LOTSIZEACRES'].'</td><td>'.$rows['YEARBUILT'].'</td><td>'.$rows['DATE'].'</td><td>'.$rows['STRUCTURESTORIES'].'</td><td>Criteria 4</td></tr>';
+				}	
+				else if(($rows['SQ_FT'] >= $C4Rangesqrft['Min'] && $rows['SQ_FT'] <= $C4Rangesqrft['Max'] ) &&  ($rows['YEARBUILT'] >= $C4RangeAge['Min'] && $rows['YEARBUILT'] <= $C4RangeAge['Max']) && ($ydate>= $cn2) && $rows['DIST']<=$C4Proximity && $rows['STRUCTURESTORIES']==$stories)
+				{
+					$c4age[] = array('city'=>$rows['CITY'], 'state'=>$rows['STATE'], 'zip'=>$rows['ZIP'],'address'=>$rows['ADDRESS'], 'distance'=>$rows['DIST'],'bedsBaths'=>$rows['BEDS'].' /'.$rows['BATHS'].' ','sq_size'=>$rows['SQ_FT'],'year_built'=>$rows['YEARBUILT'],'lot_size'=>$rows['LOTSIZEACRES'],'stories'=>$rows['STRUCTURESTORIES'],'dateSold'=>$rows['DATE'], 'amount'=>$rows['PRICE'],'latitude'=>$rows['LAT'], 'longitude'=>$rows['LON'], 'pool'=>$rows['POOL'], 'basement'=>"No",'criteria'=>'5','criteria4age'=>'cr4');
+
+					$aSearchProp[] = array('city'=>$rows['CITY'], 'state'=>$rows['STATE'], 'zip'=>$rows['ZIP'], 'address'=>$rows['ADDRESS'], 'distance'=>$rows['DIST'],'bedsBaths'=>$rows['BEDS'].' /'.$rows['BATHS'].' ','sq_size'=>$rows['SQ_FT'],'year_built'=>$rows['YEARBUILT'],'lot_size'=>$rows['LOTSIZEACRES'],'stories'=>$rows['STRUCTURESTORIES'],'dateSold'=>$rows['DATE'], 'amount'=>$rows['PRICE'],'latitude'=>$rows['LAT'], 'longitude'=>$rows['LON'], 'pool'=>$rows['POOL'], 'basement'=>"No",'criteria'=>'5','criteria4age'=>'cr4');
+
+					$dt = $dt.'<tr style="background-color:aqua;"><td>'.$count.'</td><td>'.$rows['ADDRESS'].'</td><td>'.$rows['DIST'].'</td><td>'.$rows['SQ_FT'].'</td><td>'.$rows['LOTSIZEACRES'].'</td><td>'.$rows['YEARBUILT'].'</td><td>'.$rows['DATE'].'</td><td>'.$rows['STRUCTURESTORIES'].'</td><td>Criteria 4</td></tr>';
+				}	
+				
+				$count++;		
+			}
+        }
+
+
 		$dt = $dt. '</table>';
 		$path = $_SESSION['path'];
 		$fd = fopen($path,"a");
@@ -549,6 +771,9 @@
 		$c1 = subval_sort($c1,'distance'); 
 		$c2 = subval_sort($c2,'distance'); 
 		$c3 = subval_sort($c3,'distance'); 
+		$c4age = subval_sort($c4age, 'distance');
+		$c4lot = subval_sort($c4lot,'distance');
+
 
 		/******************LOG***************/
 		$c1data = "<h5>Properties matching criteria 1 </h5>";
@@ -599,7 +824,38 @@
 		$c3data  = $c3data.'</table>';
 		fwrite($fd,$c3data);
 		/*************************************************/
-	
+		$c4lotdata = "<h5>Properties matching criteria 4 - lot size </h5>";
+				$c4lotdata = $c4lotdata.'<table class="table table-bordered"> 
+				<tr>
+					<td>SL</td><td>Address </td><td>Distance </td><td>Bed/baths </td><td>Sqft</td><td>Year Built</td><td>Lot Size</td><td>Stories</td><td>List Date</td><td>Price</td><td>Pool</td>
+				</tr>
+				';
+				$count=1;
+				foreach($c4lot as $rows){
+					$tr = '<tr><td>'.$count.'</td><td>'.$rows['address'].'</td><td>'.$rows['distance'].'</td><td>'.$rows['bedsBaths'].' </td><td>'.$rows['sq_size'].' </td><td>'.$rows['year_built'].'</td><td>'.$rows['lot_size'].'</td><td>'.$rows['stories'].'</td><td>'.$rows['dateSold'].'</td><td>'.$rows['amount'].'</td><td>'.$rows['pool'].'</td></tr>';
+					$count++;
+					$c4lotdata = $c4lotdata .''.$tr;
+				}
+				$c4lotdata  = $c4lotdata.'</table>';
+				fwrite($fd,$c4lotdata);
+
+                //----------------------------------//
+				$c4agedata = "<h5>Properties matching criteria 4 - Age Home </h5>";
+				$c4agedata = $c4agedata.'<table class="table table-bordered"> 
+				<tr>
+					<td>SL</td><td>Address </td><td>Distance </td><td>Bed/baths </td><td>Sqft</td><td>Year Built</td><td>Lot Size</td><td>Stories</td><td>List Date</td><td>Price</td><td>Pool</td>
+				</tr>
+				';
+				$count=1;
+				foreach($c4age as $rows){
+					$tr = '<tr><td>'.$count.'</td><td>'.$rows['address'].'</td><td>'.$rows['distance'].'</td><td>'.$rows['bedsBaths'].' </td><td>'.$rows['sq_size'].' </td><td>'.$rows['year_built'].'</td><td>'.$rows['lot_size'].'</td><td>'.$rows['stories'].'</td><td>'.$rows['dateSold'].'</td><td>'.$rows['amount'].'</td><td>'.$rows['pool'].'</td></tr>';
+					$count++;
+					$c4agedata = $c4agedata .''.$tr;
+				}
+				$c4agedata  = $c4agedata.'</table>';
+				fwrite($fd,$c4agedata);
+
+
 		$cnt=0;
 		foreach($c1 as $cr1){
 			$aSearchProp[$cnt] = $cr1;			
@@ -615,36 +871,111 @@
 			$aSearchProp[$cnt] = $cr3;
 			$cnt++;
 		}
-		
 
-		/* top 5 */	
+	  foreach($c4lot as $cr4){
+					$aSearchProp[$cnt] = $cr4;
+					$cnt++;
+				}
+
+				foreach($c4age as $cr5){
+					$aSearchProp[$cnt] = $cr5;
+					$cnt++;
+				}
+
+		/* top properties */	
 		$top = $aSearchProp;
-		$top_array = array_slice($top, 0, $maxRecords);
-		$top_array = subval_asort($top_array,'criteria');
-		foreach($top_array as $tp){			
-			if(array_key_exists("criteria3", $tp)){
-				$fParam = 3;
-				break;
-			}
-			else if(array_key_exists("criteria2", $tp)){
-				$fParam = 2;
-				break;
-			}
-			else if(array_key_exists("criteria1", $tp)){
-				$fParam = 1;
-				break;
-			}
-		}
+//			echo "<pre>";  print_r($lot_size); print_r($C4Rangelot); print_r($top); 
+				$top_array = array_slice($top, 0, $maxRecords);
+				$top_array = subval_asort($top_array,'criteria');
 
-		if ($fParam==3) {
-    		$finalParameters = array("square_footage"=>"+/- 20%", "radius"=>"< 2.5 Miles", "age"=>"50% of age rounded up", "lotSize"=>"+/- 50%", "stories"=>$stories,  "dateSale"=>"< 1 year");
-		}
-		elseif ($fParam==2) {
-    		$finalParameters = array("square_footage"=>"+/- 15%", "radius"=>"< 1 Mile", "age"=>"+/- 10years", "lotSize"=>"+/- 50%", "stories"=>$stories,  "dateSale"=>"< 1 year");
-		}
-		elseif ($fParam==1) {
-    		$finalParameters = array("square_footage"=>"+/- 10%", "radius"=>"< 0.5 Miles", "age"=>"+/- 5years", "lotSize"=>"+/- 50%", "stories"=>$stories,  "dateSale"=>"< 180 days");
-		}
+			
+				foreach($top_array as $tp){			
+
+					if(array_key_exists("criteria3", $tp)){
+						$fParam = 3;
+						break;
+					}
+					else if(array_key_exists("criteria2", $tp)){
+						$fParam = 2;
+						break;
+					}
+					else if(array_key_exists("criteria1", $tp)){
+						$fParam = 1;
+						break;
+					}
+				}
+
+
+				foreach($top_array as $tp){								
+					if(array_key_exists("criteria4age", $tp)){
+						$sParam = 5;						
+					}
+
+					if(array_key_exists("criteria4lot", $tp)){
+						$sParam1 = 4;				
+					
+					}
+				}
+
+
+
+				if($sParam == 5){
+						if ($fParam==3) {
+							$finalParameters = array("square_footage"=>"+/- 20%", "radius"=>"< 2.5 Miles", "age"=>"50% of age rounded up", "lotSize"=>"+/- 50%", "stories"=>$stories,  "dateSale"=>"< 1 year");
+						}
+						elseif ($fParam==2) {
+							$finalParameters = array("square_footage"=>"+/- 15%", "radius"=>"< 1 Mile", "age"=>"+/- 10years", "lotSize"=>"+/- 50%", "stories"=>$stories,  "dateSale"=>"< 1 year");
+						}
+						elseif ($fParam==1) {
+							$finalParameters = array("square_footage"=>"+/- 10%", "radius"=>"< 0.5 Miles", "age"=>"+/- 5years", "lotSize"=>"+/- 50%", "stories"=>$stories,  "dateSale"=>"< 180 days");
+						}
+						if(isset($finalParameters['square_footage'])){
+							if($sParam1==4)
+							{
+								$finalParameters["lotsize"] = "100% of age rounded up";
+							}
+							$finalParameters ["age"]= "100% of age rounded up";
+						}
+						else{
+							
+							$finalParameters = array("square_footage"=>"+/- 20%", "radius"=>"< 2.5 Miles", "age"=>"100% of age rounded up", "lotSize"=>"N/a", "stories"=>$stories,  "dateSale"=>"< 1 year");
+
+							if($sParam1==4)
+							{
+								$finalParameters["lotsize"] = "100% of age rounded up";
+							}
+						}
+				}
+				
+				if($sParam1 == 4){
+						if ($fParam==3) {
+							$finalParameters = array("square_footage"=>"+/- 20%", "radius"=>"< 2.5 Miles", "age"=>"50% of age rounded up", "lotSize"=>"+/- 50%", "stories"=>$stories,  "dateSale"=>"< 1 year");
+						}
+						elseif ($fParam==2) {
+							$finalParameters = array("square_footage"=>"+/- 15%", "radius"=>"< 1 Mile", "age"=>"+/- 10years", "lotSize"=>"+/- 50%", "stories"=>$stories,  "dateSale"=>"< 1 year");
+						}
+						elseif ($fParam==1) {
+							$finalParameters = array("square_footage"=>"+/- 10%", "radius"=>"< 0.5 Miles", "age"=>"+/- 5years", "lotSize"=>"+/- 50%", "stories"=>$stories,  "dateSale"=>"< 180 days");
+						}			
+						if(isset($finalParameters['square_footage'])){
+							$finalParameters ["lotSize"]= "+/- 100%";
+						}
+						else{
+							$finalParameters = array("square_footage"=>"+/- 20%", "radius"=>"< 2.5 Miles", "age"=>"N/a", "lotSize"=>"+/- 100%", "stories"=>$stories,  "dateSale"=>"< 1 year");
+						}
+				}
+
+				if(!$sParam || !$sParam1){
+					if ($fParam==3) {
+						$finalParameters = array("square_footage"=>"+/- 20%", "radius"=>"< 2.5 Miles", "age"=>"50% of age rounded up", "lotSize"=>"+/- 50%", "stories"=>$stories,  "dateSale"=>"< 1 year");
+					}
+					elseif ($fParam==2) {
+						$finalParameters = array("square_footage"=>"+/- 15%", "radius"=>"< 1 Mile", "age"=>"+/- 10years", "lotSize"=>"+/- 50%", "stories"=>$stories,  "dateSale"=>"< 1 year");
+					}
+					elseif ($fParam==1) {
+						$finalParameters = array("square_footage"=>"+/- 10%", "radius"=>"< 0.5 Miles", "age"=>"+/- 5years", "lotSize"=>"+/- 50%", "stories"=>$stories,  "dateSale"=>"< 180 days");
+					}
+				}
 		$_SESSION['finalParameters']=$finalParameters;
 
 

@@ -1,7 +1,6 @@
 <?php 
 session_start();
-include('db/db.php');
-	
+	include('db/db.php');
 	if(!isset($_SESSION['forgot-user'])){
 		header('Location: login.php');
 	}
@@ -10,16 +9,14 @@ if(isset($_POST['forgotpasswordsubmit']) && isset($_SESSION['forgot-user'])){
 	$answer2 = trim($_POST['answer2']);
 	$answer3 = trim($_POST['answer3']);
 
-	$userid = $_SESSION['userid'];
+	$userid = $_SESSION['forgot-user'];
 
 
 	//$query = "SELECT Answer FROM securityquestion WHERE userID = (SELECT UserID FROM userdetail where UserName = '$emailid')";
-	$query = "SELECT Answer FROM securityquestion WHERE userID = $userid";
-	//echo $query;
-	$query2 = "SELECT Answer FROM securityquestion WHERE userID = $userid ORDER BY QuestionID DESC LIMIT 1, 1";
-	//echo $query2;
-	$query3 = "SELECT Answer FROM securityquestion WHERE userID = $userid ORDER BY QuestionID DESC LIMIT 1";
-	//echo $query3;exit;
+	 $query = "SELECT Answer FROM securityquestion WHERE userID='$userid'";
+  $query2 = "SELECT Answer FROM securityquestion WHERE userID='$userid' ORDER BY QuestionID DESC LIMIT 1,1";
+   $query3 = "SELECT Answer FROM securityquestion WHERE userID='$userid' ORDER BY QuestionID DESC LIMIT 1";
+  //echo $query3;exit;
 	$sql = mysql_query($query);
 	$result = mysql_fetch_array($sql);
 	$sql2 = mysql_query($query2);
@@ -27,9 +24,11 @@ if(isset($_POST['forgotpasswordsubmit']) && isset($_SESSION['forgot-user'])){
 	$sql3 = mysql_query($query3);
 	$result3 = mysql_fetch_array($sql3);
 
+
 	if($result[0] == $answer1 && $result2[0] == $answer2 && $result3[0] == $answer3){
 		$_SESSION['success'] =1;
 		unset($_SESSION['forgot-user']);
+		$_SESSION['userid']=$userid;
 		header("Location: change_password.php");
 
 	}else{

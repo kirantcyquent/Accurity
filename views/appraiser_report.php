@@ -25,7 +25,7 @@
 			<tr>
 				<td width="4%"><div style="width:10px; height:10px;background-color:#A689B6;"></div></td>
 				<td width="16%">&nbsp;<strong>Subject Property</strong></td>
-				<td width="4%"><div style="width:13px; height:10px;background-color:#99BEFD;"></div></td>
+				<td width="4%"><div style="width:13px; height:10px;background-color:#003F7F;"></div></td>
 				<td width="33%">&nbsp;<strong>Potential Comparable Sales Used</strong></td>
 				<td width="4%"><div style="width:13px; height:10px;background-color:#F5635B;"></div></td>
 				<td width="35%">&nbsp;<strong>Potential Comparable Sales Not Used</strong> </td>
@@ -52,7 +52,7 @@
 						<tr style="height:25px !important;"><td>Radius</td><td> <?php echo $finalParameters['radius'];?> </td></tr>
 						<tr style="height:25px !important;"><td>Age</td><td> <?php echo $finalParameters['age'];?></td></tr>
 						<tr style="height:25px !important;"><td>Lot Size</td><td> <?php echo $finalParameters['lotSize'];?></td></tr>
-						<tr style="height:25px !important;"><td>Stories</td><td> <?php echo $finalParameters['stories'];?></td></tr>
+						<tr style="height:25px !important;"><td>STY</td><td> <?php echo $finalParameters['stories'];?></td></tr>
 						<tr style="height:25px !important;"><td>Date of Sale</td><td>  <?php echo $finalParameters['dateSale'];?> </td></tr>
 					</table>
 				</td>
@@ -74,26 +74,26 @@
 
 					}else{?>
 				<tr bgcolor="#ccc" style="font-size:7px !important;">
-					<th colspan="11" width="84%">&nbsp;</th>
-					<th colspan="3" width="12%" style="border-right:1px solid #ccc;"><strong>Public Record Match</strong></th>
-					<th width="6%">&nbsp;</th>
+					<th colspan="11" width="85%">&nbsp;</th>
+					<th colspan="2" width="11%" style="border-right:1px solid #ccc;"><strong>Public Record Match</strong></th>
+					<th width="4%">&nbsp;</th>
 				</tr>
 				<?php }?>
 				<tr bgcolor="#ccc" style="font-size:7px !important;">
-					<th width="15%" style="border-right:1px solid #ccc;"><strong>Address</strong></th>
-					<th width="9%" style="border-right:1px solid #ccc;"><strong>Distance</strong></th>
-					<th width="8%" style="border-right:1px solid #ccc;"><strong>Bd/Ba</strong></th>
-					<th width="7%" style="border-right:1px solid #ccc;"><strong>SF</strong></th>
-					<th width="5%" style="border-right:1px solid #ccc;"><strong>Yr</strong></th>
-					<th width="7%" style="border-right:1px solid #ccc;"><strong>Lot</strong></th>
-					<th width="6%" style="border-right:1px solid #ccc;"><strong>Stories</strong></th>
-					<th width="5%" style="border-right:1px solid #ccc;"><strong>Pool</strong></th>
-					<th width="6%" style="border-right:1px solid #ccc;"><strong>Bsmnt</strong></th>
-					<th width="10%" style="border-right:1px solid #ccc;"><strong>Date Sold</strong></th>
-					<th width="8%" style="border-right:1px solid #ccc;"><strong>Amount</strong></th>
-					<th width="6%" style="border-right:1px solid #ccc;"><strong>Sales $</strong></th>
-					<th width="6%" style="border-right:1px solid #ccc;"><strong>Sales Date</strong></th>
-					<th width="4%" style="border-right:1px solid #ccc;"><strong>Concessions</strong></th>
+					<th width="22%" style="border-right:1px solid #ccc;"><strong>Address</strong></th>
+					<th width="7%" style="border-right:1px solid #ccc;"><strong>Distance</strong></th>
+					<th width="5%" style="border-right:1px solid #ccc;"><strong>Bd/Ba</strong></th>
+					<th width="7%" style="border-right:1px solid #ccc;text-align:center;"><strong>SF</strong></th>
+					<th width="5%" style="border-right:1px solid #ccc;text-align:center;"><strong>Yr</strong></th>
+					<th width="7%" style="border-right:1px solid #ccc;text-align:center;"><strong>Lot</strong></th>
+					<th width="4%" style="border-right:1px solid #ccc;text-align:center;"><strong>STY</strong></th>
+					<th width="5%" style="border-right:1px solid #ccc;text-align:center;"><strong>Pool</strong></th>
+					<th width="5%" style="border-right:1px solid #ccc;text-align:center;"><strong>BSMT</strong></th>
+					<th width="10%" style="border-right:1px solid #ccc;text-align:center;"><strong>Date Sold</strong></th>
+					<th width="8%" style="border-right:1px solid #ccc;text-align:center;"><strong>Amount</strong></th>
+					<th width="6%" style="border-right:1px solid #ccc;text-align:center;"><strong>Sales $</strong></th>
+					<th width="5%" style="border-right:1px solid #ccc;text-align:center;"><strong>Sales Date</strong></th>
+					<th width="4%" style="border-right:1px solid #ccc;text-align:center;"><strong>Concessions</strong></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -109,19 +109,19 @@
 					
 			?>
 			  <tr bgcolor="#f6f6f6">
-			  <td width="15%" style="border-right:1px solid #ccc;"><?php echo $key2+1 .") ".$detail['address'];?></td>
-				<td width="9%" style="border-right:1px solid #ccc;"><?php echo  sprintf('%0.2f', $detail['distance']);?>miles</td>
-				<td width="8%" style="border-right:1px solid #ccc;"><?php echo $detail['bedsBaths'];?></td>
-				<td width="7%" style="border-right:1px solid #ccc;"><?php echo number_format($detail['sq_size']);?></td>
-				<td width="5%" style="border-right:1px solid #ccc;"><?php echo $detail['year_built'];?></td>
-				<td width="7%" style="3px;border-right:1px solid #ccc;"><?php echo number_format($detail['lot_size']);?></td>
-				<td width="6%" style="3px;border-right:1px solid #ccc;"><?php echo $detail['stories'];?></td>
-				<td width="5%" style="3px;border-right:1px solid #ccc;"><?php echo $detail['pool'];?></td>
-				<td width="6%" style="border-right:1px solid #ccc;"><?php echo $detail['basement'];?></td>
-				<td width="10%" style="border-right:1px solid #ccc;"><?php echo $detail['dateSold'];?></td>
-				<td width="8%" style="border-right:1px solid #ccc;">$<?php echo number_format($detail['amount']);?></td>	
-				<td width="6%" style="border-right:1px solid #ccc;"><?php echo $detail['dy'] ?></td>
-				<td width="6%" style="border-right:1px solid #ccc;"><?php echo $detail['ay'] ?></td>
+			  <td width="22%" style="border-right:1px solid #ccc;"><?php echo $key2+1 .") ".$detail['address'];?></td>
+				<td width="7%" style="border-right:1px solid #ccc;"><?php echo  sprintf('%0.2f', $detail['distance']);?> mi</td>
+				<td width="5%" style="border-right:1px solid #ccc;text-align:center;"><?php echo $detail['bedsBaths'];?></td>
+				<td width="7%" style="border-right:1px solid #ccc;text-align:center;"><?php echo number_format($detail['sq_size']);?></td>
+				<td width="5%" style="border-right:1px solid #ccc;text-align:center;"><?php echo $detail['year_built'];?></td>
+				<td width="7%" style="3px;border-right:1px solid #ccc;text-align:center;"><?php echo number_format($detail['lot_size']);?></td>
+				<td width="4%" style="3px;border-right:1px solid #ccc;text-align:center;"><?php echo $detail['stories'];?></td>
+				<td width="5%" style="3px;border-right:1px solid #ccc;text-align:center;"><?php echo $detail['pool'];?></td>
+				<td width="5%" style="border-right:1px solid #ccc;text-align:center;"><?php echo $detail['basement'];?></td>
+				<td width="10%" style="border-right:1px solid #ccc;text-align:center;"><?php echo $detail['dateSold'];?></td>
+				<td width="8%" style="border-right:1px solid #ccc;text-align:center;">$<?php echo number_format($detail['amount']);?></td>	
+				<td width="6%" style="border-right:1px solid #ccc;text-align:center;"><?php echo $detail['dy'] ?></td>
+				<td width="5%" style="border-right:1px solid #ccc;text-align:center;"><?php echo $detail['ay'] ?></td>
 				<td width="4%">&nbsp;</td>
 			  </tr>
 			  <?php
@@ -149,25 +149,25 @@
 		<table id="compTable" width="100%" style="font-size:9px;">
     <thead>
         <tr bgcolor="#ccc" style="font-size:7px !important;">
-					<th colspan="11" width="84%">&nbsp;</th>
-					<th colspan="3" width="12%" style="border-right:1px solid #ccc;"><strong>Public Record Match</strong></th>
-					<th width="6%">&nbsp;</th>
+			<th colspan="11" width="85%">&nbsp;</th>
+			<th colspan="2" width="11%" style="border-right:1px solid #ccc;"><strong>Public Record Match</strong></th>
+			<th width="4%">&nbsp;</th>
 		</tr>
       <tr bgcolor="#ccc" style="font-size:7px !important;">	 
-        <th width="15%" style="border-right:1px solid #ccc;"><strong>Address</strong></th>
-		<th width="9%" style="border-right:1px solid #ccc;"><strong>Distance</strong></th>
-		<th width="8%" style="border-right:1px solid #ccc;"><strong>Bd/Ba</strong></th>
-		<th width="7%" style="border-right:1px solid #ccc;"><strong>SF</strong></th>
-		<th width="5%" style="border-right:1px solid #ccc;"><strong>Yr</strong></th>
-		<th width="7%" style="border-right:1px solid #ccc;"><strong>Lot</strong></th>
-		<th width="6%" style="border-right:1px solid #ccc;"><strong>Stories</strong></th>
-		<th width="5%" style="border-right:1px solid #ccc;"><strong>Pool</strong></th>
-		<th width="6%" style="border-right:1px solid #ccc;"><strong>Bsmnt</strong></th>
-		<th width="10%" style="border-right:1px solid #ccc;"><strong>Date Sold</strong></th>
-		<th width="8%" style="border-right:1px solid #ccc;"><strong>Amount</strong></th>
-		<th width="6%" style="border-right:1px solid #ccc;"><strong>Sales $</strong></th>
-		<th width="6%" style="border-right:1px solid #ccc;"><strong>Sales Date</strong></th>
-		<th width="4%" style="border-right:1px solid #ccc;"><strong>Concessions</strong></th>
+        <th width="22%" style="border-right:1px solid #ccc;"><strong>Address</strong></th>
+		<th width="7%" style="border-right:1px solid #ccc;"><strong>Distance</strong></th>
+		<th width="5%" style="border-right:1px solid #ccc;text-align:center;"><strong>Bd/Ba</strong></th>
+		<th width="7%" style="border-right:1px solid #ccc;text-align:center;"><strong>SF</strong></th>
+		<th width="5%" style="border-right:1px solid #ccc;text-align:center;"><strong>Yr</strong></th>
+		<th width="7%" style="border-right:1px solid #ccc;text-align:center;"><strong>Lot</strong></th>
+		<th width="4%" style="border-right:1px solid #ccc;text-align:center;"><strong>STY</strong></th>
+		<th width="5%" style="border-right:1px solid #ccc;text-align:center;"><strong>Pool</strong></th>
+		<th width="5%" style="border-right:1px solid #ccc;text-align:center;"><strong>BSMT</strong></th>
+		<th width="10%" style="border-right:1px solid #ccc;text-align:center;"><strong>Date Sold</strong></th>
+		<th width="8%" style="border-right:1px solid #ccc;text-align:center;"><strong>Amount</strong></th>
+		<th width="6%" style="border-right:1px solid #ccc;text-align:center;"><strong>Sales $</strong></th>
+		<th width="5%" style="border-right:1px solid #ccc;text-align:center;"><strong>Sales Date</strong></th>
+		<th width="4%" style="border-right:1px solid #ccc;text-align:center;"><strong>Concessions</strong></th>
       </tr>
     </thead>
     <tbody>
@@ -184,20 +184,20 @@
 			//$detail['basement']=$basement;
 	?>
       <tr bgcolor="#f6f6f6">
-	  <td width="15%" style="border-right:1px solid #ccc;"><?php echo $odd+1 .") ".$detail['address'];?></td>
-		<td width="9%" style="border-right:1px solid #ccc;"><?php echo  sprintf('%0.2f', $detail['distance']);?>miles</td>
-		<td width="8%" style="border-right:1px solid #ccc;"><?php echo $detail['bedsBaths'];?></td>
-		<td width="7%" style="border-right:1px solid #ccc;"><?php echo number_format($detail['sq_size']);?></td>
-		<td width="5%" style="border-right:1px solid #ccc;"><?php echo $detail['year_built'];?></td>
-		<td width="7%" style="3px;border-right:1px solid #ccc;"><?php echo number_format($detail['lot_size']);?></td>
-		<td width="6%" style="3px;border-right:1px solid #ccc;"><?php echo $detail['stories'];?></td>
-		<td width="5%" style="3px;border-right:1px solid #ccc;"><?php echo $detail['pool'];?></td>
-		<td width="6%" style="border-right:1px solid #ccc;"><?php echo $detail['basement'];?></td>
-		<td width="10%" style="border-right:1px solid #ccc;"><?php echo $detail['dateSold'];?></td>
-		<td width="8%" style="border-right:1px solid #ccc;">$<?php echo number_format($detail['amount']);?></td>
+	  <td width="22%" style="border-right:1px solid #ccc;"><?php echo $odd+1 .") ".$detail['address'];?></td>
+		<td width="7%" style="border-right:1px solid #ccc;"><?php echo  sprintf('%0.2f', $detail['distance']);?> mi</td>
+		<td width="5%" style="border-right:1px solid #ccc;text-align:center;"><?php echo $detail['bedsBaths'];?></td>
+		<td width="7%" style="border-right:1px solid #ccc;text-align:center;"><?php echo number_format($detail['sq_size']);?></td>
+		<td width="5%" style="border-right:1px solid #ccc;text-align:center;"><?php echo $detail['year_built'];?></td>
+		<td width="7%" style="3px;border-right:1px solid #ccc;text-align:center;"><?php echo number_format($detail['lot_size']);?></td>
+		<td width="4%" style="3px;border-right:1px solid #ccc;text-align:center;"><?php echo $detail['stories'];?></td>
+		<td width="5%" style="3px;border-right:1px solid #ccc;text-align:center;"><?php echo $detail['pool'];?></td>
+		<td width="5%" style="border-right:1px solid #ccc;text-align:center;"><?php echo $detail['basement'];?></td>
+		<td width="10%" style="border-right:1px solid #ccc;text-align:center;"><?php echo $detail['dateSold'];?></td>
+		<td width="8%" style="border-right:1px solid #ccc;text-align:center;">$<?php echo number_format($detail['amount']);?></td>
 		
-		<td width="6%" style="border-right:1px solid #ccc;"><?php echo $detail['dy'] ?></td>
-		<td width="6%" style="border-right:1px solid #ccc;"><?php echo $detail['ay'] ?></td>
+		<td width="6%" style="border-right:1px solid #ccc;text-align:center;"><?php echo $detail['dy'] ?></td>
+		<td width="5%" style="border-right:1px solid #ccc;text-align:center;"><?php echo $detail['ay'] ?></td>
 		<td width="4%">&nbsp;</td>
       </tr>
 	   <tr>
@@ -328,7 +328,7 @@ downloadReport-->
 					<tr><td>Radius</td><td> <?php echo $finalParameters['radius'];?> </td></tr>
 					<tr><td>Age</td><td> <?php echo $finalParameters['age'];?></td></tr>
 					<tr><td>Lot Size</td><td> <?php echo $finalParameters['lotSize'];?></td></tr>
-					<tr><td>Stories</td><td> <?php echo $finalParameters['stories'];?></td></tr>
+					<tr><td>STY</td><td> <?php echo $finalParameters['stories'];?></td></tr>
 					<tr><td> Date of Sale</td><td>  <?php echo $finalParameters['dateSale'];?> </td></tr>
 				</table>
 		</div>
@@ -370,26 +370,26 @@ downloadReport-->
         <th>Address</th>
         <th>Distance</th>
         <th>Bd/Ba</th>
-		<th>SF</th>
-        <th>Yr</th>
-        <th>Lot</th>
-		<th>Stories</th>
-		<th>Pool</th>
-		<th>Bsmnt</th>
-        <th>Date Sold</th>
-        <th>Amount</th>
+		<th style="text-align:center;">SF</th>
+        <th style="text-align:center;">Yr</th>
+        <th style="text-align:center;">Lot</th>
+		<th style="text-align:center;">STY</th>
+		<th style="text-align:center;">Pool</th>
+		<th style="text-align:center;">BSMT</th>
+        <th style="text-align:center;">Date Sold</th>
+        <th style="text-align:center;">Amount</th>
         <?php
 			if($user==2){
 
 			}else{
 		?>
-		<th>Sales $</th>
-		<th>Sales Date</th>
+		<th style="text-align:center;">Sales $</th>
+		<th style="text-align:center;">Sales Date</th>
 		<?php
 	}
 		?>
 		
-		<th>Concessions</th>
+		<th style="text-align:center;">Concessions</th>
       </tr>
     </thead>
     <tbody>
@@ -408,16 +408,16 @@ downloadReport-->
 	?>
       <tr >
 	  <td><?php echo $count.". ".$detail['address'];?></td>
-        <td><?php echo  sprintf('%0.2f', $detail['distance']);?>miles</td>
+        <td><?php echo  sprintf('%0.2f', $detail['distance']);?> mi</td>
         <td><?php echo $detail['bedsBaths'];?></td>
-		<td><?php echo number_format($detail['sq_size']);?></td>
-        <td><?php echo $detail['year_built'];?></td>
-        <td><?php echo number_format($detail['lot_size']);?></td>
-		<td><?php echo $detail['stories'];?></td>
-		<td><?php echo $detail['pool'];?></td>
-		<td><?php echo $detail['basement'];?></td>
-        <td><?php echo $detail['dateSold'];?></td>
-        <td>$<?php echo number_format($detail['amount']);?></td>
+		<td style="text-align:center;"><?php echo number_format($detail['sq_size']);?></td>
+        <td style="text-align:center;"><?php echo $detail['year_built'];?></td>
+        <td style="text-align:center;"><?php echo number_format($detail['lot_size']);?></td>
+		<td style="text-align:center;"><?php echo $detail['stories'];?></td>
+		<td style="text-align:center;"><?php echo $detail['pool'];?></td>
+		<td style="text-align:center;"><?php echo $detail['basement'];?></td>
+        <td style="text-align:center;"><?php echo $detail['dateSold'];?></td>
+        <td style="text-align:center;">$<?php echo number_format($detail['amount']);?></td>
 		
 
 		<?php
@@ -425,10 +425,10 @@ downloadReport-->
 
 			}else{
 		?>
-		<td><?php echo $detail['dy'] ?></td>
-		<td><?php echo $detail['ay'] ?></td>
+		<td style="text-align:center;"><?php echo $detail['dy'] ?></td>
+		<td style="text-align:center;"><?php echo $detail['ay'] ?></td>
 		<?php } ?>
-		<td></td>
+		<td style="text-align:center;"></td>
       </tr>
 	  <?php
 	  $count++;
@@ -468,9 +468,9 @@ downloadReport-->
 		<th>SF</th>
         <th>Yr</th>
         <th>Lot</th>
-		<th>Stories</th>
+		<th>STY</th>
 		<th>Pool</th>
-		<th>Bsmnt</th>
+		<th>BSMT</th>
         <th>Date Sold</th>
         <th>Amount</th>
 		<th>Sales $</th>
@@ -496,7 +496,7 @@ downloadReport-->
 	?>
       <tr style="background:<?php  echo $color;?>">
         <td><?php echo $count.". ";?><?php echo $detail['address'];?></td>
-        <td><?php echo  sprintf('%0.2f', $detail['distance']); ?>miles</td>
+        <td><?php echo  sprintf('%0.2f', $detail['distance']); ?> mi</td>
         <td><?php echo $detail['bedsBaths'];?></td>
 		<td><?php echo number_format($detail['sq_size']);?></td>
         <td><?php echo $detail['year_built'];?></td>

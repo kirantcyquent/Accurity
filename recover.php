@@ -3,17 +3,17 @@
 	if(!isset($_SESSION['forgot-user'])){
 		header('Location: login.php');
 	}
+	
 	$userid = $_SESSION['forgot-user'];
-	$_SESSION['userid'] =$userid;
 
 	include('db/db.php');
-	
-	$query = "SELECT Question FROM securityquestion WHERE userID = $userid";
-	$query2 = "SELECT Question FROM securityquestion WHERE userID = $userid ORDER BY QuestionID DESC LIMIT 1, 1";
-	$query3 = "SELECT Question FROM securityquestion WHERE userID = $userid ORDER BY QuestionID DESC LIMIT 1";
-	$sql = mysql_query($query);
-	$result = mysql_fetch_array($sql)or die(mysql_error());
-	$sql2 = mysql_query($query2);
+
+	$query = "SELECT Question FROM securityquestion WHERE userID = '$userid'";
+	$query2 = "SELECT Question FROM securityquestion WHERE userID = '$userid' ORDER BY QuestionID DESC LIMIT 1, 1";
+	$query3 = "SELECT Question FROM securityquestion WHERE userID = '$userid' ORDER BY QuestionID DESC LIMIT 1";
+	$sql = mysql_query($query) or die(mysql_error());
+	$result = mysql_fetch_array($sql);
+	$sql2 = mysql_query($query2)or die(mysql_error());
 	$result2 = mysql_fetch_array($sql2);
 	$sql3 = mysql_query($query3);
 	$result3 = mysql_fetch_array($sql3);
