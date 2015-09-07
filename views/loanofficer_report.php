@@ -58,13 +58,17 @@
 				//for($i=0;$i<$riskCount;$i++){
 			$odd=1;
 					foreach($comps as $key=>$detail){
-						if($odd%2==0){ $color= "#ffffff;";}else{ $color= "#f6f6f6;";}
+						
+					if($key%2 == 1)
+					$row_bg_colour = "#F1F1F1";
+					else
+					$row_bg_colour = "#fff";
 					$odd++;
 				//	$detail['pool']=$pool;
 				//	$detail['basement']=$basement;
 					
 			?>
-			  <tr bgcolor="#f6f6f6">
+			  <tr bgcolor="<?echo $row_bg_colour;?>">
 			  <td width="30%" style="border-right:1px solid #ccc;"><?php echo $key+1 .") ".$detail['address'];?></td>
 				<td width="9%" style="border-right:1px solid #ccc;"><?php echo  sprintf('%0.2f', $detail['distance']);?> mi</td>
 				<td width="5%" style="border-right:1px solid #ccc;"><?php echo $detail['bedsBaths'];?></td>
@@ -83,22 +87,27 @@
 			  
 			</tbody>
   </table>
-  
-<br><br><br><?php if($odd<=4){?><br><br><br><br><?php }?>
-	<div width="50%" align="center" style="text-align:center !important;">
-		<table width="80%" style="font-size:10px;" align="center">
+  <br><br><br>
+
+		<table width="80%" style="font-size:10px;" align="center" valign="baseline;">
 			<tr>
 				<td width="%4"><div style="width:10px; height:10px;background-color:#A689B6;"></div></td>
 				<td width="25%">&nbsp;<strong>Subject Property</strong></td>
 				<td width="4%"><div style="width:13px; height:10px;background-color:#003F7F;"></div></td>
 				<td width="35%">&nbsp;<strong>Potential Comparable Used</strong></td>
 			</tr>
-			<tr style="height:25px;"><td colspan=2>&nbsp;</td></tr>
 		</table>
-	</div>
-	<div width="90%">
-		
-	</div>
+
+	
+<br>
+		<table width="100%" valign="top">
+			<tr>
+				<td width="100%">
+					<img src="<?php if(isset($_SESSION['results']['map']) || isset($_SESSION['map'])){ $map = isset($_SESSION['results']['map']) ? $_SESSION['results']['map'] : $_SESSION['map']; echo $map; } ?> " width="650px;" height="350px;"/>
+				</td>
+			</tr>
+		</table>
+
 		
 		<?php } ?>
 
@@ -149,7 +158,7 @@ downloadReport-->
 		
 		<div class="row">
 			<div class="col-lg-12 col-sm-12 col-xs-12 col-md-12">
-		<table class="table table-striped" id="compTable">
+		<table class="table" id="compTable">
    <thead>
    	 <?php
 			if($user==2){
@@ -161,7 +170,7 @@ downloadReport-->
     <th style="border:none;"></th>
     </tr>
     <?php }?>
-      <tr>
+      <tr bgcolor="#ccc">
 	 
         <th>Address</th>
         <th>Distance</th>
@@ -197,13 +206,18 @@ downloadReport-->
 	$odd=1;
 	
 			foreach($comps as $key=>$detail){
-				if($odd%2==0){ $color= "#ffffff;";}else{ $color= "#f6f6f6;";}
+				
+			if($count%2 == 0)
+			$row_bg_colour = "#F1F1F1";
+			else
+			$row_bg_colour = "#fff";
+
 			$odd++;
 		//	$detail['pool']=$pool;
 		//	$detail['basement']=$basement;
 			
 	?>
-      <tr >
+      <tr bgcolor="<?php echo $row_bg_colour;?>">
 	  <td><?php echo $count.". ".$detail['address'];?></td>
         <td><?php echo  sprintf('%0.2f', $detail['distance']);?> mi</td>
         <td><?php echo $detail['bedsBaths'];?></td>

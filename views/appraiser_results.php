@@ -99,13 +99,13 @@
 					<table class="table " id="compTable">
 					 <thead>
 					 <?php if($user==1){?>
-						<tr rowspan="2">
+						<tr rowspan="2" bgcolor="#ccc">
 							<th colspan="11" style="border:none;"></th>
 							<th colspan="2" style="border:none;">Public Record Match</th>
 							<th style="border:none;"></th>
 						</tr>					
 						<?php } ?>
-						<tr>					 
+						<tr bgcolor="#ccc">					 
 							<th>Address</th>
 							<th>Distance</th>
 							<th>Bd/Ba</th>
@@ -154,6 +154,12 @@
 							if(preg_match("@^[0-9]{1}$@",$m))
 									$m= "0".$m;
 							$dateSold = $y."-".$m."-".$d;
+							
+							if($seq%2 == 0)
+							$row_bg_colour = "#F1F1F1";
+							else
+							$row_bg_colour = "#fff";
+							
 							foreach($compare as $rs){
 								//echo "<pre>"; print_r($rs);
 								//print $rs['address']; print "----- ".$row['address'];
@@ -198,7 +204,7 @@
 							}
 
 							
-							echo '<tr>';
+							echo '<tr bgcolor='.$row_bg_colour.'>';
 							echo '<td>'.$seq.'. '.$address.'</td>';
 							echo '<td>';
 							echo sprintf('%0.2f', $row['distance']);
