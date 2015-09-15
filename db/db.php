@@ -1,8 +1,8 @@
 <?php
-    $host = 'localhost'; 
+    $host = 'Db1-hf.realtytrac.com'; 
     $db_name = 'loan';
     $db_username = 'loan_user';
-    $db_password = 'l0an';
+    $db_password = 'l0@n';
     mysql_connect("localhost",$db_username, $db_password);
 	$db = mysql_select_db($db_name);
 	/*if($db){
