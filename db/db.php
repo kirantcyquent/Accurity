@@ -3,8 +3,8 @@
     $db_name = 'loan';
     $db_username = 'loan_user';
     $db_password = 'l0@n';
-    mysql_connect($host,$db_username, $db_password);
-	$db = mysql_select_db($db_name);
+    mysql_connect($host, $db_username, $db_password)or die(mysql_error());
+	$db = mysql_select_db($db_name)or die(mysql_error());
 	/*if($db){
 		echo "conected";
 	}else{
