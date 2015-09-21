@@ -57,13 +57,13 @@
 					<table class="table " id="compTable">
 					 <thead>
 					 <?php if($user==1){?>
-						<tr rowspan="2">
+						<tr rowspan="2" bgcolor="#ccc">
 							<th colspan="11" style="border:none;"></th>
 							<th colspan="2" style="border:none;">Public Record Match</th>
 							<th style="border:none;"></th>
 						</tr>					
 						<?php } ?>
-						<tr>					 
+						<tr bgcolor="#ccc">					 
 							<th>Address</th>
 							<th>Distance</th>
 							<th>Bd/Ba</th>
@@ -92,7 +92,7 @@
 						$storeData = '<h3 style="color:green;">Final Results </h3><table class="table table-bordered"> 
 		<tr>
 			<td>SL</td><td>Address </td><td>Distance </td><td>Bed/baths </td><td>Sqft</td><td>Year Built</td><td>Lot Size</td><td>Stories</td><td>Pool</td><td>Basement</td><td>List Date</td><td>Price</td>
-		</tr>';
+		<td>Property Type</td></tr>';
 						foreach($aSearchProp as $row){					
 
 							if($i>$maxRecords){
@@ -112,6 +112,12 @@
 							if(preg_match("@^[0-9]{1}$@",$m))
 									$m= "0".$m;
 							$dateSold = $y."-".$m."-".$d;
+							
+							if($seq%2 == 0)
+							$row_bg_colour = "#F1F1F1";
+							else
+							$row_bg_colour = "#fff";
+							
 							foreach($compare as $rs){
 								//echo "<pre>"; print_r($rs);
 								//print $rs['address']; print "----- ".$row['address'];
@@ -144,7 +150,7 @@
 								}
 							}
 
-							echo '<tr>';
+							echo '<tr bgcolor='.$row_bg_colour.'>';
 							echo '<td>'.$seq.'. '.$row['address'].'</td>';
 							echo '<td>';
 							echo sprintf('%0.2f', $row['distance']);
@@ -217,7 +223,7 @@
 							}
 							echo '</tr>';
 							$aMatchData[$seq] = $row;										
-							$storeData = $storeData.'<tr><td>'.$seq.'</td><td>'.$row['address'].'</td><td>'.sprintf('%0.2f', $row['distance']).' mi</td><td>'.$row['bedsBaths'].'</td><td>'.number_format($row['sq_size']).'</td><td>'.$row['year_built'].'</td><td>'.number_format($row['lot_size']).'</td><td>'.$row['stories'].'</td><td>'.$row['pool'].'</td><td>'.$row['basement'].'</td><td>'.$row['dateSold'].'</td><td>$'.number_format($row['amount']).'</td></tr>';			
+							$storeData = $storeData.'<tr><td>'.$seq.'</td><td>'.$row['address'].'</td><td>'.sprintf('%0.2f', $row['distance']).' mi</td><td>'.$row['bedsBaths'].'</td><td>'.number_format($row['sq_size']).'</td><td>'.$row['year_built'].'</td><td>'.number_format($row['lot_size']).'</td><td>'.$row['stories'].'</td><td>'.$row['pool'].'</td><td>'.$row['basement'].'</td><td>'.$row['dateSold'].'</td><td>$'.number_format($row['amount']).'</td><td>'.$rows['propertyType'].'</td></tr>';			
 							$seq++;
 						}
 						$storeData = $storeData.'</table>';

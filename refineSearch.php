@@ -20,8 +20,22 @@
 	if(isset($_REQUEST['searchAddress']))
 	{
 		unset($_SESSION['refineSearch']); unset($_SESSION['results']);
-		$aRet = ConvertAddress($Add);
 
+		$searchA = $_REQUEST['searchAddress'];
+
+		if(preg_match("@(.*?)\,(.*?)\,\s*([A-Za-z]{2})\s*\,\s*([0-9]+)$@",$searchA)){			
+			$arr = explode(',',$searchA);
+			$aRet= array("StreetAdd"=>trim($arr[0]), "City"=>trim($arr[1]), "State"=>trim($arr[2]), "Zip"=>trim($arr[3]));
+		}
+		else if(preg_match("@(.*?)\,(.*?)\,\s*([A-Za-z]{2})\s*([0-9]{0,6})$@",$searchA)){			
+			$arr = explode(',',$searchA);
+			list($arr[2],$arr[3]) = preg_split("@\s+@",$arr[2]);
+			$aRet= array("StreetAdd"=>trim($arr[0]), "City"=>trim($arr[1]), "State"=>trim($arr[2]), "Zip"=>trim($arr[3]));
+		}
+		else{
+			$aRet = ConvertAddress($Add);
+		}
+		
 		$PropData = GetPropertyFromRealty($aRet['StreetAdd'],$aRet['City'],$aRet['State'],$aRet['Zip']);		
 
 		if(!isset($PropData['_STREETADDRESS'])){
@@ -51,6 +65,9 @@
 		}
 		unset($_SESSION['trackerror']);
 		$PropData['TOTALBATHROOMCOUNT']=round($PropData['TOTALBATHROOMCOUNT']);
+		
+		$pType = $PropData['STANDARDUSECODE_EXT'];
+		$propertyType = getPropertyTypeDLP($PropData['STANDARDUSECODE_EXT']);
 
 		$city = $PropData['_CITY'];
 		$state = $PropData['_STATE'];
@@ -59,7 +76,6 @@
 		$PropData['_STREETADDRESS'] = trim($PropData['_STREETADDRESS']);
 
 		$street  = $PropData['_HOUSENUMBERFRACTION_EXT']." ".$PropData['_HOUSENUMBER']." ".$PropData['_DIRECTIONSUFFIX']." ".$PropData['_STREETNAME']." ".$PropData['_STREETSUFFIX']." ".$PropData['_APARTMENTORUNITPREFIX_EXT']." ".$PropData['_APARTMENTORUNIT'];
-
 		$street = trim($street);
 
 		$Add =  $street.' '.$PropData['_CITY'].' '.$PropData['_STATE'].' '.$PropData['_POSTALCODE'];	
@@ -70,6 +86,7 @@
 		$year_built = $PropData['PROPERTYSTRUCTUREBUILTYEAR'];
 		$lot_size =  round($PropData['LOTSIZESQUAREFEETCOUNT_EXT']);
 		$stories = round($PropData['STORIESCOUNT']);
+
 		$sq_f  =  "+/- 20%";
 		$radius  =  "0.5 Mile";
 		$age  =  "+/- 5 years";
@@ -104,6 +121,7 @@
 				<td>Year Built</td>
 				<td>Lot </td>
 				<td>Stories</td>
+				<td>Property Type</td>
 			</tr>
 			<tr>
 				<td>'.$Add.'</td>
@@ -113,6 +131,7 @@
 				<td>'.$year_built.'</td>
 				<td>'.$lot_size.'</td>
 				<td>'.$stories.'</td>
+				<td>'.$propertyType.'</td>
 			</tr>
 		</table>';
 		$fd = fopen($path,"a");
@@ -132,7 +151,8 @@
 		$lot_size = isset($_SESSION['refineSearch']['lot_size']) ? $_SESSION['refineSearch']['lot_size'] :  $PropData['LOTSIZESQUAREFEETCOUNT_EXT'];
 		$stories = isset($_SESSION['refineSearch']['stories']) ? $_SESSION['refineSearch']['stories'] :$PropData['STORIESCOUNT'];
 		$propertyId = isset($_SESSION['refineSearch']['propertyId']) ? $_SESSION['refineSearch']['propertyId'] :$PropData['PROPERTYPARCELID_EXT'];
-
+		$propertyType = isset($_SESSION['refineSearch']['propertyType']) ? $_SESSION['refineSearch']['propertyType'] :$PropData['STANDARDUSECODE_EXT'];
+		$pType = isset($_SESSION['refineSearch']['pType']) ? $_SESSION['refineSearch']['pType'] :$PropData['STANDARDUSECODE_EXT'];
 
 		$sq_f  = isset($_SESSION['refineSearch']['sq_f']) ? $_SESSION['refineSearch']['sq_f'] : "+/- 20%";
 		$radius  = isset($_SESSION['refineSearch']['radius']) ? $_SESSION['refineSearch']['radius'] : "0.5 Mile";
@@ -258,7 +278,8 @@
 		<input type="hidden" name="sale_range" id="sale_range" value="<?php echo $sale_range;?>" />	
 		<input type="hidden" name="sale_type" id="sale_type" value="<?php echo $sale_type;?>" />	
 		<input type="hidden" name="propertyId" id="propertyId" value="<?php echo $propertyId;?>" />
-	
+		<input type="hidden" name="propertyType" id="propertyType" value="<?php echo $propertyType;?>" />
+		<input type="hidden" name="pType" id="pType" value="<?php echo $pType;?>" />
 
 		<input type="hidden" name="address" value="<?php echo $Add; ?>" />
 		
@@ -351,8 +372,10 @@
 				var sale_type = $('#sale_type').val();
 				var org_footage = $('#original_footage').val();
 				var propId = $('#propertyId').val();
+				var propertyType = $('#propertyType').val();
+				var pType = $('#pType').val();
 
-				var dataString = 'sq_f='+sq_f+'&radius='+radius+'&age='+age+'&l_size='+l_size+'&story='+story +'&pool='+pool+'&basement='+basement+'&beds_from='+beds_from+'&beds_to='+ beds_to+'&baths_from='+baths_from+'&baths_to='+baths_to+'&sale_range='+ sale_range+'&sale_type='+sale_type+'&square_footage='+square_footage+'&bedrooms=<?php echo $bedrooms;?>&bathrooms=<?php echo $bathrooms;?>&stories=<?php echo $stories;?>&lot_size=<?php echo $lot_size;?>&year_built=<?php echo $year_built;?>&address=<?php echo $Add;?>&street=<?php echo $a = isset($PropData["_STREETADDRESS"]) ? urlencode($PropData["_STREETADDRESS"]) : $_SESSION["refineSearch"]["street"]; ?>&state=<?php echo $b = isset($PropData["_STATE"]) ? $PropData["_STATE"] :  $_SESSION["refineSearch"]["state"];?>&city=<?php echo $c = isset($PropData["_CITY"]) ? $PropData["_CITY"] :  $_SESSION["refineSearch"]["city"];?>&zip=<?php echo $c = isset($PropData["_POSTALCODE"]) ? $PropData["_POSTALCODE"] :  $_SESSION["refineSearch"]["zip"];?>&original_footage='+org_footage+'&propertyId='+propId;
+				var dataString = 'sq_f='+sq_f+'&radius='+radius+'&age='+age+'&l_size='+l_size+'&story='+story +'&pool='+pool+'&basement='+basement+'&beds_from='+beds_from+'&beds_to='+ beds_to+'&baths_from='+baths_from+'&baths_to='+baths_to+'&sale_range='+ sale_range+'&sale_type='+sale_type+'&square_footage='+square_footage+'&bedrooms=<?php echo $bedrooms;?>&bathrooms=<?php echo $bathrooms;?>&stories=<?php echo $stories;?>&lot_size=<?php echo $lot_size;?>&year_built=<?php echo $year_built;?>&address=<?php echo $Add;?>&street=<?php echo $a = isset($PropData["_STREETADDRESS"]) ? urlencode($PropData["_STREETADDRESS"]) : $_SESSION["refineSearch"]["street"]; ?>&state=<?php echo $b = isset($PropData["_STATE"]) ? $PropData["_STATE"] :  $_SESSION["refineSearch"]["state"];?>&city=<?php echo $c = isset($PropData["_CITY"]) ? $PropData["_CITY"] :  $_SESSION["refineSearch"]["city"];?>&zip=<?php echo $c = isset($PropData["_POSTALCODE"]) ? $PropData["_POSTALCODE"] :  $_SESSION["refineSearch"]["zip"];?>&original_footage='+org_footage+'&propertyId='+propId+'&propertyType='+propertyType+'&pType='+pType;
 
 				var currentPage="results";
 				$.ajax({

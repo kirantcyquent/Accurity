@@ -112,8 +112,8 @@ if(isset($_SESSION['results']['matchResult'])){
 	 	}		
 	 }
 
-	 	$comps = subval_sort($comps,'distance'); 
-	 	$not_comps = subval_sort($not_comps,'distance'); 
+	 	//$comps = subval_sort($comps,'distance'); 
+	 	//$not_comps = subval_sort($not_comps,'distance'); 
 	
 	 	$markers = $_SESSION['markers'];
 		$count = 1;

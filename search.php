@@ -43,6 +43,9 @@ padding:5px;
 			else if(isset($_REQUEST['vreferror']) && $_REQUEST['vreferror']==1){
 				echo "<br/><strong><span style='color:red;'>Your search did not return any comparable properties.</span></strong>";
 			}
+				else if(isset($_REQUEST['referror']) && $_REQUEST['referror']==1){
+				echo "<br/><strong><span style='color:red;'>Your Search did not return any comparable properties.</span></strong>";
+			}
 			?>
 		</div>	
 	</form>		

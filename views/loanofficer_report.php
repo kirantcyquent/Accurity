@@ -56,16 +56,20 @@
 			<?php
 			
 				//for($i=0;$i<$riskCount;$i++){
-			$odd=1;
+			$odd=1; $count=1;
 					foreach($comps as $key=>$detail){
-						if($odd%2==0){ $color= "#ffffff;";}else{ $color= "#f6f6f6;";}
+						
+					if($key%2 == 1)
+					$row_bg_colour = "#F1F1F1";
+					else
+					$row_bg_colour = "#fff";
 					$odd++;
 				//	$detail['pool']=$pool;
 				//	$detail['basement']=$basement;
 					
 			?>
-			  <tr bgcolor="#f6f6f6">
-			  <td width="30%" style="border-right:1px solid #ccc;"><?php echo $key+1 .") ".$detail['address'];?></td>
+			  <tr bgcolor="<?echo $row_bg_colour;?>">
+			  <td width="30%" style="border-right:1px solid #ccc;"><?php echo $count .") ".$detail['address']; $count++;?></td>
 				<td width="9%" style="border-right:1px solid #ccc;"><?php echo  sprintf('%0.2f', $detail['distance']);?> mi</td>
 				<td width="5%" style="border-right:1px solid #ccc;"><?php echo $detail['bedsBaths'];?></td>
 				<td width="7%" style="border-right:1px solid #ccc;text-align:center;"><?php echo number_format($detail['sq_size']);?></td>
@@ -83,22 +87,27 @@
 			  
 			</tbody>
   </table>
-  
-<br><br><br><?php if($odd<=4){?><br><br><br><br><?php }?>
-	<div width="50%" align="center" style="text-align:center !important;">
-		<table width="80%" style="font-size:10px;" align="center">
+  <br><br><br>
+
+		<table width="80%" style="font-size:10px;" align="center" valign="baseline;">
 			<tr>
 				<td width="%4"><div style="width:10px; height:10px;background-color:#A689B6;"></div></td>
 				<td width="25%">&nbsp;<strong>Subject Property</strong></td>
 				<td width="4%"><div style="width:13px; height:10px;background-color:#003F7F;"></div></td>
 				<td width="35%">&nbsp;<strong>Potential Comparable Used</strong></td>
 			</tr>
-			<tr style="height:25px;"><td colspan=2>&nbsp;</td></tr>
 		</table>
-	</div>
-	<div width="90%">
-		
-	</div>
+
+	
+<br>
+		<table width="100%" valign="top">
+			<tr>
+				<td width="100%">
+					<img src="<?php if(isset($_SESSION['results']['map']) || isset($_SESSION['map'])){ $map = isset($_SESSION['results']['map']) ? $_SESSION['results']['map'] : $_SESSION['map']; echo $map; } ?> " width="650px;" height="350px;"/>
+				</td>
+			</tr>
+		</table>
+
 		
 		<?php } ?>
 
@@ -149,7 +158,7 @@ downloadReport-->
 		
 		<div class="row">
 			<div class="col-lg-12 col-sm-12 col-xs-12 col-md-12">
-		<table class="table table-striped" id="compTable">
+		<table class="table" id="compTable">
    <thead>
    	 <?php
 			if($user==2){
@@ -161,7 +170,7 @@ downloadReport-->
     <th style="border:none;"></th>
     </tr>
     <?php }?>
-      <tr>
+      <tr bgcolor="#ccc">
 	 
         <th>Address</th>
         <th>Distance</th>
@@ -197,24 +206,29 @@ downloadReport-->
 	$odd=1;
 	
 			foreach($comps as $key=>$detail){
-				if($odd%2==0){ $color= "#ffffff;";}else{ $color= "#f6f6f6;";}
+				
+			if($count%2 == 0)
+			$row_bg_colour = "#F1F1F1";
+			else
+			$row_bg_colour = "#fff";
+
 			$odd++;
 		//	$detail['pool']=$pool;
 		//	$detail['basement']=$basement;
 			
 	?>
-      <tr >
+      <tr bgcolor="<?php echo $row_bg_colour;?>">
 	  <td><?php echo $count.". ".$detail['address'];?></td>
         <td><?php echo  sprintf('%0.2f', $detail['distance']);?> mi</td>
-        <td><?php echo $detail['bedsBaths'];?></td>
-		<td><?php echo number_format($detail['sq_size']);?></td>
-        <td><?php echo $detail['year_built'];?></td>
-        <td><?php echo number_format($detail['lot_size']);?></td>
-		<td><?php echo $detail['stories'];?></td>
-		<td><?php echo $detail['pool'];?></td>
-		<td><?php echo $detail['basement'];?></td>
-        <td><?php echo $detail['dateSold'];?></td>
-        <td>$<?php echo number_format($detail['amount']);?></td>
+        <td style="text-align:center;"><?php echo $detail['bedsBaths'];?></td>
+		<td style="text-align:center;"><?php echo number_format($detail['sq_size']);?></td>
+        <td style="text-align:center;"><?php echo $detail['year_built'];?></td>
+        <td style="text-align:center;"><?php echo number_format($detail['lot_size']);?></td>
+		<td style="text-align:center;"><?php echo $detail['stories'];?></td>
+		<td style="text-align:center;"><?php echo $detail['pool'];?></td>
+		<td style="text-align:center;"><?php echo $detail['basement'];?></td>
+        <td style="text-align:center;"><?php echo $detail['dateSold'];?></td>
+        <td style="text-align:center;">$<?php echo number_format($detail['amount']);?></td>
 		
 
 		<?php
@@ -222,8 +236,8 @@ downloadReport-->
 
 			}else{
 		?>
-		<td><?php echo $detail['dy'] ?></td>
-		<td><?php echo $detail['ay'] ?></td>
+		<td style="text-align:center;"><?php echo $detail['dy'] ?></td>
+		<td style="text-align:center;"><?php echo $detail['ay'] ?></td>
 		<?php } ?>
       </tr>
 	  <?php
@@ -294,18 +308,18 @@ downloadReport-->
         <td><?php echo $count.". ";?><?php echo $detail['address'];?></td>
         <td><?php echo  sprintf('%0.2f', $detail['distance']); ?>mi</td>
         <td><?php echo $detail['bedsBaths'];?></td>
-		<td><?php echo number_format($detail['sq_size']);?></td>
-        <td><?php echo $detail['year_built'];?></td>
-        <td><?php echo number_format($detail['lot_size']);?></td>
-		<td><?php echo $detail['stories'];?></td>
-		<td><?php echo $detail['pool'];?></td>
-		<td><?php echo $detail['basement'];?></td>
-        <td><?php echo $detail['dateSold'];?></td>
-        <td>$<?php echo number_format($detail['amount']);?></td>
+		<td style="text-align:center;"><?php echo number_format($detail['sq_size']);?></td>
+        <td style="text-align:center;"><?php echo $detail['year_built'];?></td>
+        <td style="text-align:center;"><?php echo number_format($detail['lot_size']);?></td>
+		<td style="text-align:center;"><?php echo $detail['stories'];?></td>
+		<td style="text-align:center;"><?php echo $detail['pool'];?></td>
+		<td style="text-align:center;"><?php echo $detail['basement'];?></td>
+        <td style="text-align:center;"><?php echo $detail['dateSold'];?></td>
+        <td style="text-align:center;">$<?php echo number_format($detail['amount']);?></td>
 		
-		<td><?php echo $detail['dy'] ?></td>
-		<td><?php echo $detail['ay'] ?></td>
-		<td></td>
+		<td style="text-align:center;"><?php echo $detail['dy'] ?></td>
+		<td style="text-align:center;"><?php echo $detail['ay'] ?></td>
+		<td>&nbsp;</td>
       </tr>
 	   <tr style="background:<?php  echo $color;?>">
 	  <td colspan="15"><span style="color:red;"><?php echo $reason;?></span>  &nbsp; <span style="color:red;">Notes: <?php echo $note;?></span></td>

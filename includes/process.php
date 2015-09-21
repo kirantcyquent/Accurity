@@ -59,7 +59,7 @@
 	{
 		$StreetAddr = urlencode($StreetAddr);
 
-		$URL  = "http://dlpapi.realtytrac.com/Reports/Get?ApiKey=a2d3e2aa-9c9b-4aab-af3a-56785ae67e25&Login=accurity&Password=1cyquent!&JobID=&LoanNumber=&PreparedBy=&ResellerID=&PreparedFor=&OwnerFirstName=&OwnerLastName=&AddressType=&PropertyStreetAddress=$StreetAddr&AddressNumber=&StartAddressNumberRange=&EndAddressNumberRange=&StreetDir=&StreetName=&StreetSuffix=&City=$City&StateCode=$State&County=&ZipCode=$Zip&PropertyParcelID=&APN=&ApnRangeStart=&ApnRangeEnd=&GeoCodeX=&GeoCodeY=&GeoCodeRadius=&SearchType=&NumberOfRecords=&Format=XML&ReportID=102";
+		 $URL  = "http://dlpapi.realtytrac.com/Reports/Get?ApiKey=a2d3e2aa-9c9b-4aab-af3a-56785ae67e25&Login=accurity&Password=1cyquent!&JobID=&LoanNumber=&PreparedBy=&ResellerID=&PreparedFor=&OwnerFirstName=&OwnerLastName=&AddressType=&PropertyStreetAddress=$StreetAddr&AddressNumber=&StartAddressNumberRange=&EndAddressNumberRange=&StreetDir=&StreetName=&StreetSuffix=&City=$City&StateCode=$State&County=&ZipCode=$Zip&PropertyParcelID=&APN=&ApnRangeStart=&ApnRangeEnd=&GeoCodeX=&GeoCodeY=&GeoCodeRadius=&SearchType=&NumberOfRecords=&Format=XML&ReportID=102";
 	
 	
 		$path = $_SESSION['path'];
@@ -74,8 +74,6 @@
 		xml_parse_into_struct($p, $data, $vals, $index);
 		xml_parser_free($p);
 		
-		
-	
 		foreach($vals as $aval)
 		{
 			
@@ -359,7 +357,7 @@
 			if($aval['tag'] == 'PROP' && $aval['type'] == 'open')
 				$aProp[] = $aval['attributes'];
 		}
-		
+
 		return $aProp;
 	}
 
@@ -408,7 +406,7 @@
 			 preg_match("@SALES_HISTORY.*?PropertySalesAmount=\"(.*?)\"@is",$arr[1],$sale_amount);
 
 			 preg_match("@AMENITY _Type=\"Pool\" _ExistsIndicator=\"(.*?)\"@is", $arr[1],$pool);
-			 if($pool[1]==""){ $pool[1]="No";}
+			 $pool[1] = getPoolType($pool[1]);
 
 			 preg_match("@BASEMENT SquareFeetCount=\"(.*?)\"@is",$arr[1],$basement);
 			 if($basement[1]>0){ $basement[1]="Y";}else{ $basement[1]="No"; }
@@ -420,12 +418,110 @@
 			 $transfer[1] = preg_replace("@T.*?$@is", "", $transfer[1]);
 			 preg_match("@StoriesCount=\"(.*?)\"@is",$arr[1],$stories);
 			 $stories = $stories[1];
-			 $result[] = array('address'=>$address,'distance'=>$distance[1], 'beds'=>trim(floor($beds[1])).'/'.floor($baths[1]).'','sq_size'=>$size[1],'year_built'=>$built[1], 'lot_size'=>$lot[1], 'stories'=>$story[1], 'dateSold'=>$sale_date[1], 'amount'=>$sale_amount[1], 'street'=>$matches[2],'city'=>$matches[1],'state'=>$matches[3], 'zip'=>$matches[4],'latitude'=>$latitude, 'longitude'=>$longitude, 'pool'=>$pool[1], 'basement'=>$basement[1], 'transferDate'=>$transfer[1],'stories'=>$stories);			
+			  preg_match("@StandardUseCode_ext=\"(.*?)\"@",$arr[1],$props);
+			 $ptype = trim($props[1]);
+			 $ptype = getPropertyTypeDLP($ptype);
+			 $result[] = array('address'=>$address,'distance'=>$distance[1], 'beds'=>trim(floor($beds[1])).'/'.floor($baths[1]).'','sq_size'=>$size[1],'year_built'=>$built[1], 'lot_size'=>$lot[1], 'stories'=>$story[1], 'dateSold'=>$sale_date[1], 'amount'=>$sale_amount[1], 'street'=>$matches[2],'city'=>$matches[1],'state'=>$matches[3], 'zip'=>$matches[4],'latitude'=>$latitude, 'longitude'=>$longitude, 'pool'=>$pool[1], 'basement'=>$basement[1], 'transferDate'=>$transfer[1],'stories'=>$stories,"propertyType"=>$ptype);			
 		}
 			
 		return $result;
 	}
 
+
+	function getPropertyTypeDLP($prop){
+			$multi = array("RAGA","RAHI","RAP1","RAPG","RAPT","RBOR","RDOR","RFRA","RMFD","RRIN");
+			$sfr = array("RBUN","RMAN","RPAT","RPUD","RRES","RRUR","RSEA","RSFR");
+			$condo = array("RCLU","RCOM","RCON","RCOO","RROW","RTHO");
+			$duplex = array("RDUP");
+			$mobile = array("RMOB","RMPM","RMSC");
+			$quadraplex = array("RQUA","RRCO");
+			$triplex = array("RTRI");
+
+			$ml = preg_grep("@$prop@is", $multi);
+			$sr  = preg_grep("@$prop@is", $sfr);
+			$cn = preg_grep("@$prop@is", $condo);
+			$dl  = preg_grep("@$prop@is", $duplex);
+			$mb = preg_grep("@$prop@is", $mobile);
+			$qd = preg_grep("@$prop@is", $quadraplex);
+			$trp = preg_grep("@$prop@is", $triplex);
+
+			if(count($ml)>0){
+					return "MULTI";
+			}
+			else if(count($sr)>0){
+					return "SFR";
+			}
+			else if(count($cn)>0){
+					return "CONDO";
+			}
+			else if(count($dl)>0){
+					return "DUPLEX";
+			}
+			else if(count($mb)>0){
+					return "MOBILE";
+			}
+			else if(count($qd)>0){
+					return "QUADRAPLEX";
+			}
+			else if(count($trp)>0){
+					return "TRIPLEX";
+			}
+			return "SFR";
+	}	
+
+
+	function getPropertyTypeRELAR($prop){
+			$multi = array("Residential Income (General/Multi-Family)","Multi-Family Dwellings (Generic, any combination)");
+			$sfr = array("Historical - Private (general)","Historical Residence","Agricultural/Rural (general)","Apartment house (100+ units)","Apartment house (5+ units)","Apartments (generic)","Boarding/Rooming House, Apt Hotel","Bungalow (Residential)","Rural Residence","Residential (General/Single)","Ranch","Planned Unit Development (PUD)","Patio Home","Manufactured, Modular, Pre-Fabricated Homes","Seasonal, Cabin, Vacation Residence","Single Family Residence","Single Family Residential","Zero Lot Line (Residential)");
+			$condo = array("Cooperative","Condominium Development (Association Assessment)","Condominium","Common Area (Residential)","Cluster home","Row house","Townhouse");
+			$duplex = array("Highrise Apartments","Garden Apt, Court Apt (5+ units)","Duplex (2 units, any combination)");
+			$mobile = array("Mobile home");
+			$quadraplex = array("Quadruplex (4 units, any combination)");
+			$triplex = array("Triplex (3 units, any combination)");
+
+			$ml = preg_grep("@$prop@is", $multi);
+			$sr  = preg_grep("@$prop@is", $sfr);
+			$cn = preg_grep("@$prop@is", $condo);
+			$dl  = preg_grep("@$prop@is", $duplex);
+			$mb = preg_grep("@$prop@is", $mobile);
+			$qd = preg_grep("@$prop@is", $quadraplex);
+			$trp = preg_grep("@$prop@is", $triplex);
+
+			if(count($ml)>0){
+					return "MULTI";
+			}
+			else if(count($sr)>0){
+					return "SFR";
+			}
+			else if(count($cn)>0){
+					return "CONDO";
+			}
+			else if(count($dl)>0){
+					return "DUPLEX";
+			}
+			else if(count($mb)>0){
+					return "MOBILE";
+			}
+			else if(count($qd)>0){
+					return "QUADRAPLEX";
+			}
+			else if(count($trp)>0){
+					return "TRIPLEX";
+			}
+			return "SFR";
+	}	
+	
+	
+	function getPoolType($pool){
+		
+			if(preg_match("@Yes|Y|Gunite|In\s*ground|Above\s*ground@is",$pool)){				
+				return "Y";					
+			}
+			else if (preg_match("@N|No|Association Pool|Neighborhood Pool@is",$pool)){
+				return "N";
+			}
+			return "N";
+	}
 
 function get_xml_data_address($arrParam){		
 		$url = 'http://dlpapi.realtytrac.com/Reports/Get?ApiKey=a2d3e2aa-9c9b-4aab-af3a-56785ae67e25&Login=accurity&Password=1cyquent!&JobID=&LoanNumber=&PreparedBy=&ResellerID=&PreparedFor=&OwnerFirstName=&OwnerLastName=&AddressType=&PropertyStreetAddress='.$arrParam['street'].'&AddressNumber=&StartAddressNumberRange=&EndAddressNumberRange=&StreetDir=&StreetName=&StreetSuffix=&City='.$arrParam['city'].'&StateCode='.$arrParam['state'].'&County=&ZipCode=&PropertyParcelID=&SAPropertyID=&APN=&ApnRangeStart=&ApnRangeEnd=&GeoCodeX=&GeoCodeY=&GeoCodeRadius=&SearchType=&NumberOfRecords=&Format=XML&ReportID=104&R104_SettingsMode=';
@@ -446,7 +542,7 @@ function get_xml_data_address($arrParam){
 		preg_match_all("@<PROPERTY>(.*?)</PROPERTY>@is",$resp,$aProp,PREG_SET_ORDER);
 
 		$result = array();
-	
+
 		foreach($aProp as $arr){
 			 preg_match("@_City=\"(.*?)\"\s*_StreetAddress=\"(.*?)\"\s*_State=\"(.*?)\"\s*_PostalCode=\"(.*?)\"@is",$arr[1],$matches);
 			 $address = $matches[2]." ".$matches[1]." ".$matches[3]." ".$matches[4];
@@ -466,7 +562,7 @@ function get_xml_data_address($arrParam){
 			 preg_match("@SALES_HISTORY.*?PropertySalesAmount=\"(.*?)\"@is",$arr[1],$sale_amount);
 
 			 preg_match("@AMENITY _Type=\"Pool\" _ExistsIndicator=\"(.*?)\"@is", $arr[1],$pool);
-			 if($pool[1]==""){ $pool[1]="No";}
+			 if($pool[1]==""){ $pool[1]="N";}
 
 			 preg_match("@BASEMENT SquareFeetCount=\"(.*?)\"@is",$arr[1],$basement);
 			 if($basement[1]>0){ $basement[1]="Y";}else{ $basement[1]="No"; }
@@ -478,9 +574,20 @@ function get_xml_data_address($arrParam){
 			 $transfer[1] = preg_replace("@T.*?$@is", "", $transfer[1]);
 			 preg_match("@StoriesCount=\"(.*?)\"@is",$arr[1],$stories);
 			 $stories = $stories[1];
-			 $result[] = array('address'=>$address,'distance'=>$distance[1], 'beds'=>floor($beds[1]).' /'.floor($baths[1]).' ','sq_size'=>$size[1],'year_built'=>$built[1], 'lot_size'=>$lot[1], 'stories'=>$story[1], 'dateSold'=>$sale_date[1], 'amount'=>$sale_amount[1], 'street'=>$matches[2],'city'=>$matches[1],'state'=>$matches[3], 'zip'=>$matches[4],'latitude'=>$latitude, 'longitude'=>$longitude, 'pool'=>$pool[1], 'basement'=>$basement[1], 'transferDate'=>$transfer[1],'stories'=>$stories);			
+			 preg_match("@StandardUseCode_ext=\"(.*?)\"@",$arr[1],$props);
+			 $ptype = trim($props[1]);
+			 $ptype = getPropertyTypeDLP($ptype);
+			 if($basement[1]=="Yes"){		 
+				 $basement[1] = "Y";
+			 }else if($basement[1]=="No"){
+				 $basement[1] = "N";				 
+			 }
+			 $result[] = array('address'=>$address,'distance'=>$distance[1], 'beds'=>floor($beds[1]).' /'.floor($baths[1]).' ','sq_size'=>$size[1],'year_built'=>$built[1], 'lot_size'=>$lot[1], 'stories'=>$story[1], 'dateSold'=>$sale_date[1], 'amount'=>$sale_amount[1], 'street'=>$matches[2],'city'=>$matches[1],'state'=>$matches[3], 'zip'=>$matches[4],'latitude'=>$latitude, 'longitude'=>$longitude, 'pool'=>$pool[1], 'basement'=>$basement[1], 'transferDate'=>$transfer[1],'stories'=>$stories,'propertyType'=>$ptype);			
 		}
 			
 		return $result;
 	}
+
+
+
 ?>

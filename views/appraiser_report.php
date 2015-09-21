@@ -18,7 +18,6 @@
 					</h6>
 				</td>
 			</tr>	
-			<tr style="height:25px;"><td colspan=2>&nbsp;</td></tr>
 		</table>
 
 		<table width="60%" style="font-size:6px;">
@@ -37,7 +36,7 @@
 			<tr>
 				<td valign="top" id="mp" width="60%">
 					
-					<img src="<?php if(isset($_SESSION['results']['map']) || isset($_SESSION['map'])){ $map = isset($_SESSION['results']['map']) ? $_SESSION['results']['map'] : $_SESSION['map']; echo $map; } ?>" width="100%;"/>
+					<img src="<?php if(isset($_SESSION['results']['map']) || isset($_SESSION['map'])){ $map = isset($_SESSION['results']['map']) ? $_SESSION['results']['map'] : $_SESSION['map']; echo $map; } ?> " width="350px;" height="250px;"/>
 					
 				</td>
 				<td valign="top" width="40%" valign="top">
@@ -61,10 +60,9 @@
 		</table>
 
 		<?php
-
+$count=1;
 	if(count($comps)>0){
 		?>
-		<br><br><br><br><br><br><br><br>
 		<h4 class="resultHeading">Potential Comparable Sales</h4>
 		<br>
 		<table id="compTable" width="100%" style="font-size:9px;">
@@ -106,22 +104,27 @@
 					$odd++;
 				//	$detail['pool']=$pool;
 				//	$detail['basement']=$basement;
-					
+				
+				if($count%2 == 1)
+				$row_bg_colour = "#F1F1F1";
+				else
+				$row_bg_colour = "#FFFFFF";
+		
 			?>
-			  <tr bgcolor="#f6f6f6">
-			  <td width="22%" style="border-right:1px solid #ccc;"><?php echo $key2+1 .") ".$detail['address'];?></td>
-				<td width="7%" style="border-right:1px solid #ccc;"><?php echo  sprintf('%0.2f', $detail['distance']);?> mi</td>
-				<td width="5%" style="border-right:1px solid #ccc;text-align:center;"><?php echo $detail['bedsBaths'];?></td>
-				<td width="7%" style="border-right:1px solid #ccc;text-align:center;"><?php echo number_format($detail['sq_size']);?></td>
-				<td width="5%" style="border-right:1px solid #ccc;text-align:center;"><?php echo $detail['year_built'];?></td>
-				<td width="7%" style="3px;border-right:1px solid #ccc;text-align:center;"><?php echo number_format($detail['lot_size']);?></td>
-				<td width="4%" style="3px;border-right:1px solid #ccc;text-align:center;"><?php echo $detail['stories'];?></td>
-				<td width="5%" style="3px;border-right:1px solid #ccc;text-align:center;"><?php echo $detail['pool'];?></td>
-				<td width="5%" style="border-right:1px solid #ccc;text-align:center;"><?php echo $detail['basement'];?></td>
-				<td width="10%" style="border-right:1px solid #ccc;text-align:center;"><?php echo $detail['dateSold'];?></td>
-				<td width="8%" style="border-right:1px solid #ccc;text-align:center;">$<?php echo number_format($detail['amount']);?></td>	
-				<td width="6%" style="border-right:1px solid #ccc;text-align:center;"><?php echo $detail['dy'] ?></td>
-				<td width="5%" style="border-right:1px solid #ccc;text-align:center;"><?php echo $detail['ay'] ?></td>
+			  <tr bgcolor="<?php echo $row_bg_colour;?>">
+			  <td width="22%" style="border-right:1px solid #ccc;valign:middle;"><?php echo $count .") ".$detail['address']; $count++;?></td>
+				<td width="7%" style="border-right:1px solid #ccc;valign:middle;"><?php echo  sprintf('%0.2f', $detail['distance']);?> mi</td>
+				<td width="5%" style="border-right:1px solid #ccc;text-align:center;valign:middle;"><?php echo $detail['bedsBaths'];?></td>
+				<td width="7%" style="border-right:1px solid #ccc;valign:middle;text-align:center;"><?php echo number_format($detail['sq_size']);?></td>
+				<td width="5%" style="border-right:1px solid #ccc;valign:middle;text-align:center;"><?php echo $detail['year_built'];?></td>
+				<td width="7%" style="3px;border-right:1px solid #ccc;valign:middle;text-align:center;"><?php echo number_format($detail['lot_size']);?></td>
+				<td width="4%" style="3px;border-right:1px solid #ccc;valign:middle;text-align:center;"><?php echo $detail['stories'];?></td>
+				<td width="5%" style="3px;border-right:1px solid #ccc;valign:middle;text-align:center;"><?php echo $detail['pool'];?></td>
+				<td width="5%" style="border-right:1px solid #ccc;valign:middle;text-align:center;"><?php echo $detail['basement'];?></td>
+				<td width="10%" style="border-right:1px solid #ccc;valign:middle;text-align:center;"><?php echo $detail['dateSold'];?></td>
+				<td width="8%" style="border-right:1px solid #ccc;valign:middle;text-align:center;">$<?php echo number_format($detail['amount']);?></td>	
+				<td width="6%" style="border-right:1px solid #ccc;valign:middle;text-align:center;"><?php echo $detail['dy'] ?></td>
+				<td width="5%" style="border-right:1px solid #ccc;valign:middle;text-align:center;"><?php echo $detail['ay'] ?></td>
 				<td width="4%">&nbsp;</td>
 			  </tr>
 			  <?php
@@ -142,7 +145,6 @@
 	if(count($comps)==0){
 		$odd=0;
 		?>
-		<br><br><br><br><br><br><br><br><br>
 	<?php }else{$odd=$key2+1;}?>
 		<h4 class="resultHeading">Potential Comparable Sales Not Used</h4>
 
@@ -176,15 +178,19 @@
 				
 			if($detail['reason']==1){$reason = "Poor Condition of Subject/Good Condition of Comp &nbsp;&nbsp;&nbsp;"; } else{ $reason="None"; }
 			if($detail['note']==1){ $note = "I didn't use this property because"; } else{ $note="None"; }
-
+			
+			if($odd%2 == 1)
+			$row_bg_colour = "#F1F1F1";
+			else
+			$row_bg_colour = "#FFFFFF";
 
 			
 			//if($odd%2==0){ $color= "#ffffff;";}else{ $color= "#f6f6f6;";}
 			//$detail['pool']=$pool;
 			//$detail['basement']=$basement;
 	?>
-      <tr bgcolor="#f6f6f6">
-	  <td width="22%" style="border-right:1px solid #ccc;"><?php echo $odd+1 .") ".$detail['address'];?></td>
+      <tr bgcolor="<?php echo $row_bg_colour;?>">
+	  <td width="22%" style="border-right:1px solid #ccc;"><?php echo $count .") ".$detail['address'];$count++;?></td>
 		<td width="7%" style="border-right:1px solid #ccc;"><?php echo  sprintf('%0.2f', $detail['distance']);?> mi</td>
 		<td width="5%" style="border-right:1px solid #ccc;text-align:center;"><?php echo $detail['bedsBaths'];?></td>
 		<td width="7%" style="border-right:1px solid #ccc;text-align:center;"><?php echo number_format($detail['sq_size']);?></td>
@@ -200,7 +206,7 @@
 		<td width="5%" style="border-right:1px solid #ccc;text-align:center;"><?php echo $detail['ay'] ?></td>
 		<td width="4%">&nbsp;</td>
       </tr>
-	   <tr>
+	   <tr  bgcolor="<?php echo $row_bg_colour;?>">
 	  <td colspan="15"><span style="color:red;"><?php echo $reason;?></span>  &nbsp; <span style="color:red;">Notes: <?php echo $note;?></span></td>
 	  </tr>
 	  <?php
@@ -353,23 +359,23 @@ downloadReport-->
 		
 		<div class="row">
 			<div class="col-lg-12 col-sm-12 col-xs-12 col-md-12">
-		<table class="table table-striped" id="compTable">
+		<table class="table" id="compTable">
    <thead>
    	 <?php
 			if($user==2){
 
 			}else{?>
-     <tr rowspan="2">
+     <tr rowspan="2" bgcolor="#ccc">
     <th colspan="11" style="border:none;"></th>
     <th colspan="2" style="border:none;">Public Record Match</th>
     <th style="border:none;"></th>
     </tr>
     <?php }?>
-      <tr>
+      <tr bgcolor="#ccc">
 	 
         <th>Address</th>
         <th>Distance</th>
-        <th>Bd/Ba</th>
+        <th style="text-align:center;">Bd/Ba</th>
 		<th style="text-align:center;">SF</th>
         <th style="text-align:center;">Yr</th>
         <th style="text-align:center;">Lot</th>
@@ -403,13 +409,17 @@ downloadReport-->
 	$odd=1;
 	
 			foreach($comps as $key=>$detail){
-				if($odd%2==0){ $color= "#ffffff;";}else{ $color= "#f6f6f6;";}
-			$odd++;
+			
+			if($count%2 == 0)
+			$row_bg_colour = "#F1F1F1";
+			else
+			$row_bg_colour = "#FFFFFF";
+			
 	?>
-      <tr >
+      <tr bgcolor="<?php echo $row_bg_colour;?>">
 	  <td><?php echo $count.". ".$detail['address'];?></td>
         <td><?php echo  sprintf('%0.2f', $detail['distance']);?> mi</td>
-        <td><?php echo $detail['bedsBaths'];?></td>
+        <td style="text-align:center;"><?php echo $detail['bedsBaths'];?></td>
 		<td style="text-align:center;"><?php echo number_format($detail['sq_size']);?></td>
         <td style="text-align:center;"><?php echo $detail['year_built'];?></td>
         <td style="text-align:center;"><?php echo number_format($detail['lot_size']);?></td>
@@ -453,69 +463,70 @@ downloadReport-->
 
 		<div class="row">
 			<div class="col-lg-12 col-sm-12 col-xs-12 col-md-12">
-		<table class="table table-striped" id="compTable">
+		<table class="table" id="compTable">
     <thead>
-        <tr rowspan="2">
+        <tr rowspan="2" bgcolor="#ccc">
     <th colspan="11" style="border:none;"></th>
     <th colspan="2" style="border:none;">Public Record Match</th>
     <th style="border:none;"></th>
     </tr>
-      <tr>
+      <tr bgcolor="#ccc">
 	 
         <th>Address</th>
         <th>Distance</th>
-        <th>Bd/Ba</th>
-		<th>SF</th>
-        <th>Yr</th>
-        <th>Lot</th>
-		<th>STY</th>
-		<th>Pool</th>
-		<th>BSMT</th>
-        <th>Date Sold</th>
-        <th>Amount</th>
-		<th>Sales $</th>
-		<th>Sales Date</th>
-		<th>Concessions</th>
+        <th style="text-align:center;">Bd/Ba</th>
+		<th style="text-align:center;">SF</th>
+        <th style="text-align:center;">Yr</th>
+        <th style="text-align:center;">Lot</th>
+		<th style="text-align:center;">STY</th>
+		<th style="text-align:center;">Pool</th>
+		<th style="text-align:center;">BSMT</th>
+        <th style="text-align:center;">Date Sold</th>
+        <th style="text-align:center;">Amount</th>
+		<th style="text-align:center;">Sales $</th>
+		<th style="text-align:center;">Sales Date</th>
+		<th style="text-align:center;">Concessions</th>
       </tr>
     </thead>
     <tbody>
 	<?php
-	$odd=1;
+	$odd=0;
 
 		foreach($not_comps as $key=>$detail){
 				
 			if($detail['reason']==1){$reason = "Poor Condition of Subject/Good Condition of Comp &nbsp;&nbsp;&nbsp;"; } else{ $reason="None"; }
 			if($detail['note']==1){ $note = "I didn't use this property because"; } else{ $note="None"; }
 
-
-			
-			if($odd%2==0){ $color= "#ffffff;";}else{ $color= "#f6f6f6;";}
-			$odd++;
+			if($count%2 == 1)
+			$row_bg_colour = '#F1F1F1';
+			else
+			$row_bg_colour = "#FFFFFF";
+		
 			//$detail['pool']=$pool;
 			//$detail['basement']=$basement;
 	?>
-      <tr style="background:<?php  echo $color;?>">
+      <tr style="background:<?php echo $row_bg_colour;?> !important;">
         <td><?php echo $count.". ";?><?php echo $detail['address'];?></td>
         <td><?php echo  sprintf('%0.2f', $detail['distance']); ?> mi</td>
-        <td><?php echo $detail['bedsBaths'];?></td>
-		<td><?php echo number_format($detail['sq_size']);?></td>
-        <td><?php echo $detail['year_built'];?></td>
-        <td><?php echo number_format($detail['lot_size']);?></td>
-		<td><?php echo $detail['stories'];?></td>
-		<td><?php echo $detail['pool'];?></td>
-		<td><?php echo $detail['basement'];?></td>
-        <td><?php echo $detail['dateSold'];?></td>
-        <td>$<?php echo number_format($detail['amount']);?></td>
+        <td style="text-align:center;"><?php echo $detail['bedsBaths'];?></td>
+		<td style="text-align:center;"><?php echo number_format($detail['sq_size']);?></td>
+        <td style="text-align:center;"><?php echo $detail['year_built'];?></td>
+        <td style="text-align:center;"><?php echo number_format($detail['lot_size']);?></td>
+		<td style="text-align:center;"><?php echo $detail['stories'];?></td>
+		<td style="text-align:center;"><?php echo $detail['pool'];?></td>
+		<td style="text-align:center;"><?php echo $detail['basement'];?></td>
+        <td style="text-align:center;"><?php echo $detail['dateSold'];?></td>
+        <td style="text-align:center;">$<?php echo number_format($detail['amount']);?></td>
 		
-		<td><?php echo $detail['dy'] ?></td>
-		<td><?php echo $detail['ay'] ?></td>
-		<td></td>
+		<td style="text-align:center;"><?php echo $detail['dy'] ?></td>
+		<td style="text-align:center;"><?php echo $detail['ay'] ?></td>
+		<td>&nbsp;</td>
       </tr>
-	   <tr style="background:<?php  echo $color;?>">
+	   <tr  bgcolor="<?php echo $row_bg_colour;?>">
 	  <td colspan="15"><span style="color:red;"><?php echo $reason;?></span>  &nbsp; <span style="color:red;">Notes: <?php echo $note;?></span></td>
 	  </tr>
 	  <?php
-	  $count++;
+	  $count++;$odd++;
 		}
 		
 	  ?>	
